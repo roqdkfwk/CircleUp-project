@@ -28,7 +28,7 @@ public class CourseSerivce {
     //////////////////////////////////////////////////////////////////////////
     public List<CoursesRes> getCoursesByTitle(String name, int size){
         Pageable pageable = PageRequest.of(0, size);
-        return courseRepository.findByNameContaining(name, pageable)
+        return courseRepository.findByKeyword(name, pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
