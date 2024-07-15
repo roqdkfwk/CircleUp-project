@@ -31,30 +31,29 @@ public class CourseController {
     public ResponseEntity<List<CoursesRes>> courselist(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false, value="tag") List<Long> tags)
+            @RequestParam(required = false, value="tag") List<Long> tags,
+            @RequestParam(required = true) int size)
     {
         List<CoursesRes> courseList ;
 
-        // TODO 페이징
+        System.out.println("size : " + size);
+
         if(keyword != null){
             // 강의 제목으로 검색
-            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword));
+            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, size));
         }else if(tags != null){
             // 태그 목록으로 검색
-            System.out.println("================태그 목록으로 검색================");
-            System.out.println(tags.get(0));
-            System.out.println(tags.get(0).getClass());
-            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags));
+            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, size));
         }else if(type != null){
             if(type.equals("register")){ // 수강중
                 // TODO 인증필터를 이용한 memberId 추가
-                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L));
+                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L, size));
             }else if(type.equals("offer")){ // 추천순
-                return ResponseEntity.ok().body(courseService.getOfferingCourses());
+                return ResponseEntity.ok().body(courseService.getOfferingCourses(size));
             }else if(type.equals("hot")){ // 인기순
-                return ResponseEntity.ok().body(courseService.getCoursesByView());
+                return ResponseEntity.ok().body(courseService.getCoursesByView(size));
             }else if(type.equals("free")){ // 무료
-                return ResponseEntity.ok().body(courseService.getFreeCourses());
+                return ResponseEntity.ok().body(courseService.getFreeCourses(size));
             }
         }
         return ResponseEntity.badRequest().build();
