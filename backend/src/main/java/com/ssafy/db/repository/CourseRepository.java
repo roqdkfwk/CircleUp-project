@@ -12,7 +12,9 @@ import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long>, CourseRepositoryCustom{
 
-    List<Course> findByNameContaining(String name, Pageable pageable);
+    @Query("SELECT c FROM Course c WHERE c.name LIKE %:keyword% OR c.summary LIKE %:keyword%")
+    List<Course> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
     List<Course> findByPrice(Long price, Pageable pageable);
     List<Course> findAllByOrderByViewDesc(Pageable pageable);
 

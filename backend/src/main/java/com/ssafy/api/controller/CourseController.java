@@ -37,28 +37,27 @@ public class CourseController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type,
             @RequestParam(required = false, value="tag") List<Long> tags,
+            @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = true) int size)
     {
         List<CoursesRes> courseList ;
 
-        System.out.println("size : " + size);
-
         if(keyword != null){
             // 강의 제목으로 검색
-            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, size));
+            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, page, size));
         }else if(tags != null){
             // 태그 목록으로 검색
-            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, size));
+            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, page, size));
         }else if(type != null){
             if(type.equals("register")){ // 수강중
                 // TODO 인증필터를 이용한 memberId 추가
-                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L, size));
+                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L, page, size));
             }else if(type.equals("offer")){ // 추천순
-                return ResponseEntity.ok().body(courseService.getOfferingCourses(size));
+                return ResponseEntity.ok().body(courseService.getOfferingCourses(page, size));
             }else if(type.equals("hot")){ // 인기순
-                return ResponseEntity.ok().body(courseService.getCoursesByView(size));
+                return ResponseEntity.ok().body(courseService.getCoursesByView(page,size));
             }else if(type.equals("free")){ // 무료
-                return ResponseEntity.ok().body(courseService.getFreeCourses(size));
+                return ResponseEntity.ok().body(courseService.getFreeCourses(page, size));
             }
         }
         return ResponseEntity.badRequest().build();
