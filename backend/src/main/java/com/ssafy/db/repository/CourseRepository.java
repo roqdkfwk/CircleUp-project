@@ -1,5 +1,6 @@
 package com.ssafy.db.repository;
 
+import com.ssafy.api.response.InstructorRes;
 import com.ssafy.db.entity.Course;
 import org.kurento.client.internal.server.Param;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,10 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
 
     @Query("SELECT c FROM Course c JOIN FETCH c.instructor JOIN FETCH c.course_tag_list WHERE c.id = :id")
     Optional<Course> findAllById(@Param("id") Long id);
+
+    @Query("SELECT new com.ssafy.api.response.InstructorRes(" +
+            "m.id, m.name, i.description, m.contact) from Member m " +
+            "INNER JOIN Instructor i ON i.id = m.id " +
+            "WHERE i.id = (SELECT c.instructor.id FROM Course c WHERE c.id = :id) ")
+    Optional<InstructorRes> findInstructorByCourseId(@Param("id") Long id);
 }

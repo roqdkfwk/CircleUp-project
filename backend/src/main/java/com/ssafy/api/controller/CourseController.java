@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.api.service.CourseSerivce;
 import io.swagger.annotations.Api;
@@ -75,5 +76,15 @@ public class CourseController {
         return ResponseEntity.ok().body(courseService.getCourseById(id));
     }
 
+    @GetMapping("/courses/{course_id}/owner")
+    @ApiOperation(value = "강사 정보 조회")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "강사 없음")
+    })
+    public ResponseEntity<InstructorRes> owner(
+            @PathVariable(name="course_id") Long id
+    ){
+        return ResponseEntity.ok().body(courseService.getInstructorByCourseId(id));
+    }
 
 }

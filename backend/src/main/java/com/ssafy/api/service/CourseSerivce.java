@@ -85,7 +85,14 @@ public class CourseSerivce {
 
     public CourseRes getCourseById(Long id){
         return CourseRes.of(courseRepository.findAllById(id).orElseThrow(
-                ()-> new NotFoundException("Not Found Course : " + id)
+                ()-> new NotFoundException("Not Found Course : Course_id is " + id)
         ));
+    }
+
+
+    public InstructorRes getInstructorByCourseId(Long id){
+        return courseRepository.findInstructorByCourseId(id).orElseThrow(
+                ()-> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
+        );
     }
 }
