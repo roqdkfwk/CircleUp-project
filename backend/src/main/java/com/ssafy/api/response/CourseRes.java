@@ -35,7 +35,7 @@ public class CourseRes {
                 .img_url(course.getImg_url())
                 .price(course.getPrice())
                 .view(course.getView())
-                .instructorName(course.getInstructor().getName())
+                .instructorName(course.getInstructor().getMember().getName())
                 .curriculum(course.getCurriculum())
                 .description(course.getDescription())
                 .tags(course.getCourse_tag_list().stream().map(ct->ct.getTag().getName()).collect(Collectors.toList())).build();
