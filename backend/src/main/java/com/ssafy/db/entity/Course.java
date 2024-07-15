@@ -28,8 +28,11 @@ public class Course {
     @Column(length = 1000)
     private String img_url;
 
-    @Column(length = 45)
+    @Column
     private String name;
+
+    @Column
+    private String summary;
 
     @Column
     private Long view;
