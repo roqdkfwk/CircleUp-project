@@ -2,7 +2,9 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
+import com.ssafy.common.exception.handler.NotFoundException;
 import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -82,6 +84,8 @@ public class CourseSerivce {
 
 
     public CourseRes getCourseById(Long id){
-        return CourseRes.of(courseRepository.findAllById(id).orElse(null));
+        return CourseRes.of(courseRepository.findAllById(id).orElseThrow(
+                ()-> new NotFoundException("Not Found Course : " + id)
+        ));
     }
 }

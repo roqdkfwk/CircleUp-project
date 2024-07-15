@@ -5,6 +5,9 @@ import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.api.service.CourseSerivce;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +65,10 @@ public class CourseController {
 
 
     @GetMapping("/courses/{course_id}")
-    @Operation(summary="강의 상세 정보 조회")
+    @ApiOperation(value = "강의 정보 상세 조회")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "해당 강의 없음")
+    })
     public ResponseEntity<CourseRes> course(
             @PathVariable(name="course_id") Long id
     ){
