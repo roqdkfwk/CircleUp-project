@@ -19,8 +19,8 @@ public class Course {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    Member instructor;
+    @JoinColumn(name = "instructor_id")
+    Instructor instructor;
 
     @Column
     private Timestamp created_at;
@@ -28,8 +28,11 @@ public class Course {
     @Column(length = 1000)
     private String img_url;
 
-    @Column(length = 45)
+    @Column
     private String name;
+
+    @Column
+    private String summary;
 
     @Column
     private Long view;

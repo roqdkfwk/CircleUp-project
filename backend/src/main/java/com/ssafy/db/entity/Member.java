@@ -1,22 +1,17 @@
 package com.ssafy.db.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.ssafy.db.entity.enums.Role;
+import lombok.*;
 import org.checkerframework.checker.units.qual.Length;
 
 import javax.persistence.*;
 import java.util.Optional;
 
-enum Role {
-    User,
-    Instructor,
-    Admin
-}
-
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class Member {
 
     @Id
@@ -45,7 +40,5 @@ public class Member {
     @Column(length = 45)
     private String tel;
 
-    public static void main(String[] args) {
-
-    }
+    protected Member(){}
 }

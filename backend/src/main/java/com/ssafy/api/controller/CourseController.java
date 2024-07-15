@@ -1,9 +1,14 @@
 package com.ssafy.api.controller;
 
+import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.api.service.CourseSerivce;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,34 +36,55 @@ public class CourseController {
     public ResponseEntity<List<CoursesRes>> courselist(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false, value="tag") List<Long> tags)
+            @RequestParam(required = false, value="tag") List<Long> tags,
+            @RequestParam(required = true) int size)
     {
         List<CoursesRes> courseList ;
 
-        // TODO 페이징
+        System.out.println("size : " + size);
+
         if(keyword != null){
             // 강의 제목으로 검색
-            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword));
+            return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, size));
         }else if(tags != null){
             // 태그 목록으로 검색
-            System.out.println("================태그 목록으로 검색================");
-            System.out.println(tags.get(0));
-            System.out.println(tags.get(0).getClass());
-            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags));
+            return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, size));
         }else if(type != null){
             if(type.equals("register")){ // 수강중
                 // TODO 인증필터를 이용한 memberId 추가
-                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L));
+                return ResponseEntity.ok().body(courseService.getRegisteredCourses(3L, size));
             }else if(type.equals("offer")){ // 추천순
-                return ResponseEntity.ok().body(courseService.getOfferingCourses());
+                return ResponseEntity.ok().body(courseService.getOfferingCourses(size));
             }else if(type.equals("hot")){ // 인기순
-                return ResponseEntity.ok().body(courseService.getCoursesByView());
+                return ResponseEntity.ok().body(courseService.getCoursesByView(size));
             }else if(type.equals("free")){ // 무료
-                return ResponseEntity.ok().body(courseService.getFreeCourses());
+                return ResponseEntity.ok().body(courseService.getFreeCourses(size));
             }
         }
         return ResponseEntity.badRequest().build();
     }
 
+
+    @GetMapping("/courses/{course_id}")
+    @ApiOperation(value = "강의 정보 상세 조회")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "해당 강의 없음")
+    })
+    public ResponseEntity<CourseRes> course(
+            @PathVariable(name="course_id") Long id
+    ){
+        return ResponseEntity.ok().body(courseService.getCourseById(id));
+    }
+
+    @GetMapping("/courses/{course_id}/owner")
+    @ApiOperation(value = "강사 정보 조회")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "강사 없음")
+    })
+    public ResponseEntity<InstructorRes> owner(
+            @PathVariable(name="course_id") Long id
+    ){
+        return ResponseEntity.ok().body(courseService.getInstructorByCourseId(id));
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.ssafy.api.service;
 
+import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.dto.MemberDto;
@@ -16,36 +18,38 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
+    // 회원가입
     @Override
     @Transactional
-    public void signup(MemberDto memberDto) {
-        try {
-            Member member = Member.builder()
-                    .email(memberDto.getEmail())
-                    .pw(memberDto.getPw())
-                    .name(memberDto.getName())
-                    .token(memberDto.getToken())
-                    .type(memberDto.getType())
-                    .tel(memberDto.getTel())
-                    .build();
+    public void signup(MemberSignupPostReq memberSignupPostReq) {
 
-            memberRepository.save(member);
-        } catch (Exception e) {
-            System.out.println("회원가입에 실패했습니다: " + e.getMessage());
-            throw new RuntimeException("회원가입 중 오류가 발생했습니다.", e);
-        }
+        Member member = Member.builder()
+                .email(memberSignupPostReq.getEmail())
+                .pw(memberSignupPostReq.getPw())
+                .name(memberSignupPostReq.getName())
+                .token(memberSignupPostReq.getToken())
+                .role(memberSignupPostReq.getRole())
+                .tel(memberSignupPostReq.getTel())
+                .contact(memberSignupPostReq.getContact())
+                .build();
+
+        memberRepository.save(member);
     }
 
+    // 이메일 중복체크
+    @Override
+    public boolean checkEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        return member.isPresent();
+    }
+
+    // 회원탈퇴
     @Override
     public void withdraw(Long memberId) {
-        try {
-            memberRepository.deleteById(memberId);
-        } catch (Exception e) {
-            System.out.println("회원 탈퇴 실패: " + e.getMessage());
-            throw new RuntimeException("회원 탈퇴 중 오류가 발생했습니다.", e);
-        }
+        memberRepository.deleteById(memberId);
     }
 
+    // email, pw로 로그인
     @Override
     public Optional<Member> login(String email, String pw) {
         Optional<Member> member = memberRepository.findByEmail(email);
@@ -56,29 +60,35 @@ public class MemberServiceImpl implements MemberService {
         return Optional.empty();
     }
 
+    // 회원정보수정
     @Override
-    public Member updateMember(MemberDto memberDto) {
-        Optional<Member> optionalMember = memberRepository.findByEmail(memberDto.getEmail());
+    public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
         if (!optionalMember.isPresent()) {
-            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + memberDto.getEmail());
+            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + memberModifyUpdateReq.getName());
         }
 
         Member member = optionalMember.get();
 
-//        Email은 로그인 시 사용하는 아이디이므로 변경할 수 없음
-//        if (memberDto.getEmail() != null) existingMember.setEmail(memberDto.getEmail());
-        if (memberDto.getPw() != null) member.setPw(memberDto.getPw());
-        if (memberDto.getName() != null) member.setName(memberDto.getName());
-        if (memberDto.getToken() != null) member.setToken(memberDto.getToken());
-        if (memberDto.getType() != null) member.setType(memberDto.getType());
-        if (memberDto.getTel() != null) member.setTel(memberDto.getTel());
+        if (memberModifyUpdateReq.getContact() != null) member.setContact(memberModifyUpdateReq.getContact());
+        if (memberModifyUpdateReq.getPw() != null) member.setPw(memberModifyUpdateReq.getPw());
+        if (memberModifyUpdateReq.getName() != null) member.setName(memberModifyUpdateReq.getName());
+        if (memberModifyUpdateReq.getToken() != null) member.setToken(memberModifyUpdateReq.getToken());
+        if (memberModifyUpdateReq.getRole() != null) member.setRole(memberModifyUpdateReq.getRole());
+        if (memberModifyUpdateReq.getTel() != null) member.setTel(memberModifyUpdateReq.getTel());
 
         return memberRepository.save(member);
     }
 
+    // 회원정보조회
     @Override
     public Optional<Member> readMember(Long memberId) {
         return memberRepository.findById(memberId);
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
     }
 }

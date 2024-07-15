@@ -1,5 +1,7 @@
 package com.ssafy.api.controller;
 
+import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.db.entity.Member;
 import com.ssafy.dto.MemberDto;
@@ -22,10 +24,20 @@ public class MemberController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "이메일과 비밀번호를 통해 회원가입을 진행합니다<br/>별도 인증과정은 필요없습니다")
-    public ResponseEntity<?> signup(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<?> signup(@RequestBody MemberSignupPostReq memberSignupPostReq) {
         // TODO 서비스 코드
-        memberService.signup(memberDto);
+        memberService.signup(memberSignupPostReq);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/checkEmail")
+    @Operation(summary = "이메일 중복체크", description = "사용자가 로그인 시 사용할 Email과<br/>중복되는 Email이 존재하는지 DB에서 확인합니다")
+    public ResponseEntity<?> checkEmail(@RequestParam String email) {
+
+        if (memberService.checkEmail(email))
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        else
+            return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{member_id}")
@@ -38,9 +50,9 @@ public class MemberController {
 
     @PutMapping("/{member_id}")
     @Operation(summary = "회원정보수정", description = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일 외의 정보를 수정할 수 있습니다")
-    public ResponseEntity<?> updateMember(@RequestBody MemberDto memberDto, @PathVariable("member_id") Long memberId) {
+    public ResponseEntity<?> modifyMember(@RequestBody MemberModifyUpdateReq memberModifyUpdateReq, @PathVariable("member_id") Long memberId) {
         // TODO 서비스 코드
-        Member updatedMember = memberService.updateMember(memberDto);
+        Member updatedMember = memberService.modifyMember(memberId, memberModifyUpdateReq);
         return ResponseEntity.status(HttpStatus.OK).body(updatedMember);
     }
 

@@ -9,13 +9,14 @@ import lombok.Getter;
 public class CoursesRes {
 
     Long id;
-    String name;
     String img_url;
+    String name;
+    String summary;
     Long price;
     Long view;
 
     public static CoursesRes of(Course course){
-        return new CoursesRes(course.getId(), course.getName(),
-                course.getImg_url(), course.getPrice(), course.getView());
+        return new CoursesRes(course.getId(), course.getImg_url(), course.getName(),
+                course.getSummary(), course.getPrice(), course.getView());
     }
 }
