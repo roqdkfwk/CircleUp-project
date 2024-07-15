@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long>, CourseRepositoryCustom{
 
@@ -22,4 +23,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
 
     @Query("SELECT c FROM Course c JOIN c.course_tag_list ct WHERE ct.tag.id IN :tagIds GROUP BY c.id HAVING COUNT(ct.tag.id) = :size")
     List<Course> findByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
+
+    @Query("SELECT c FROM Course c JOIN FETCH c.instructor JOIN FETCH c.course_tag_list WHERE c.id = :id")
+    Optional<Course> findAllById(@Param("id") Long id);
 }

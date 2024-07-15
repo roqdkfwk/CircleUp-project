@@ -1,5 +1,6 @@
 package com.ssafy.api.service;
 
+import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.db.repository.CourseRepository;
@@ -18,10 +19,11 @@ public class CourseSerivce {
 
     private final CourseRepository courseRepository;
 
+    //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
         return courseRepository.getAllTag().stream().map(tag-> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
     }
-
+    //////////////////////////////////////////////////////////////////////////
     public List<CoursesRes> getCoursesByTitle(String name, int size){
         Pageable pageable = PageRequest.of(0, size);
         return courseRepository.findByNameContaining(name, pageable)
@@ -75,5 +77,11 @@ public class CourseSerivce {
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
 
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+
+    public CourseRes getCourseById(Long id){
+        return CourseRes.of(courseRepository.findAllById(id).orElse(null));
     }
 }

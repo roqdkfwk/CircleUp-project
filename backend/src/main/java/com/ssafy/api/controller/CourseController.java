@@ -1,5 +1,6 @@
 package com.ssafy.api.controller;
 
+import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.api.service.CourseSerivce;
@@ -57,6 +58,15 @@ public class CourseController {
             }
         }
         return ResponseEntity.badRequest().build();
+    }
+
+
+    @GetMapping("/courses/{course_id}")
+    @Operation(summary="강의 상세 정보 조회")
+    public ResponseEntity<CourseRes> course(
+            @PathVariable(name="course_id") Long id
+    ){
+        return ResponseEntity.ok().body(courseService.getCourseById(id));
     }
 
 
