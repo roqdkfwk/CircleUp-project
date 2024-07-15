@@ -1,6 +1,5 @@
 package com.ssafy.db.repository;
 
-import com.ssafy.api.service.MemberServiceImpl;
 import com.ssafy.db.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
