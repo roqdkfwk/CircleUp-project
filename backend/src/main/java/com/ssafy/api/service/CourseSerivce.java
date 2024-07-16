@@ -6,6 +6,7 @@ import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.common.exception.handler.NotFoundException;
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -98,5 +99,24 @@ public class CourseSerivce {
         return courseRepository.findInstructorByCourseId(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
         );
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    public List<CoursesRes> getCoursesImade(Long member_id){
+        Instructor instructor = courseRepository.getInstructorById(member_id).orElseThrow(
+                () -> new NotFoundException("Not Found Instructor : Instructor_id is " + member_id)
+        );
+//        Member member = courseRepository.getMemberById(instructor.getId()).orElseThrow(
+//                () -> new NotFoundException("Not Found Member : Member_id is " + member_id)
+//        );
+        return courseRepository.findByInstructor(instructor).stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<CoursesRes> getCoursesIregistered(Long member_id){
+        return courseRepository.findByRegisteredMemberId(member_id)
+                .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 }
