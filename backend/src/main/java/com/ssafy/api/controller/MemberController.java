@@ -67,14 +67,14 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "로그인", description = "로그인합니다<br/>이메일과 비밀번호를 입력해 DB에 저장된 데이터와 비교합니다")
-    public ResponseEntity<?> login(@RequestBody MemberDto memberDto) {
-        // TODO 서비스 코드
-        Optional<Member> member = memberService.login(memberDto.getEmail(), memberDto.getPw());
-        if (member.isPresent())
-            return ResponseEntity.status(HttpStatus.OK).body(member.get());
-        else
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
+//    @PostMapping("/login")
+//    @Operation(summary = "로그인", description = "로그인합니다<br/>이메일과 비밀번호를 입력해 DB에 저장된 데이터와 비교합니다")
+//    public ResponseEntity<?> login(@RequestBody MemberDto memberDto) {
+//        // TODO 서비스 코드
+//        Optional<Member> member = memberService.login(memberDto.getEmail(), memberDto.getPw());
+//        if (member.isPresent())
+//            return ResponseEntity.status(HttpStatus.OK).body(member.get());
+//        else
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//    }
 }

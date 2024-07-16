@@ -3,7 +3,6 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.db.entity.Member;
-import com.ssafy.dto.MemberDto;
 
 import java.util.Optional;
 
@@ -18,8 +17,8 @@ public interface MemberService {
     // 회원탈퇴
     void withdraw(Long memberId);
     
-    // 로그인
-    Optional<Member> login(String email, String pw);
+//    // 로그인
+//    Optional<Member> login(String email, String pw);
 
     // 회원정보수정
     Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
@@ -29,4 +28,6 @@ public interface MemberService {
 
     // email로 회원찾기
     Optional<Member> findByEmail(String email);
+
+    Member getMemberByEmail(String email);
 }

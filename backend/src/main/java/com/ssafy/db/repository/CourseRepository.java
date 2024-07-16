@@ -2,6 +2,7 @@ package com.ssafy.db.repository;
 
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Instructor;
 import org.kurento.client.internal.server.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +36,11 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
             "INNER JOIN Instructor i ON i.id = m.id " +
             "WHERE i.id = (SELECT c.instructor.id FROM Course c WHERE c.id = :id) ")
     Optional<InstructorRes> findInstructorByCourseId(@Param("id") Long id);
+
+    List<Course> findByInstructor(Instructor instructor);
+
+    @Query("SELECT c FROM Course c WHERE c.id IN " +
+            "(SELECT r.id FROM Register r WHERE r.member.id = :memberId)")
+    List<Course> findByRegisteredMemberId(@Param("memberId") Long memberId);
+
 }

@@ -6,6 +6,9 @@ import com.ssafy.db.entity.Member;
 import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,16 +52,16 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    // email, pw로 로그인
-    @Override
-    public Optional<Member> login(String email, String pw) {
-        Optional<Member> member = memberRepository.findByEmail(email);
-
-        if (member.isPresent() && member.get().getPw().equals(pw))
-            return member;
-
-        return Optional.empty();
-    }
+//    // email, pw로 로그인
+//    @Override
+//    public Optional<Member> login(String email, String pw) {
+//        Optional<Member> member = memberRepository.findByEmail(email);
+//
+//        if (member.isPresent() && passwordEncoder.matches(pw, member.get().getPw()))
+//            return member;
+//
+//        return Optional.empty();
+//    }
 
     // 회원정보수정
     @Override
@@ -90,5 +93,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
+    }
+
+    @Override
+    public Member getMemberByEmail(String email) {
+
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        } else {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
     }
 }

@@ -5,12 +5,15 @@ import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.common.exception.handler.NotFoundException;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,11 +85,13 @@ public class CourseSerivce {
     }
     //////////////////////////////////////////////////////////////////////////
 
-
+    @Transactional
     public CourseRes getCourseById(Long id){
-        return CourseRes.of(courseRepository.findAllById(id).orElseThrow(
+        Course course = courseRepository.findAllById(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Course : Course_id is " + id)
-        ));
+        );
+        course.upView();
+        return CourseRes.of(course);
     }
 
 
@@ -94,5 +99,24 @@ public class CourseSerivce {
         return courseRepository.findInstructorByCourseId(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
         );
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    public List<CoursesRes> getCoursesImade(Long member_id){
+        Instructor instructor = courseRepository.getInstructorById(member_id).orElseThrow(
+                () -> new NotFoundException("Not Found Instructor : Instructor_id is " + member_id)
+        );
+//        Member member = courseRepository.getMemberById(instructor.getId()).orElseThrow(
+//                () -> new NotFoundException("Not Found Member : Member_id is " + member_id)
+//        );
+        return courseRepository.findByInstructor(instructor).stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<CoursesRes> getCoursesIregistered(Long member_id){
+        return courseRepository.findByRegisteredMemberId(member_id)
+                .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 }
