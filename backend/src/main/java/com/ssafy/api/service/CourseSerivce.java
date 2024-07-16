@@ -89,7 +89,7 @@ public class CourseSerivce {
 
     @Transactional
     public CourseRes getCourseById(Long id){
-        Course course = courseRepository.findAllById(id).orElseThrow(
+        Course course = courseRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Course : Course_id is " + id)
         );
         course.upView();
