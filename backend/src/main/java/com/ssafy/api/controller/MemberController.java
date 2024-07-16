@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
+import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.db.entity.Member;
 import com.ssafy.dto.MemberDto;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Api(tags = {"멤버"})
@@ -49,7 +51,7 @@ public class MemberController {
     }
 
     @PutMapping("/{member_id}")
-    @Operation(summary = "회원정보수정", description = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일 외의 정보를 수정할 수 있습니다")
+    @Operation(summary = "회원정보수정", description = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다")
     public ResponseEntity<?> modifyMember(@RequestBody MemberModifyUpdateReq memberModifyUpdateReq, @PathVariable("member_id") Long memberId) {
         // TODO 서비스 코드
         Member updatedMember = memberService.modifyMember(memberId, memberModifyUpdateReq);
@@ -58,23 +60,14 @@ public class MemberController {
 
     @GetMapping("/{member_id}")
     @Operation(summary = "회원정보조회", description = "회원의 정보를 조회합니다")
-    public ResponseEntity<?> readMember(@PathVariable("member_id") Long memberId) {
+    public ResponseEntity<MemberReadGetRes> readMember(@PathVariable("member_id") Long memberId) {
         // TODO 서비스 코드
-        Optional<Member> member = memberService.readMember(memberId);
-        if (member.isPresent())
-            return ResponseEntity.status(HttpStatus.OK).body(member.get());
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            MemberReadGetRes memberDto = memberService.readMember(memberId);
+            return ResponseEntity.ok(memberDto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-//    @PostMapping("/login")
-//    @Operation(summary = "로그인", description = "로그인합니다<br/>이메일과 비밀번호를 입력해 DB에 저장된 데이터와 비교합니다")
-//    public ResponseEntity<?> login(@RequestBody MemberDto memberDto) {
-//        // TODO 서비스 코드
-//        Optional<Member> member = memberService.login(memberDto.getEmail(), memberDto.getPw());
-//        if (member.isPresent())
-//            return ResponseEntity.status(HttpStatus.OK).body(member.get());
-//        else
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//    }
 }

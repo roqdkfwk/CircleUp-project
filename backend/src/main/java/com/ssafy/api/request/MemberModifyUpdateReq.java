@@ -10,7 +10,6 @@ public class MemberModifyUpdateReq {
 
     private String pw;
     private String name;
-    private String token;
     private Role role;
     private String contact;
     private String tel;
