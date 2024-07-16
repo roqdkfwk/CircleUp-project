@@ -43,4 +43,8 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
             "(SELECT r.id FROM Register r WHERE r.member.id = :memberId)")
     List<Course> findByRegisteredMemberId(@Param("memberId") Long memberId);
 
+
+    @Query("SELECT 1 FROM Register r WHERE r.member.id = :memberId AND r.course.id = :courseId")
+    Long existsRegisterByMemberIdAndCourseId(@Param("memberId") Long memberId, @Param("courseId") Long courseId);
+
 }
