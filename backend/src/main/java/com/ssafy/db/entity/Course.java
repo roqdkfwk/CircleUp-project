@@ -54,4 +54,8 @@ public class Course {
 
     @OneToMany(mappedBy = "course")
     private List<CourseTag> course_tag_list = new ArrayList<>();
+
+    public void upView(){
+        this.view = this.view + 1;
+    }
 }

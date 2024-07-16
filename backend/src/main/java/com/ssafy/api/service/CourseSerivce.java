@@ -5,12 +5,14 @@ import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.common.exception.handler.NotFoundException;
+import com.ssafy.db.entity.Course;
 import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,11 +84,13 @@ public class CourseSerivce {
     }
     //////////////////////////////////////////////////////////////////////////
 
-
+    @Transactional
     public CourseRes getCourseById(Long id){
-        return CourseRes.of(courseRepository.findAllById(id).orElseThrow(
+        Course course = courseRepository.findAllById(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Course : Course_id is " + id)
-        ));
+        );
+        course.upView();
+        return CourseRes.of(course);
     }
 
 
