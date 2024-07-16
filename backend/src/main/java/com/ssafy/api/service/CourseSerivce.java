@@ -4,6 +4,8 @@ import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
+import com.ssafy.common.exception.handler.BadRequestException;
+import com.ssafy.common.exception.handler.ConflictException;
 import com.ssafy.common.exception.handler.NotFoundException;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
@@ -87,7 +89,7 @@ public class CourseSerivce {
 
     @Transactional
     public CourseRes getCourseById(Long id){
-        Course course = courseRepository.findAllById(id).orElseThrow(
+        Course course = courseRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Not Found Course : Course_id is " + id)
         );
         course.upView();
@@ -119,4 +121,32 @@ public class CourseSerivce {
         return courseRepository.findByRegisteredMemberId(member_id)
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
+
+    public Boolean existRegister(Long memberId, Long courseId){
+        if(courseRepository.existsRegisterByMemberIdAndCourseId(memberId,courseId) == null){
+            return false;
+        }
+        return true;
+    }
+
+    public void doRegister(Long memberId, Long courseId){
+        // 이미 수강중이면
+        if(existRegister(memberId,courseId) == true){
+            throw new ConflictException("Already registered");
+        }
+        // TODO point 사용?
+
+        // 수강등록 성공여부
+        if(courseRepository.postRegister(memberId, courseId) == false) {
+            throw new NotFoundException("Not Found Course or Member");
+        };
+    }
+
+    public void cancelRegister(Long memberId, Long courseId){
+        // 수강취소
+        if(courseRepository.deleteRegister(memberId, courseId) == false){
+            throw new BadRequestException("Not Found Course or Member or Register");
+        }
+    }
+
 }

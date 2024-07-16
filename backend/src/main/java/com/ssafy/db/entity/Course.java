@@ -50,7 +50,7 @@ public class Course {
     private Long total_course;
 
     @Column
-    private Long completed_coruse;
+    private Long completed_course;
 
     @OneToMany(mappedBy = "course")
     private List<CourseTag> course_tag_list = new ArrayList<>();
