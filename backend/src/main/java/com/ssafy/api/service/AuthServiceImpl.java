@@ -14,10 +14,12 @@ public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistService tokenBlacklistService;
 
     // 로그인
     @Override
     public MemberLoginPostRes login(MemberLoginPostReq loginReq) {
+
         Member member = memberRepository.findByEmail(loginReq.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -31,6 +33,21 @@ public class AuthServiceImpl implements AuthService {
         return MemberLoginPostRes.of(200, "로그인에 성공하였습니다.", accessToken, refreshToken, member.getEmail(), member.getRole());
     }
 
+    // 로그아웃
+    @Override
+    public void logout(String token) {
+
+        Long id = jwtUtil.extractId(token);
+
+        // 해당 토큰이 유효하고 && 블랙리트스트에 등록되지 않은 토큰이라면
+        // 블랙리스트에 등록
+        if (jwtUtil.validateToken(token, id) && !tokenBlacklistService.isBlacklisted(token)) {
+            tokenBlacklistService.addToBlacklist(token, jwtUtil.extractExpiration(token));
+        } else {
+            throw new RuntimeException("Invalid token");
+        }
+    }
+
     // 토큰의 유효성 검사
     @Override
     public Member validateMember(String token) {
@@ -38,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (jwtUtil.validateToken(token, id)) {
+        if (jwtUtil.validateToken(token, id) && !tokenBlacklistService.isBlacklisted(token)) {
             return member;
         } else {
             throw new RuntimeException("Invalid token");

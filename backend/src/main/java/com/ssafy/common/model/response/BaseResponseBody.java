@@ -29,7 +29,8 @@ public class BaseResponseBody {
 		this.statusCode = statusCode;
 		this.message = message;
 	}
-	
+
+	// 상태 코드와 메시지로 BaseResponseBody 객체를 생성
 	public static BaseResponseBody of(Integer statusCode, String message) {
 		BaseResponseBody body = new BaseResponseBody();
 		body.message = message;
