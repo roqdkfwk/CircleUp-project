@@ -22,6 +22,7 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 @Component
 public class JwtTokenUtil {
+
     private static String secretKey;
     private static Integer expirationTime;
 
@@ -46,7 +47,8 @@ public class JwtTokenUtil {
                 .withIssuer(ISSUER)
                 .build();
     }
-    
+
+    // 사용자 ID를 기반으로 JWT 토큰을 생성
     public static String getToken(String userId) {
     		Date expires = JwtTokenUtil.getTokenExpiration(expirationTime);
         return JWT.create()
@@ -57,6 +59,7 @@ public class JwtTokenUtil {
                 .sign(Algorithm.HMAC512(secretKey.getBytes()));
     }
 
+    // 만료시각과 사용자 ID를 기반으로 JWT 토큰을 생성
     public static String getToken(Instant expires, String userId) {
         return JWT.create()
                 .withSubject(userId)
@@ -65,12 +68,14 @@ public class JwtTokenUtil {
                 .withIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
                 .sign(Algorithm.HMAC512(secretKey.getBytes()));
     }
-    
+
+    // 현재 시각에 expirationTime을 더해 토큰의 만료 시각을 반환
     public static Date getTokenExpiration(int expirationTime) {
     		Date now = new Date();
     		return new Date(now.getTime() + expirationTime);
     }
 
+    // 토큰 접두사("Bearer ")를 제거한 후 검증하며 발생 가능한 관련 예외 처리
     public static void handleError(String token) {
         JWTVerifier verifier = JWT
                 .require(Algorithm.HMAC512(secretKey.getBytes()))
@@ -100,6 +105,7 @@ public class JwtTokenUtil {
         }
     }
 
+    // 토큰 접두사("Bearer ")를 제거한 후 검증하며 발생 가능한 관련 예외 처리
     public static void handleError(JWTVerifier verifier, String token) {
         try {
             verifier.verify(token.replace(TOKEN_PREFIX, ""));

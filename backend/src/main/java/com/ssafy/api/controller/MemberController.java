@@ -59,15 +59,10 @@ public class MemberController {
     }
 
     @GetMapping("/{member_id}")
-    @Operation(summary = "회원정보조회", description = "회원의 정보를 조회합니다")
-    public ResponseEntity<MemberReadGetRes> readMember(@PathVariable("member_id") Long memberId) {
-        // TODO 서비스 코드
-        try {
-            MemberReadGetRes memberDto = memberService.readMember(memberId);
-            return ResponseEntity.ok(memberDto);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @Operation(summary = "마이페이지", description = "마이페이지입니다<br/>이메일, 이름 등의 정보를 조회합니다")
+    public ResponseEntity<MemberReadGetRes> readMember(@RequestHeader("Authorization") String token) {
+        MemberReadGetRes memberDto = memberService.readMemberByToken(token);
+        return ResponseEntity.ok(memberDto);
     }
 
 }

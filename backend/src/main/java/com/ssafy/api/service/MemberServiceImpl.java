@@ -3,6 +3,7 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.dto.MemberDto;
@@ -22,10 +23,10 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final AuthService authService;
 
     // 회원가입
     @Override
-    @Transactional
     public void signup(MemberSignupPostReq memberSignupPostReq) {
 
         Member member = Member.builder()
@@ -42,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 이메일 중복체크
     @Override
+    @Transactional(readOnly = true)
     public boolean checkEmail(String email) {
 
         Optional<Member> member = memberRepository.findByEmail(email);
@@ -77,15 +79,22 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보조회
     @Override
-    public MemberReadGetRes readMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+    @Transactional(readOnly = true)
+    public MemberReadGetRes readMemberByToken(String token) {
 
-        return convertToDto(member);
+        try {
+            String memberToken = token.replace("Bearer ", "");
+            Member member = authService.validateMember(memberToken);
+            return convertToDto(member);
+        } catch (RuntimeException e) {
+            throw new EntityNotFoundException("Invalid token or user not found");
+        }
     }
 
     private MemberReadGetRes convertToDto(Member member) {
+
         return MemberReadGetRes.builder()
+                .id(member.getId())
                 .email(member.getEmail())
                 .name(member.getName())
                 .role(member.getRole())
@@ -95,18 +104,34 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
 
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
         if (memberOptional.isPresent()) {
             return memberOptional.get();
         } else {
             throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        } else {
+            throw new EntityNotFoundException("User not found with id: " + memberId);
         }
     }
 }

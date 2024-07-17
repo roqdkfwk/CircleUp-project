@@ -18,6 +18,7 @@ public class MemberLoginPostRes extends BaseResponseBody {
     Role role;
 
     public static MemberLoginPostRes of(Integer statusCode, String message, String accessToken, String refreshToken, String email, Role role) {
+
         MemberLoginPostRes res = new MemberLoginPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
@@ -25,6 +26,7 @@ public class MemberLoginPostRes extends BaseResponseBody {
         res.setRefreshToken(refreshToken);
         res.setEmail(email);
         res.setRole(role);
+
         return res;
     }
 }

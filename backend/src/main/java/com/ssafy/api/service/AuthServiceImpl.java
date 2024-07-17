@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getRole());
+        String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member.getId());
 
         return MemberLoginPostRes.of(200, "로그인에 성공하였습니다.", accessToken, refreshToken, member.getEmail(), member.getRole());
@@ -51,9 +51,10 @@ public class AuthServiceImpl implements AuthService {
     // 토큰의 유효성 검사
     @Override
     public Member validateMember(String token) {
+
         Long id = jwtUtil.extractId(token);
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
         if (jwtUtil.validateToken(token, id) && !tokenBlacklistService.isBlacklisted(token)) {
             return member;
