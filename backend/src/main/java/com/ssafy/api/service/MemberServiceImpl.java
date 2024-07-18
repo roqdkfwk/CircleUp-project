@@ -5,12 +5,10 @@ import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.MemberRepository;
-import com.ssafy.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +22,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     // 회원가입
     @Override
@@ -58,49 +57,62 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보수정
     @Override
-    public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+    public Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq) {
 
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Long memberId = jwtUtil.extractId(token);
+        Optional<Member> member = memberRepository.findById(memberId);
 
-        if (!optionalMember.isPresent()) {
-            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + memberModifyUpdateReq.getName());
+        if (!member.isPresent()) {
+            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다.");
         }
 
-        Member member = optionalMember.get();
+        member.get().setPw(memberModifyUpdateReq.getPw());
+        member.get().setRole(memberModifyUpdateReq.getRole());
+        member.get().setTel(memberModifyUpdateReq.getTel());
+        member.get().setContact(memberModifyUpdateReq.getContact());
 
-        if (memberModifyUpdateReq.getContact() != null) member.setContact(memberModifyUpdateReq.getContact());
-        if (memberModifyUpdateReq.getPw() != null) member.setPw(memberModifyUpdateReq.getPw());
-        if (memberModifyUpdateReq.getName() != null) member.setName(memberModifyUpdateReq.getName());
-        if (memberModifyUpdateReq.getRole() != null) member.setRole(memberModifyUpdateReq.getRole());
-        if (memberModifyUpdateReq.getTel() != null) member.setTel(memberModifyUpdateReq.getTel());
+        Member updatedMember = memberRepository.save(member.get());
 
-        return memberRepository.save(member);
+        String newAccessToken = jwtUtil.generateAccessToken(updatedMember);
+        String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
+
+//        updatedMember.setAccessToken(newAccessToken);
+        updatedMember.setRefreshToken(newRefreshToken);
+
+        return updatedMember;
+//        if (memberModifyUpdateReq.getContact() != null) member.get().setContact(memberModifyUpdateReq.getContact());
+//        if (memberModifyUpdateReq.getPw() != null) member.get().setPw(memberModifyUpdateReq.getPw());
+//        if (memberModifyUpdateReq.getName() != null) member.get().setName(memberModifyUpdateReq.getName());
+//        if (memberModifyUpdateReq.getRole() != null) member.get().setRole(memberModifyUpdateReq.getRole());
+//        if (memberModifyUpdateReq.getTel() != null) member.get().setTel(memberModifyUpdateReq.getTel());
+
+//        return Optional.of(memberRepository.save(member));
     }
 
-    // 회원정보조회
+    // 마이페이지
     @Override
     @Transactional(readOnly = true)
     public MemberReadGetRes readMemberByToken(String token) {
 
         try {
             String memberToken = token.replace("Bearer ", "");
-            Member member = authService.validateMember(memberToken);
-            return convertToDto(member);
-        } catch (RuntimeException e) {
-            throw new EntityNotFoundException("Invalid token or user not found");
+            if (jwtUtil.validateToken(memberToken)) {
+
+                return MemberReadGetRes.builder()
+                        .id(jwtUtil.extractId(memberToken))
+                        .email(jwtUtil.extractClaim(memberToken, claims -> claims.get("email", String.class)))
+                        .name(jwtUtil.extractClaim(memberToken, claims -> claims.get("name", String.class)))
+                        .role(jwtUtil.extractClaim(memberToken, claims -> Role.valueOf(claims.get("role", String.class))))
+                        .contact(jwtUtil.extractClaim(memberToken, claims -> claims.get("contact", String.class)))
+                        .tel(jwtUtil.extractClaim(memberToken, claims -> claims.get("tel", String.class)))
+                        .build();
+            } else {
+                throw new RuntimeException("Invalid token");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new EntityNotFoundException("Invalid token or user not found: " + e.getMessage());
         }
-    }
-
-    private MemberReadGetRes convertToDto(Member member) {
-
-        return MemberReadGetRes.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .name(member.getName())
-                .role(member.getRole())
-                .contact(member.getContact())
-                .tel(member.getTel())
-                .build();
     }
 
     @Override

@@ -2,10 +2,8 @@ package com.ssafy.db.entity;
 
 import com.ssafy.db.entity.enums.Role;
 import lombok.*;
-import org.checkerframework.checker.units.qual.Length;
 
 import javax.persistence.*;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -29,7 +27,7 @@ public class Member {
     private String name;
 
     @Column(length = 1000)
-    private String token;
+    private String refreshToken;
 
     @Enumerated(EnumType.ORDINAL)
     private Role role;
