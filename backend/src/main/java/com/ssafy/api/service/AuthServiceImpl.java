@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 해당 토큰이 유효하고 && 블랙리트스트에 등록되지 않은 토큰이라면
         // 블랙리스트에 등록
-        if (jwtUtil.validateToken(token, id) && !tokenBlacklistService.isBlacklisted(token)) {
+        if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
             tokenBlacklistService.addToBlacklist(token, jwtUtil.extractExpiration(token));
         } else {
             throw new RuntimeException("Invalid token");
@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        if (jwtUtil.validateToken(token, id) && !tokenBlacklistService.isBlacklisted(token)) {
+        if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
             return member;
         } else {
             throw new RuntimeException("Invalid token");

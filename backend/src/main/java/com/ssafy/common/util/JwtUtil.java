@@ -1,14 +1,13 @@
 package com.ssafy.common.util;
 
 import com.ssafy.db.entity.Member;
-import com.ssafy.db.entity.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key;
+    private final SecretKey secretKey;
     private final Long expiration;
 
     public static final String TOKEN_PREFIX = "Bearer ";
@@ -27,7 +26,7 @@ public class JwtUtil {
     // jwt.expiration = 1h
     public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration}") Long expiration) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
         this.expiration = expiration;
     }
 
@@ -65,14 +64,15 @@ public class JwtUtil {
                 .setSubject(subject)    // 해당 토큰 사용자의 식별자 추가 
                 .setIssuedAt(new Date(System.currentTimeMillis()))  // 토큰 생성 시각
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))   // 토큰 만료 시각
-                .signWith(key, SignatureAlgorithm.HS256)    // 암호화 알고리즘 명시
+                .setIssuer(ISSUER)  // ISSUER 설정
+                .signWith(secretKey, SignatureAlgorithm.HS256)    // 암호화 알고리즘 명시
                 .compact();
     }
 
     public JwtParser getVerifier() {
 
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(secretKey)
                 .requireIssuer(ISSUER)
                 .build();
     }
@@ -80,16 +80,6 @@ public class JwtUtil {
     // 토큰에서 사용자 ID를 추출
     public Long extractId(String token) {
         return Long.parseLong(extractClaim(token, Claims::getSubject));
-    }
-
-    // 토큰에서 사용자 email을 추출
-    public String extractEmail(String token) {
-        return extractAllClaims(token).get("email", String.class);
-    }
-
-    // 토큰에서 사용자 role을 추출
-    public Role extractRole(String token) {
-        return Role.valueOf(extractAllClaims(token).get("role", String.class));
     }
 
     // 토큰에서 특정 클레임을 추출
@@ -102,7 +92,7 @@ public class JwtUtil {
 
     // 토큰에서 모든 클레임을 추출
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
     }
 
     // 토큰이 만료되었는지 확인
@@ -116,11 +106,25 @@ public class JwtUtil {
     }
 
     // 토큰이 유효한지 검증
-    public Boolean validateToken(String token, Long id) {
+    public Boolean validateToken(String token) {
 
-        final Long extractedId = extractId(token);
+        try {
+            String memberToken = token.replace(TOKEN_PREFIX, "");
 
-        return (extractedId.equals(id) && !isTokenExpired(token));
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .requireIssuer(ISSUER)
+                    .build()
+                    .parseClaimsJws(memberToken)
+                    .getBody();
+
+            boolean isExpired = isTokenExpired(memberToken);
+            return !isExpired;
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     // 주어진 토큰이 리프레시 토큰인지 확인
@@ -133,7 +137,7 @@ public class JwtUtil {
 
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(secretKey)
                     .requireIssuer(ISSUER)
                     .build()
                     .parseClaimsJws(token.replace(TOKEN_PREFIX, ""));
