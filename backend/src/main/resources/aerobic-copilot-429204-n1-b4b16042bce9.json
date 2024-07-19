@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "aerobic-copilot-429204-n1",
+  "private_key_id": "b4b16042bce9fce0008d22ff2a573ff39d642e53",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDHEU1/AXJYq73/\n5oTfyj8bCgb4xTnA6hJy/wDC/Z9s+NsK7QuFA5eaMEF7tyvfV6FypTHqIVg+q7xW\nulP15SFLoIeCdl/+nyDaDaBDIIc14h/AAllCJbDdiMLFxJE9jTCUs+hvzEXJOo2i\nQaXwDFUzRdDyKlUodaux0gdRCyfr8CVIb4VfJB/RcpcUoNwaJBVmN565VTsHgVRy\nO1wy813oCfZCc3MKY/b2ytLytGNMazkPO0P0P9/+Dz+oUoq+ePNs1IJUPwbBqv96\nxO7oWQ3kHxnogFUmCg2A/uS8V/vVdiw8V2qWg0Esg2vAv9dGRpaIquzCeZBsxhNA\nPUnQjBfbAgMBAAECggEARZlxmGmnkoP9apast1fNZ4VCecDvF9le+PDaUdJ95oo9\nf1zwjaF7ZE/h3UDmKHDJhD1orbzZzxOZRlNgHpVtZjUqm70KhAob4NEpyr55N6gn\nRKktjviBlXsG6kF3LGeMaDlcl5X6gkgkE+pS+5I8SbBrxPdzDbHShVny7+1wGEeg\nmz4oOTaMAnjTcYLKruv1zRnvm4PoJYhWnT/Z7ZPoIwH5WuUOlqeq1k+Mibt4ohTe\nZ0G6bP85pBP5gcBBqB8pu8pjNvOGHv0mgMMxyrQJNzkzqzm/3pUnxKOvII+peOf8\ngueYZuZFcIxZy6rtZmCogbSmRTSg4N7dvufitn6ppQKBgQDtX4LqF8JcxJZKyHvp\neo6ZwGuVLU5EHpYZ5fnh3jEN1kAopACF+J8yTAxuVjZKmQC6iZESG9xoqwjqYBvC\nJJD2XSNJ+8bm9OVuGZsF2VUOPSHgV56aqbUK+U6Gk88g+dCE9Aq16O56oGZaDJAA\n8piUhyuvk6b1A9L6HWGJ13No1QKBgQDWsEnDSfFkead1eEGRxFnR0fE7z/jpz5GY\nl0zVKfb9DbQaLI7UVjmX05pHnZqnn7UwFaMda2TccslnOPdbziJEAcOzA+yzzouO\nFatTbVi4YsseHEaZDz/iasffJavUdJZWQWNmMQ6AUb1lRgpuW7NtgjrY2xvO2+8K\nkeCqGUTV7wKBgQDZM8xW5+axfDEJvOmler+BcNEAb7RuII64o/dC9k1sm9+ZUHgq\nHpWNMIkvbTPAjsBb8AUOzO+h1t8Rl1/PBiafSBpCWGBodS560HNJptRtcwLMhWBb\npW5D3Fw+SIH/apejEKu8SKfvDVaaj2Q1ecakIguXXUQobpdexgO6Xar9AQKBgQCS\n30mnS5fUGBIDIEEjWwPjsk/pjm8IbdN6Y8/RaQMqvcw/t8oC4/ZEsyOx6NVb5bvL\n6JGN1+HJmtHER0maSdxRUC+08XNm01/P1W0/BuiSRCwXLlrx7WfUGx8fvyLdluEe\no19AE0GLceAzP4Z1V1DaEyT1JHjSvM29Gm1rkRvxiwKBgQCob1SV1b24fKjgtwBT\ndiw6TlVY2PW/2NGNSKc7lKLgTlvxM2LCY6GE8Cp/GZjhSgc17AGIS4NC0PRGGnh0\n7Pb1Z0nKVJnpiyiTj+h31fXcVlFIJ4vRAjSOKtROzkDPeeKkVI8OmBkBT8hJc2md\nXF/CQWlBqthsjxt9+wCMRi7M/A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@aerobic-copilot-429204-n1.iam.gserviceaccount.com",
+  "client_id": "107158295461358789501",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40aerobic-copilot-429204-n1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
