@@ -1,45 +1,35 @@
 package com.ssafy.common.auth;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Objects;
+import com.ssafy.api.service.MemberService;
+import com.ssafy.common.util.JwtUtil;
+import com.ssafy.common.util.ResponseBodyWriteUtil;
+import com.ssafy.db.entity.Member;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ssafy.api.service.UserService;
-import com.ssafy.common.util.JwtTokenUtil;
-import com.ssafy.common.util.ResponseBodyWriteUtil;
-import com.ssafy.db.entity.User;
+import java.io.IOException;
 
 /**
  * 요청 헤더에 jwt 토큰이 있는 경우, 토큰 검증 및 인증 처리 로직 정의.
  */
-public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
-    private UserService userService;
+public class JwtAuthenticationFilterM extends BasicAuthenticationFilter {
+    private MemberService memberService;
+    private JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService) {
+    public JwtAuthenticationFilterM(AuthenticationManager authenticationManager, MemberService memberService, JwtUtil jwtUtil) {
         super(authenticationManager);
-        this.userService = userService;
+        this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -47,10 +37,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throws ServletException, IOException {
 
         // HTTP 요청의 헤더들 중에서 "Authorization"이라는 이름을 가진 헤더를 찾음
-        String header = request.getHeader(JwtTokenUtil.HEADER_STRING);
+        String header = request.getHeader(JwtUtil.HEADER_STRING);
 
         // 헤더가 없거나 "Bearer "로 시작하지 않으면 다음 필터로 넘깁니다.
-        if (header == null || !header.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
+        if (header == null || !header.startsWith(JwtUtil.TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -72,25 +62,26 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     public Authentication getAuthentication(HttpServletRequest request) throws Exception {
 
         // HTTP 요청의 헤더들 중에서 "Authorization"이라는 이름을 가진 헤더를 찾음
-        String token = request.getHeader(JwtTokenUtil.HEADER_STRING);
+        String token = request.getHeader(JwtUtil.HEADER_STRING);
 
         // 요청 헤더에 Authorization 키값에 jwt 토큰이 포함된 경우에만, 토큰 검증 및 인증 처리 로직 실행.
         if (token != null) {
-            // parse the token and validate it (decode)
-            JWTVerifier verifier = JwtTokenUtil.getVerifier();
-            JwtTokenUtil.handleError(token);
-            DecodedJWT decodedJWT = verifier.verify(token.replace(JwtTokenUtil.TOKEN_PREFIX, ""));
-            String userId = decodedJWT.getSubject();
 
-            if (userId != null) {
+            // parse the token and validate it (decode)
+            JwtParser verifier = jwtUtil.getVerifier();
+            jwtUtil.handleError(token);
+            Claims claims = verifier.parseClaimsJws(token.replace(JwtUtil.TOKEN_PREFIX, "")).getBody();
+            String memberId = claims.getSubject();
+
+            if (memberId != null) {
                 // jwt 토큰에 포함된 계정 정보(userId) 통해 실제 디비에 해당 정보의 계정이 있는지 조회.
-                User user = userService.getUserByUserId(userId);
-                if (user != null) {
+                Member member = memberService.getMemberById(Long.parseLong(memberId));
+                if (member != null) {
                     // 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성.
-                    SsafyUserDetails userDetails = new SsafyUserDetails(user);
-                    UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(userId,
-                            null, userDetails.getAuthorities());
-                    jwtAuthentication.setDetails(userDetails);
+                    SsafyMemberDetails memberDetails = new SsafyMemberDetails(member);
+                    UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(memberId,
+                            null, memberDetails.getAuthorities());
+                    jwtAuthentication.setDetails(memberDetails);
 
                     // Spring Security에서 사용할 수 있는 Authentication 객체를 생성
                     return jwtAuthentication;

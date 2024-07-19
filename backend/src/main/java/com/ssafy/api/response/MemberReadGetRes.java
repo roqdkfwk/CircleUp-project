@@ -13,6 +13,9 @@ import lombok.Setter;
 @ApiModel("MemberReadGetResponse")
 public class MemberReadGetRes {
 
+    @ApiModelProperty(name="회원 ID")
+    private Long id;
+
     @ApiModelProperty(name="이메일")
     private String email;
 

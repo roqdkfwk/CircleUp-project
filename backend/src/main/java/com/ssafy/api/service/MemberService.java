@@ -19,13 +19,16 @@ public interface MemberService {
     void withdraw(Long memberId);
 
     // 회원정보수정
-    Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
+    Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq);
     
     // 회원정보조회
-    MemberReadGetRes readMember(Long memberId);
+    MemberReadGetRes readMemberByToken(String token);
+//    MemberReadGetRes readMember(Long memberId);
 
     // email로 회원찾기
     Optional<Member> findByEmail(String email);
 
     Member getMemberByEmail(String email);
+
+    Member getMemberById(Long memberId);
 }

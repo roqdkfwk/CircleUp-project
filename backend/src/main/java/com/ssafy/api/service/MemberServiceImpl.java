@@ -3,13 +3,12 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.MemberRepository;
-import com.ssafy.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +21,11 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     // 회원가입
     @Override
-    @Transactional
     public void signup(MemberSignupPostReq memberSignupPostReq) {
 
         Member member = Member.builder()
@@ -42,6 +42,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 이메일 중복체크
     @Override
+    @Transactional(readOnly = true)
     public boolean checkEmail(String email) {
 
         Optional<Member> member = memberRepository.findByEmail(email);
@@ -56,57 +57,93 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보수정
     @Override
-    public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+    public Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq) {
 
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Long memberId = jwtUtil.extractId(token);
+        Optional<Member> member = memberRepository.findById(memberId);
 
-        if (!optionalMember.isPresent()) {
-            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + memberModifyUpdateReq.getName());
+        if (!member.isPresent()) {
+            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다.");
         }
 
-        Member member = optionalMember.get();
+        member.get().setPw(memberModifyUpdateReq.getPw());
+        member.get().setRole(memberModifyUpdateReq.getRole());
+        member.get().setTel(memberModifyUpdateReq.getTel());
+        member.get().setContact(memberModifyUpdateReq.getContact());
 
-        if (memberModifyUpdateReq.getContact() != null) member.setContact(memberModifyUpdateReq.getContact());
-        if (memberModifyUpdateReq.getPw() != null) member.setPw(memberModifyUpdateReq.getPw());
-        if (memberModifyUpdateReq.getName() != null) member.setName(memberModifyUpdateReq.getName());
-        if (memberModifyUpdateReq.getRole() != null) member.setRole(memberModifyUpdateReq.getRole());
-        if (memberModifyUpdateReq.getTel() != null) member.setTel(memberModifyUpdateReq.getTel());
+        Member updatedMember = memberRepository.save(member.get());
 
-        return memberRepository.save(member);
+        String newAccessToken = jwtUtil.generateAccessToken(updatedMember);
+        String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
+
+//        updatedMember.setAccessToken(newAccessToken);
+        updatedMember.setRefreshToken(newRefreshToken);
+
+        return updatedMember;
+//        if (memberModifyUpdateReq.getContact() != null) member.get().setContact(memberModifyUpdateReq.getContact());
+//        if (memberModifyUpdateReq.getPw() != null) member.get().setPw(memberModifyUpdateReq.getPw());
+//        if (memberModifyUpdateReq.getName() != null) member.get().setName(memberModifyUpdateReq.getName());
+//        if (memberModifyUpdateReq.getRole() != null) member.get().setRole(memberModifyUpdateReq.getRole());
+//        if (memberModifyUpdateReq.getTel() != null) member.get().setTel(memberModifyUpdateReq.getTel());
+
+//        return Optional.of(memberRepository.save(member));
     }
 
-    // 회원정보조회
+    // 마이페이지
     @Override
-    public MemberReadGetRes readMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+    @Transactional(readOnly = true)
+    public MemberReadGetRes readMemberByToken(String token) {
 
-        return convertToDto(member);
-    }
+        try {
+            String memberToken = token.replace("Bearer ", "");
+            if (jwtUtil.validateToken(memberToken)) {
 
-    private MemberReadGetRes convertToDto(Member member) {
-        return MemberReadGetRes.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .role(member.getRole())
-                .contact(member.getContact())
-                .tel(member.getTel())
-                .build();
+                return MemberReadGetRes.builder()
+                        .id(jwtUtil.extractId(memberToken))
+                        .email(jwtUtil.extractClaim(memberToken, claims -> claims.get("email", String.class)))
+                        .name(jwtUtil.extractClaim(memberToken, claims -> claims.get("name", String.class)))
+                        .role(jwtUtil.extractClaim(memberToken, claims -> Role.valueOf(claims.get("role", String.class))))
+                        .contact(jwtUtil.extractClaim(memberToken, claims -> claims.get("contact", String.class)))
+                        .tel(jwtUtil.extractClaim(memberToken, claims -> claims.get("tel", String.class)))
+                        .build();
+            } else {
+                throw new RuntimeException("Invalid token");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new EntityNotFoundException("Invalid token or user not found: " + e.getMessage());
+        }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
 
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
         if (memberOptional.isPresent()) {
             return memberOptional.get();
         } else {
             throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        } else {
+            throw new EntityNotFoundException("User not found with id: " + memberId);
         }
     }
 }
