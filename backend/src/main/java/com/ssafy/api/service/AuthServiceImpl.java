@@ -47,21 +47,6 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid token");
         }
     }
-
-//    // 토큰의 유효성 검사
-//    @Override
-//    public Member validateMember(String token) {
-//
-//        Long id = jwtUtil.extractId(token);
-//        Member member = memberRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Member not found"));
-//
-//        if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
-//            return member;
-//        } else {
-//            throw new RuntimeException("Invalid token");
-//        }
-//    }
 }
 
 //package com.ssafy.api.service;
