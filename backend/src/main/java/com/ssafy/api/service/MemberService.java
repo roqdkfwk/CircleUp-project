@@ -23,6 +23,7 @@ public interface MemberService {
     Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq);
     
     // 회원정보조회
+    MemberReadGetRes getMyInfo(Long memberId);
     MemberReadGetRes readMemberByToken(String token);
 //    MemberReadGetRes readMember(Long memberId);
 

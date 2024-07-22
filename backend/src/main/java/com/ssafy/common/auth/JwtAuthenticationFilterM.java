@@ -22,6 +22,7 @@ import java.io.IOException;
  */
 public class JwtAuthenticationFilterM extends OncePerRequestFilter {
 
+    // TODO DB 접근 로직 없애기(memberService)
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
 
@@ -42,7 +43,6 @@ public class JwtAuthenticationFilterM extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             // If header is present, try grab user principal from database and perform authorization
             Authentication authentication = getAuthentication(request);
@@ -68,10 +68,18 @@ public class JwtAuthenticationFilterM extends OncePerRequestFilter {
             JwtParser verifier = jwtUtil.getVerifier();
             jwtUtil.handleError(token);
             Claims claims = verifier.parseClaimsJws(token.replace(JwtUtil.TOKEN_PREFIX, "")).getBody();
+
+
+            System.out.println("===========================");
+            for(String o : claims.keySet()){
+                System.out.println(o + " : " + claims.get(o));
+            }
+            System.out.println("===========================");
+
             String memberId = claims.getSubject();
 
             if (memberId != null) {
-                // jwt 토큰에 포함된 계정 정보(userId) 통해 실제 디비에 해당 정보의 계정이 있는지 조회.
+                // jwt 토큰에 포함된 계정 정보(userId) 통해 실제 DB에 해당 정보의 계정이 있는지 조회.
                 Member member = memberService.getMemberById(Long.parseLong(memberId));
                 if (member != null) {
                     // 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성.

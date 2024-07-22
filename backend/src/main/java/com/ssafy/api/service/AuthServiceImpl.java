@@ -41,12 +41,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(String token) {
 
-        Long id = jwtUtil.extractId(token);
+        String accessToken = token.replace("Bearer ", "");
+        Long id = jwtUtil.extractId(accessToken);
 
         // 해당 토큰이 유효하고 && 블랙리트스트에 등록되지 않은 토큰이라면
         // 블랙리스트에 등록
-        if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
-            tokenBlacklistService.addToBlacklist(token, jwtUtil.extractExpiration(token));
+        if (jwtUtil.validateToken(accessToken) && !tokenBlacklistService.isBlacklisted(accessToken)) {
+            tokenBlacklistService.addToBlacklist(accessToken, jwtUtil.extractExpiration(accessToken));
         } else {
             throw new RuntimeException("Invalid token");
         }
