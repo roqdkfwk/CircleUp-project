@@ -51,9 +51,27 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원탈퇴
     @Override
-    public void withdraw(Long memberId) {
-        memberRepository.deleteById(memberId);
+    public void withdrawMemberByToken(String token) {
+        String accessToken = token.replace("Bearer ", "");
+
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        Long memberId = jwtUtil.extractId(accessToken);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + memberId));
+
+        // refresh token 제거
+        member.setRefreshToken(null);
+
+        // 회원 정보 삭제
+        memberRepository.delete(member);
     }
+//    @Override
+//    public void withdraw(Long memberId) {
+//        memberRepository.deleteById(memberId);
+//    }
 
     // 회원정보수정
     @Override

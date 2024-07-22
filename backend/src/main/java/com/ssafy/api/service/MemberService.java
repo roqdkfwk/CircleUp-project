@@ -16,7 +16,8 @@ public interface MemberService {
     boolean checkEmail(String email);
 
     // 회원탈퇴
-    void withdraw(Long memberId);
+    void withdrawMemberByToken(String token);
+//    void withdraw(Long memberId);
 
     // 회원정보수정
     Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq);

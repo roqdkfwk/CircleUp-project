@@ -30,6 +30,10 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member.getId());
 
+        // Refresh 토큰을 Member 엔티티에 저장
+        member.setRefreshToken(refreshToken);
+        memberRepository.save(member);
+
         return MemberLoginPostRes.of(200, "로그인에 성공하였습니다.", accessToken, refreshToken, member.getName(), member.getEmail(), member.getRole());
     }
 
