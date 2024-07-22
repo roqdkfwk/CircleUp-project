@@ -42,14 +42,4 @@ public class AuthController {
         authService.logout(token.replace("Bearer ", ""));
         return ResponseEntity.ok(BaseResponseBody.of(200, "로그아웃 되었습니다."));
     }
-
-    // 토큰 유효성 검사
-    @GetMapping("/validate")
-    @Operation(summary = "토큰 유효성 검사")
-    public ResponseEntity<Member> validateToken(@RequestHeader("Authorization") String token) {
-
-        Member member = authService.validateMember(token.replace("Bearer ", ""));
-        return ResponseEntity.ok(member);
-    }
-
 }

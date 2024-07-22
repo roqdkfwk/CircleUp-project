@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member.getId());
 
-        return MemberLoginPostRes.of(200, "로그인에 성공하였습니다.", accessToken, refreshToken, member.getEmail(), member.getRole());
+        return MemberLoginPostRes.of(200, "로그인에 성공하였습니다.", accessToken, refreshToken, member.getName(), member.getEmail(), member.getRole());
     }
 
     // 로그아웃
@@ -43,21 +43,6 @@ public class AuthServiceImpl implements AuthService {
         // 블랙리스트에 등록
         if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
             tokenBlacklistService.addToBlacklist(token, jwtUtil.extractExpiration(token));
-        } else {
-            throw new RuntimeException("Invalid token");
-        }
-    }
-
-    // 토큰의 유효성 검사
-    @Override
-    public Member validateMember(String token) {
-
-        Long id = jwtUtil.extractId(token);
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-
-        if (jwtUtil.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
-            return member;
         } else {
             throw new RuntimeException("Invalid token");
         }

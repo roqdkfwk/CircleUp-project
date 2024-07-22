@@ -1,7 +1,8 @@
 package com.ssafy.common.auth;
 
 import com.ssafy.db.entity.Member;
-import com.ssafy.db.entity.enums.Role;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,15 +11,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Getter @Setter
 public class SsafyMemberDetails implements UserDetails {
+
     private Member member;
 
     public SsafyMemberDetails(Member member) {
         this.member = member;
-    }
-
-    public Member getMember() {
-        return this.member;
     }
 
     @Override

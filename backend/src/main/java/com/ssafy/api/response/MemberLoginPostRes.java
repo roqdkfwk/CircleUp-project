@@ -14,16 +14,18 @@ public class MemberLoginPostRes extends BaseResponseBody {
 
     String accessToken;
     String refreshToken;
+    String name;
     String email;
     Role role;
 
-    public static MemberLoginPostRes of(Integer statusCode, String message, String accessToken, String refreshToken, String email, Role role) {
+    public static MemberLoginPostRes of(Integer statusCode, String message, String accessToken, String refreshToken, String name, String email, Role role) {
 
         MemberLoginPostRes res = new MemberLoginPostRes();
         res.setStatusCode(statusCode);
         res.setMessage(message);
         res.setAccessToken(accessToken);
         res.setRefreshToken(refreshToken);
+        res.setName(name);
         res.setEmail(email);
         res.setRole(role);
 

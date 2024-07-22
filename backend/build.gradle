@@ -107,20 +107,13 @@ dependencies {
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.webjars:stomp-websocket:2.3.4'
+    // Openvidu
+    implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
 
-    // 새로 추가된 JWT 관련 의존성
+    // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-    // Google Cloud Service 이용 관련
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
-
-    // Openvidu
-    implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
 }
 
 test {

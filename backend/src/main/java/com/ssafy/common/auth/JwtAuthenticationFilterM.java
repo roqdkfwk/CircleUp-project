@@ -6,12 +6,10 @@ import com.ssafy.common.util.ResponseBodyWriteUtil;
 import com.ssafy.db.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,12 +20,12 @@ import java.io.IOException;
 /**
  * 요청 헤더에 jwt 토큰이 있는 경우, 토큰 검증 및 인증 처리 로직 정의.
  */
-public class JwtAuthenticationFilterM extends BasicAuthenticationFilter {
-    private MemberService memberService;
-    private JwtUtil jwtUtil;
+public class JwtAuthenticationFilterM extends OncePerRequestFilter {
 
-    public JwtAuthenticationFilterM(AuthenticationManager authenticationManager, MemberService memberService, JwtUtil jwtUtil) {
-        super(authenticationManager);
+    private final MemberService memberService;
+    private final JwtUtil jwtUtil;
+
+    public JwtAuthenticationFilterM(MemberService memberService, JwtUtil jwtUtil) {
         this.memberService = memberService;
         this.jwtUtil = jwtUtil;
     }
@@ -58,7 +56,6 @@ public class JwtAuthenticationFilterM extends BasicAuthenticationFilter {
         filterChain.doFilter(request, response);
     }
 
-    @Transactional(readOnly = true)
     public Authentication getAuthentication(HttpServletRequest request) throws Exception {
 
         // HTTP 요청의 헤더들 중에서 "Authorization"이라는 이름을 가진 헤더를 찾음
