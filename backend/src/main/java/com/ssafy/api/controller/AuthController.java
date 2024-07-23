@@ -4,15 +4,16 @@ import com.ssafy.api.request.MemberLoginPostReq;
 import com.ssafy.api.response.MemberLoginPostRes;
 import com.ssafy.api.service.AuthService;
 import com.ssafy.common.model.response.BaseResponseBody;
-import com.ssafy.db.entity.Member;
+import com.ssafy.common.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 
 @Api(tags = {"인증"})
 @RestController
@@ -22,9 +23,23 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /////////////////////////////////////////////////////
+    private final JwtUtil jwtUtil;
+
+    @GetMapping("/jwt")
+    @ApiOperation(value = "(개발용) Access Token 생성",
+            notes = "<strong>유효기간 1일</strong>의 임시 토큰을 발급합니다<br/>" +
+                    "이 과정에서 해당 memberId가 실제로 존재하는지는 확인하지 않습니다<br/>" +
+                    "반환값은 <strong>'접두사(Bearer ) + JWT토큰'</strong>입니다")
+    public String test(@RequestParam(name = "member_id") Long memberId) {
+        return "Bearer "
+                + jwtUtil.createToken(new HashMap<>(), memberId.toString(), 86400000L, false);
+    }
+    /////////////////////////////////////////////////////
+
     // 로그인
     @PostMapping("/login")
-    @Operation(summary = "로그인")
+    @ApiOperation(value = "로그인")
     public ResponseEntity<?> login(@RequestBody MemberLoginPostReq loginReq) {
 
         try {
@@ -38,7 +53,7 @@ public class AuthController {
 
     // 로그아웃
     @PostMapping("/logout")
-    @ApiOperation( value="로그아웃" )
+    @ApiOperation(value = "로그아웃")
     @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
     public ResponseEntity<BaseResponseBody> logout(@RequestHeader("Authorization") String token) {
 

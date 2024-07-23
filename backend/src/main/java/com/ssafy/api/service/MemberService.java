@@ -21,11 +21,9 @@ public interface MemberService {
 
     // 회원정보수정
     Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq);
-    
+
     // 회원정보조회
     MemberReadGetRes getMyInfo(Long memberId);
-    MemberReadGetRes readMemberByToken(String token);
-//    MemberReadGetRes readMember(Long memberId);
 
     // email로 회원찾기
     Optional<Member> findByEmail(String email);

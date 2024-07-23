@@ -3,7 +3,6 @@ package com.ssafy.config;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.auth.JwtAuthenticationFilterM;
 import com.ssafy.common.auth.SsafyMemberDetailsService;
-import com.ssafy.common.util.CustomLogoutFilter;
 import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -79,11 +77,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberRepository), LogoutFilter.class)
+//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberRepository), LogoutFilter.class)
                 .authorizeRequests()
-                // TODO JWT가 필요한 API URL 추가
-                // "/apu.courses/**", "/api/photo/upload"
-                .antMatchers("/api/member", "/api/courses/**", "/api/member/*", "/api/photo/upload", "/api/auth/logout").authenticated()
+                .antMatchers("/swagger-ui/**", "/api/member/checkEmail", "/api/member/signup").permitAll()
+                .antMatchers("/api/courses/instructions/**",
+                        "/api/courses/registers/**",
+                        "/api/member/**", "/api/auth/logout").authenticated()
                 .anyRequest().permitAll()
                 .and().cors();
     }

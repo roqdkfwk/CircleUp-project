@@ -16,12 +16,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretKey;
-    private final Long expiration;
-
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String ISSUER = "ssafy.com";
+    private final SecretKey secretKey;
+    private final Long expiration;
 
     // jwt.expiration = 1h
     public JwtUtil(@Value("${jwt.secret}") String secret,
@@ -52,7 +51,7 @@ public class JwtUtil {
     }
 
     // 토큰을 생성하는 메소드
-    private String createToken(Map<String, Object> claims, String subject, Long expiration, boolean isRefreshToken) {
+    public String createToken(Map<String, Object> claims, String subject, Long expiration, boolean isRefreshToken) {
 
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256"); // 암호화 알고리즘

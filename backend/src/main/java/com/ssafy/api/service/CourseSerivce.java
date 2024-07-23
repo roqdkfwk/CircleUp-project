@@ -4,9 +4,9 @@ import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
-import com.ssafy.common.exception.handler.BadRequestException;
-import com.ssafy.common.exception.handler.ConflictException;
-import com.ssafy.common.exception.handler.NotFoundException;
+import com.ssafy.common.custom.BadRequestException;
+import com.ssafy.common.custom.ConflictException;
+import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.repository.CourseRepository;
@@ -28,10 +28,11 @@ public class CourseSerivce {
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
-        return courseRepository.getAllTag().stream().map(tag-> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
+        return courseRepository.getAllTag().stream().map(tag -> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
     }
+
     //////////////////////////////////////////////////////////////////////////
-    public List<CoursesRes> getCoursesByTitle(String name, int page, int size){
+    public List<CoursesRes> getCoursesByTitle(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return courseRepository.findByKeyword(name, pageable)
                 .stream()
@@ -39,13 +40,13 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesByView(int page, int size){
+    public List<CoursesRes> getCoursesByView(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findAllByOrderByViewDesc(pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getFreeCourses(int page, int size){
+    public List<CoursesRes> getFreeCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findByPrice(0L, pageable)
@@ -54,7 +55,7 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getOfferingCourses(int page, int size){
+    public List<CoursesRes> getOfferingCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Long tagSize = courseRepository.getTagSize();
@@ -67,7 +68,7 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getRegisteredCourses(Long memberId, int page, int size){
+    public List<CoursesRes> getRegisteredCourses(Long memberId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findByRegisteredMemberId(memberId, pageable)
@@ -76,7 +77,7 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesByTags(List<Long> tags, int page, int size){
+    public List<CoursesRes> getCoursesByTags(List<Long> tags, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
@@ -88,24 +89,24 @@ public class CourseSerivce {
     //////////////////////////////////////////////////////////////////////////
 
     @Transactional
-    public CourseRes getCourseById(Long id){
+    public CourseRes getCourseById(Long id) {
         Course course = courseRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Not Found Course : Course_id is " + id)
+                () -> new NotFoundException("Not Found Course : Course_id is " + id)
         );
         course.upView();
         return CourseRes.of(course);
     }
 
 
-    public InstructorRes getInstructorByCourseId(Long id){
+    public InstructorRes getInstructorByCourseId(Long id) {
         return courseRepository.findInstructorByCourseId(id).orElseThrow(
-                ()-> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
+                () -> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
         );
     }
 
     //////////////////////////////////////////////////////////////////////////
 
-    public List<CoursesRes> getCoursesImade(Long member_id){
+    public List<CoursesRes> getCoursesImade(Long member_id) {
         Instructor instructor = courseRepository.getInstructorById(member_id).orElseThrow(
                 () -> new NotFoundException("Not Found Instructor : Instructor_id is " + member_id)
         );
@@ -117,34 +118,35 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesIregistered(Long member_id){
+    public List<CoursesRes> getCoursesIregistered(Long member_id) {
         return courseRepository.findByRegisteredMemberId(member_id)
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
-    public Boolean existRegister(Long memberId, Long courseId){
-        if(courseRepository.existsRegisterByMemberIdAndCourseId(memberId,courseId) == null){
+    public Boolean existRegister(Long memberId, Long courseId) {
+        if (courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) == null) {
             return false;
         }
         return true;
     }
 
-    public void doRegister(Long memberId, Long courseId){
+    public void doRegister(Long memberId, Long courseId) {
         // 이미 수강중이면
-        if(existRegister(memberId,courseId) == true){
+        if (existRegister(memberId, courseId) == true) {
             throw new ConflictException("Already registered");
         }
         // TODO point 사용?
 
         // 수강등록 성공여부
-        if(courseRepository.postRegister(memberId, courseId) == false) {
+        if (courseRepository.postRegister(memberId, courseId) == false) {
             throw new NotFoundException("Not Found Course or Member");
-        };
+        }
+        ;
     }
 
-    public void cancelRegister(Long memberId, Long courseId){
+    public void cancelRegister(Long memberId, Long courseId) {
         // 수강취소
-        if(courseRepository.deleteRegister(memberId, courseId) == false){
+        if (courseRepository.deleteRegister(memberId, courseId) == false) {
             throw new BadRequestException("Not Found Course or Member or Register");
         }
     }

@@ -1,4 +1,4 @@
-package com.ssafy.common.exception.handler;
+package com.ssafy.common.custom;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

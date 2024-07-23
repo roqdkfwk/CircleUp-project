@@ -24,14 +24,13 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
     }
 
     @Override
-    public Long getTagSize(){
-        return (Long)em.createQuery("select count(t) from Tag t").getSingleResult();
+    public Long getTagSize() {
+        return (Long) em.createQuery("select count(t) from Tag t").getSingleResult();
     }
 
     @Override
     public Optional<Instructor> getInstructorById(Long id) {
-        return Optional.of(em.find(Instructor.class, id));
-//        return Optional.of((Instructor) em.createQuery("select i from Instructor i where i.member.id = :id").setParameter("id", id).getSingleResult());
+        return Optional.ofNullable(em.find(Instructor.class, id));
     }
 
     @Override
@@ -62,8 +61,8 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
     public Boolean deleteRegister(Long memberId, Long courseId) {
         try {
             Register register = (Register) em.createQuery("select r from Register r where r.member.id=:memberId and r.course.id = :courseId")
-                .setParameter("memberId", memberId)
-                .setParameter("courseId", courseId).getSingleResult();
+                    .setParameter("memberId", memberId)
+                    .setParameter("courseId", courseId).getSingleResult();
 
             em.remove(register);
             return true;
