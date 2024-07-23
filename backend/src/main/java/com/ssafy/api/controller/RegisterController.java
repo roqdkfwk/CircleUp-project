@@ -2,7 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.common.custom.AuthFailure;
+import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,12 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@RequiredAuth
 public class RegisterController {
 
     private final CourseSerivce courseService;
 
     @GetMapping("/courses/registers")
-    @AuthFailure
     @ApiOperation(value = "내가 수강한 강의 목록 조회")
     public ResponseEntity<List<CoursesRes>> registeredCourses(
             Authentication authentication
@@ -34,7 +34,6 @@ public class RegisterController {
 
     @GetMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 여부 조회")
-    @AuthFailure
     public ResponseEntity<Boolean> isRegister(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
@@ -46,7 +45,6 @@ public class RegisterController {
 
     @PostMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 신청")
-    @AuthFailure
     @ApiResponses({
             @ApiResponse(code = 404, message = "존재하지 않는 회원 혹은 강의"),
             @ApiResponse(code = 409, message = "이미 수강중")
@@ -63,7 +61,6 @@ public class RegisterController {
 
     @DeleteMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 취소")
-    @AuthFailure
     @ApiResponse(code = 400, message = "잘못된 요청")
     public ResponseEntity<Void> cancelRegister(
             @PathVariable(name = "course_id") Long courseId,
