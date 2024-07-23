@@ -1,74 +1,91 @@
-    package com.ssafy.api.controller;
+package com.ssafy.api.controller;
 
-    import com.ssafy.api.request.MemberModifyUpdateReq;
-    import com.ssafy.api.request.MemberSignupPostReq;
-    import com.ssafy.api.response.MemberReadGetRes;
-    import com.ssafy.api.service.MemberService;
-    import com.ssafy.db.entity.Member;
-    import com.ssafy.dto.MemberDto;
-    import io.swagger.annotations.Api;
-    import io.swagger.v3.oas.annotations.Operation;
-    import lombok.RequiredArgsConstructor;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.*;
+import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberSignupPostReq;
+import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.api.service.MemberService;
+import com.ssafy.common.model.response.BaseResponseBody;
+import com.ssafy.common.util.JwtUtil;
+import com.ssafy.db.entity.Member;
+import com.ssafy.dto.MemberDto;
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
-    import javax.persistence.EntityNotFoundException;
-    import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
-    @Api(tags = {"멤버"})
-    @RequiredArgsConstructor
-    @RestController
-    @RequestMapping("/api/member")
-    public class MemberController {
+@Api(tags = {"멤버"})
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/member")
+public class MemberController {
 
-        private final MemberService memberService;
+    private final MemberService memberService;
 
-        @PostMapping("/signup")
-        @Operation(summary = "회원가입", description = "이메일과 비밀번호를 통해 회원가입을 진행합니다<br/>별도 인증과정은 필요없습니다")
-        public ResponseEntity<?> signup(@RequestBody MemberSignupPostReq memberSignupPostReq) {
-            // TODO 서비스 코드
-            memberService.signup(memberSignupPostReq);
+    @PostMapping("/signup")
+    @Operation(summary = "회원가입", description = "이메일과 비밀번호를 통해 회원가입을 진행합니다<br/>별도 인증과정은 필요없습니다")
+    public ResponseEntity<?> signup(@RequestBody MemberSignupPostReq memberSignupPostReq) {
+        // TODO 서비스 코드
+        memberService.signup(memberSignupPostReq);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/checkEmail")
+    @Operation(summary = "이메일 중복체크", description = "사용자가 로그인 시 사용할 Email과<br/>중복되는 Email이 존재하는지 DB에서 확인합니다")
+    public ResponseEntity<?> checkEmail(
+            @RequestParam String email,
+            Authentication authentication
+    ) {
+//        return ResponseEntity.ok().build();
+        if (memberService.checkEmail(email))
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        else
             return ResponseEntity.status(HttpStatus.OK).build();
-        }
+    }
 
-        @PostMapping("/checkEmail")
-        @Operation(summary = "이메일 중복체크", description = "사용자가 로그인 시 사용할 Email과<br/>중복되는 Email이 존재하는지 DB에서 확인합니다")
-        public ResponseEntity<?> checkEmail(@RequestParam String email) {
+    @DeleteMapping("/withdraw")
+    @ApiOperation( value="회원탈퇴" )
+    @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
+    public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String token) {
 
-            if (memberService.checkEmail(email))
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            else
-                return ResponseEntity.status(HttpStatus.OK).build();
-        }
-
-        @DeleteMapping("/{member_id}")
-        @Operation(summary = "회원탈퇴", description = "회원탈퇴를 진행합니다<br/>탈퇴시 관련된 정보는 모두 즉시 삭제됩니다")
-        public ResponseEntity<?> withdraw(@PathVariable("member_id") Long memberId) {
-            // TODO 서비스 코드
-            memberService.withdraw(memberId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
-
-        @PutMapping("/{member_id}")
-        @Operation(summary = "회원정보수정", description = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다")
-        public ResponseEntity<?> modifyMember(@RequestHeader("Authorization") String token, @RequestBody MemberModifyUpdateReq memberModifyUpdateReq) {
-            // TODO 서비스 코드
-            Member updatedMember = memberService.modifyMember(token, memberModifyUpdateReq);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedMember);
-        }
-
-        @GetMapping("/{member_id}")
-        @Operation(summary = "마이페이지", description = "마이페이지입니다<br/>이메일, 이름 등의 정보를 조회합니다")
-        public ResponseEntity<?> readMember(@RequestHeader("Authorization") String token) {
-
-            try {
-                MemberReadGetRes memberReadGetRes = memberService.readMemberByToken(token);
-                return ResponseEntity.ok(memberReadGetRes);
-            } catch (EntityNotFoundException e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
-            }
+        try {
+            memberService.withdrawMemberByToken(token);
+            return ResponseEntity.ok(BaseResponseBody.of(200, "회원 탈퇴가 완료되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(BaseResponseBody.of(400, e.getMessage()));
         }
     }
+
+    @PutMapping("/{member_id}")
+    @ApiOperation(
+            value="회원정보수정",
+            notes="회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다"
+    )
+    @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
+    public ResponseEntity<?> modifyMember(@RequestHeader("Authorization") String token, @RequestBody MemberModifyUpdateReq memberModifyUpdateReq) {
+        // TODO 서비스 코드
+        Member updatedMember = memberService.modifyMember(token, memberModifyUpdateReq);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedMember);
+    }
+
+    @GetMapping
+    @ApiOperation(
+            value="마이페이지",
+            notes="마이페이지입니다<br/>이메일, 이름 등의 정보를 조회합니다"
+    ) // TODO JWT가 필요한 API에는 아래의 어노테이션을 추가하여 Swagger에 명시적으로 표시
+    @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
+    public ResponseEntity<MemberReadGetRes> readMember(
+            Authentication authentication
+    ) {
+        Long memberId = Long.valueOf(authentication.getName());
+         return ResponseEntity.ok(memberService.getMyInfo(memberId));
+//            MemberReadGetRes memberReadGetRes = memberService.readMemberByToken(token);
+    }
+}

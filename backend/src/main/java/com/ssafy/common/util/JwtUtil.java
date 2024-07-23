@@ -56,7 +56,7 @@ public class JwtUtil {
 
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256"); // 암호화 알고리즘
-        header.put("typ", isRefreshToken ? "Refresh" : "JWT");  // 토큰의 타입을 결정
+        header.put("typ", isRefreshToken ? "refresh" : "JWT");  // 토큰의 타입을 결정
 
         return Jwts.builder()
                 .setHeader(header)  // 헤더 설정 추가
@@ -128,9 +128,29 @@ public class JwtUtil {
     }
 
     // 주어진 토큰이 리프레시 토큰인지 확인
-    public Boolean isRefreshToken(String token) {
-        return extractExpiration(token).getTime() - System.currentTimeMillis() > expiration;
+    public boolean isRefreshToken(String token) {
+
+        // TOKEN_PREFIX ("Bearer ") 제거
+        String actualToken = token.replace(TOKEN_PREFIX, "");
+
+        // 토큰 파싱
+        Jws<Claims> jwsClaims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(actualToken);
+
+        // 헤더 가져오기
+        Header header = jwsClaims.getHeader();
+
+        // 토큰의 타입이 refresh라면
+        if (header.get("typ").equals("refresh"))
+            return true;
+
+        return false;
     }
+//    public Boolean isRefreshToken(String token) {
+//        return extractExpiration(token).getTime() - System.currentTimeMillis() > expiration;
+//    }
 
     // 새로 생긴 부분
     public void handleError(String token) {

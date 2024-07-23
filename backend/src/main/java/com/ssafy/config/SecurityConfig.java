@@ -3,7 +3,9 @@ package com.ssafy.config;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.auth.JwtAuthenticationFilterM;
 import com.ssafy.common.auth.SsafyMemberDetailsService;
+import com.ssafy.common.util.CustomLogoutFilter;
 import com.ssafy.common.util.JwtUtil;
+import com.ssafy.db.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,12 +72,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberRepository), LogoutFilter.class)
                 .authorizeRequests()
                 .antMatchers("/api/member", "/api/auth/logout").authenticated()
                 .anyRequest().permitAll()

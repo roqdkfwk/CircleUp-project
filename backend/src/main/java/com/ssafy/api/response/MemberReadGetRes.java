@@ -1,14 +1,15 @@
 package com.ssafy.api.response;
 
+import com.ssafy.common.util.JwtUtil;
+import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
+import io.jsonwebtoken.Jwt;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 @ApiModel("MemberReadGetResponse")
 public class MemberReadGetRes {
@@ -30,4 +31,15 @@ public class MemberReadGetRes {
 
     @ApiModelProperty(name="전화번호")
     private String tel;
+
+    public static MemberReadGetRes of(Member member){
+        return MemberReadGetRes.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .name(member.getName())
+                .role(member.getRole())
+                .contact(member.getContact())
+                .tel(member.getTel())
+                .build();
+    }
 }
