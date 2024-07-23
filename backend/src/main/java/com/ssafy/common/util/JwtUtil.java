@@ -4,13 +4,13 @@ import com.ssafy.db.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -109,6 +109,7 @@ public class JwtUtil {
     public Boolean validateToken(String token) {
 
         try {
+            // 접두사 제거
             String memberToken = token.replace(TOKEN_PREFIX, "");
 
             Claims claims = Jwts.parserBuilder()
@@ -148,9 +149,6 @@ public class JwtUtil {
 
         return false;
     }
-//    public Boolean isRefreshToken(String token) {
-//        return extractExpiration(token).getTime() - System.currentTimeMillis() > expiration;
-//    }
 
     // 새로 생긴 부분
     public void handleError(String token) {
@@ -194,5 +192,20 @@ public class JwtUtil {
         } catch (Exception ex) {
             throw ex;
         }
+    }
+
+    //////////////////////////////////////////////////
+
+    public Authentication getAuthentication(String token) {
+
+        Claims claims = extractAllClaims(token);
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(
+                new SimpleGrantedAuthority("ROLE_USER")
+        );
+
+        return new UsernamePasswordAuthenticationToken(
+                new org.springframework.security.core.userdetails.User(claims.getSubject(),
+                        "", authorities), token, authorities // 여기는 pw가 없기때문에 ""로
+        ); // 인증정보를 담은 Authentication 객체 반환
     }
 }

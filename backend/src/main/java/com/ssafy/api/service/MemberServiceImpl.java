@@ -71,10 +71,6 @@ public class MemberServiceImpl implements MemberService {
         // 회원 정보 삭제
         memberRepository.delete(member);
     }
-//    @Override
-//    public void withdraw(Long memberId) {
-//        memberRepository.deleteById(memberId);
-//    }
 
     // 회원정보수정
     @Override
@@ -128,9 +124,9 @@ public class MemberServiceImpl implements MemberService {
             String accessToken = token.replace("Bearer ", "");
             if (jwtUtil.validateToken(accessToken)) {
 
+                Long memberId = jwtUtil.extractId(accessToken);
 
-//                return MemberReadGetRes.of(accessToken);
-                return MemberReadGetRes.of(member);
+                return getMyInfo(memberId);
 //                return MemberReadGetRes.builder()
 //                        .id(jwtUtil.extractId(memberToken))
 //                        .email(jwtUtil.extractClaim(memberToken, claims -> claims.get("email", String.class)))
