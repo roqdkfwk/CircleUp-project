@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = {"강의 수강"})
+@Api(tags = {"강의 : 수강생(User)"})
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class RegisterController {
     @ApiResponses({
             @ApiResponse(code = 401, message = "인증 실패")
     })
-    public ResponseEntity<List<CoursesRes>> registeredCourses(){
+    public ResponseEntity<List<CoursesRes>> registeredCourses() {
         // TODO
         Long memberId = 3L;
         return ResponseEntity.ok().body(courseService.getCoursesIregistered(memberId));
@@ -37,8 +37,8 @@ public class RegisterController {
             @ApiResponse(code = 401, message = "인증 실패")
     })
     public ResponseEntity<Boolean> isRegister(
-            @PathVariable(name="course_id") Long courseId
-    ){
+            @PathVariable(name = "course_id") Long courseId
+    ) {
         // TODO
         Long memberId = 3L;
         return ResponseEntity.ok().body(courseService.existRegister(memberId, courseId));
@@ -53,8 +53,8 @@ public class RegisterController {
             @ApiResponse(code = 409, message = "이미 수강중")
     })
     public ResponseEntity<Void> doRegister(
-            @PathVariable(name="course_id") Long courseId
-    ){
+            @PathVariable(name = "course_id") Long courseId
+    ) {
         // TODO 인증필터를 이용한 memberId 추가
         Long memberId = 3L;
         courseService.doRegister(memberId, courseId);
@@ -69,8 +69,8 @@ public class RegisterController {
             @ApiResponse(code = 400, message = "잘못된 요청")
     })
     public ResponseEntity<Void> cancelRegister(
-            @PathVariable(name="course_id") Long courseId
-    ){
+            @PathVariable(name = "course_id") Long courseId
+    ) {
         // TODO
         Long memberId = 3L;
         courseService.cancelRegister(memberId, courseId);

@@ -8,12 +8,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 
-@Api(tags = {"강의 강사"})
+@Api(tags = {"강의 : 강사(Instructor)"})
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -27,12 +29,11 @@ public class InstructionController {
             @ApiResponse(code = 401, message = "인증 실패"),
             @ApiResponse(code = 404, message = "존재하지 않는 회원")
     })
-    public ResponseEntity<List<CoursesRes>> madeCourses(){
+    public ResponseEntity<List<CoursesRes>> madeCourses() {
         // TODO
         Long memberId = 2L;
         return ResponseEntity.ok().body(courseService.getCoursesImade(memberId));
     }
-
 
 
 }
