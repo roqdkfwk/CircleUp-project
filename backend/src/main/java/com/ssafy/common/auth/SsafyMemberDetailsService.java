@@ -3,7 +3,6 @@ package com.ssafy.common.auth;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.db.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ public class SsafyMemberDetailsService implements UserDetailsService {
     public SsafyMemberDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Member member = memberService.getMemberByEmail(email);
-        if(member != null) {
+        if (member != null) {
             SsafyMemberDetails memberDetails = new SsafyMemberDetails(member);
             return memberDetails;
         }

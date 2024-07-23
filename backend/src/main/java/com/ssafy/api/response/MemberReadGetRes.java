@@ -1,9 +1,7 @@
 package com.ssafy.api.response;
 
-import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
-import io.jsonwebtoken.Jwt;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
