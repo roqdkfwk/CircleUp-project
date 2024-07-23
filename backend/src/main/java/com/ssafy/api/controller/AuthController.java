@@ -3,10 +3,10 @@ package com.ssafy.api.controller;
 import com.ssafy.api.request.MemberLoginPostReq;
 import com.ssafy.api.response.MemberLoginPostRes;
 import com.ssafy.api.service.AuthService;
+import com.ssafy.common.custom.RequiredAuth;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.common.util.JwtUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,7 +54,7 @@ public class AuthController {
     // 로그아웃
     @PostMapping("/logout")
     @ApiOperation(value = "로그아웃")
-    @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
+    @RequiredAuth
     public ResponseEntity<BaseResponseBody> logout(@RequestHeader("Authorization") String token) {
 
         authService.logout(token.replace("Bearer ", ""));
