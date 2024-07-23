@@ -1,17 +1,18 @@
 package com.ssafy.db.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@Builder
 public class Course {
     @Id
     @Column(name = "course_id")
@@ -55,7 +56,21 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<CourseTag> course_tag_list = new ArrayList<>();
 
-    public void upView(){
+    @OneToMany(mappedBy = "course")
+    private List<Curriculum> curriculum_list;
+
+    // 커리큘럼 리스트 초기화
+    public void initCurriculumList() {
+        this.curriculum_list = new ArrayList<>();
+    }
+
+    // 커리큘럼 추가
+    public void addCurriculum(Curriculum curriculum) {
+        this.curriculum_list.add(curriculum);
+        curriculum.setCourse(this);
+    }
+
+    public void upView() {
         this.view = this.view + 1;
     }
 }

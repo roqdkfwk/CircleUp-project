@@ -1,5 +1,9 @@
 package com.ssafy.api.service;
 
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Bucket;
+import com.ssafy.api.request.CourseCreatePostReq;
+import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
@@ -7,16 +11,17 @@ import com.ssafy.api.response.TagRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
-import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.repository.CourseRepository;
+import com.ssafy.db.entity.*;
+import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,78 @@ import java.util.stream.Collectors;
 public class CourseSerivce {
 
     private final CourseRepository courseRepository;
+    private final InstructorRepository instructorRepository;
+    private final CourseTagRepository courseTagRepository;
+    private final TagRepository tagRepository;
+    private final CurriculumRepository curriculumRepository;
+    private final Bucket bucket;
+
+    //////////////////////////////////////////////////////////////////////////
+    public Course createCourse(CourseCreatePostReq courseCreatePostReq, Long memberId) {
+        try {
+            // 1. 유효성 검증
+            // 요청자가 강사가 아닐때
+            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("Instructor not found")
+            );
+            // 빈 파일일때
+            if (courseCreatePostReq.getImg() == null) {
+                throw new BadRequestException("Not File");
+            }
+            // 이미지 파일이 아닐때
+            String contentType = courseCreatePostReq.getImg().getContentType();
+            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                throw new BadRequestException("Not Image File");
+            }
+
+            // 2. 서비스 로직 실행
+            // 현재 시간
+            LocalDateTime now = LocalDateTime.now();
+            // 타입 변경
+            Timestamp timestamp = Timestamp.valueOf(now);
+            // 일단 url null로 course 생성 + 등록 >> course id 생성!
+            Course newCourse = courseCreatePostReq.toEntity(instructor, timestamp, null);
+            newCourse = courseRepository.save(newCourse);
+
+            // CourseTag에 등록
+            List<Long> tags = courseCreatePostReq.getTags();
+            if (tags != null) {
+                for (Long tagId : tags) {
+                    CourseTag newCoursTag = new CourseTag();
+                    Tag tag = tagRepository.getOne(tagId);
+                    newCoursTag.setCourse(newCourse);
+                    newCoursTag.setTag(tag);
+                    courseTagRepository.save(newCoursTag);
+                }
+            }
+
+            // Curriculum 생성 및 추가
+            List<CurriculumPostReq> curriculumRequests = courseCreatePostReq.getCurriculums();
+            if (curriculumRequests != null) {
+                Long idx = 0L;
+                newCourse.initCurriculumList();
+                for (CurriculumPostReq currReq : curriculumRequests) {
+                    Curriculum newCurr = currReq.toEntity(newCourse, idx++, null);
+                    newCurr = curriculumRepository.save(newCurr);
+
+                    String blobName = "curr_" + newCurr.getId() + "_banner";
+                    BlobInfo blobInfo = bucket.create(blobName, currReq.getImg().getBytes(), currReq.getImg().getContentType());
+                    newCurr.setImg_url(blobInfo.getMediaLink());
+                    newCourse.addCurriculum(newCurr); // Course에 Curriculum 추가
+                }
+            }
+            // 이미지 파일 네이밍
+            String blobName = "course_" + newCourse.getId() + "_banner";
+            BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
+            // img_url 넣어주기
+            newCourse.setImg_url(blobInfo.getMediaLink());
+            // 3. 업데이트된 정보로 다시 저장
+            return courseRepository.save(newCourse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create course due to image processing error", e);
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
