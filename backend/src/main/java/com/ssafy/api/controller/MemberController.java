@@ -62,8 +62,12 @@ public class MemberController {
             notes = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다"
     )
     @RequiredAuth
-    public ResponseEntity<?> modifyMember(@RequestHeader("Authorization") String token, @RequestBody MemberModifyUpdateReq memberModifyUpdateReq) {
-        Member updatedMember = memberService.modifyMember(token, memberModifyUpdateReq);
+    public ResponseEntity<?> modifyMember(
+            Authentication authentication,
+            @RequestBody MemberModifyUpdateReq memberModifyUpdateReq
+    ) {
+        Long memberId = Long.valueOf(authentication.getName());
+        Member updatedMember = memberService.modifyMember(memberId, memberModifyUpdateReq);
         return ResponseEntity.status(HttpStatus.OK).body(updatedMember);
     }
 

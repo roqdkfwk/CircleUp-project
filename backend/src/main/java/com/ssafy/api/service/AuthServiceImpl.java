@@ -21,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     public MemberLoginPostRes login(MemberLoginPostReq loginReq) {
 
         Member member = memberRepository.findByEmail(loginReq.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
         if (!member.getPw().equals(loginReq.getPassword())) {
             throw new RuntimeException("Invalid password");

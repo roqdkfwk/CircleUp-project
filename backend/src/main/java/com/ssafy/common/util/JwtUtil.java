@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -60,7 +61,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setHeader(header)  // 헤더 설정 추가
                 .setClaims(claims)  // payload에 role 정보 추가
-                .setSubject(subject)    // 해당 토큰 사용자의 식별자 추가 
+                .setSubject(subject)    // 해당 토큰 사용자의 식별자 추가
                 .setIssuedAt(new Date(System.currentTimeMillis()))  // 토큰 생성 시각
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))   // 토큰 만료 시각
                 .setIssuer(ISSUER)  // ISSUER 설정
@@ -203,7 +204,7 @@ public class JwtUtil {
         );
 
         return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(claims.getSubject(),
+                new User(claims.getSubject(),
                         "", authorities), token, authorities // 여기는 pw가 없기때문에 ""로
         ); // 인증정보를 담은 Authentication 객체 반환
     }

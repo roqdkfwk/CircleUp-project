@@ -72,47 +72,42 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보수정
     @Override
-    public Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq) {
+    public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
 
-        Long memberId = jwtUtil.extractId(token);
+        // DB에서 해당 회원 조회
         Optional<Member> member = memberRepository.findById(memberId);
 
+        // 존재하지 않는 회원인 경우
         if (!member.isPresent()) {
             throw new IllegalArgumentException("해당 회원이 존재하지 않습니다.");
         }
 
-        member.get().setPw(memberModifyUpdateReq.getPw());
-        member.get().setRole(memberModifyUpdateReq.getRole());
-        member.get().setTel(memberModifyUpdateReq.getTel());
-        member.get().setContact(memberModifyUpdateReq.getContact());
+        String email = member.get().getEmail();
 
-        Member updatedMember = memberRepository.save(member.get());
+        // 수정된 정보를 받은 회원 modifiedMember
+        Member modifiedMember = Member.modifiedMember(memberModifyUpdateReq, memberId, email);
 
-        String newAccessToken = jwtUtil.generateAccessToken(updatedMember);
+        // 수정된 정보를 바탕으로 새로운 access / refresh 토큰 발급
+        String newAccessToken = jwtUtil.generateAccessToken(modifiedMember);
         String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
 
-//        updatedMember.setAccessToken(newAccessToken);
-        updatedMember.setRefreshToken(newRefreshToken);
+        // 새로 발급 받은 refresh 토큰을 DB에 저장
+        modifiedMember.setRefreshToken(newRefreshToken);
 
-        return updatedMember;
-//        if (memberModifyUpdateReq.getContact() != null) member.get().setContact(memberModifyUpdateReq.getContact());
-//        if (memberModifyUpdateReq.getPw() != null) member.get().setPw(memberModifyUpdateReq.getPw());
-//        if (memberModifyUpdateReq.getName() != null) member.get().setName(memberModifyUpdateReq.getName());
-//        if (memberModifyUpdateReq.getRole() != null) member.get().setRole(memberModifyUpdateReq.getRole());
-//        if (memberModifyUpdateReq.getTel() != null) member.get().setTel(memberModifyUpdateReq.getTel());
-
-//        return Optional.of(memberRepository.save(member));
+        // 수정된 정보를 DB에 반영
+        memberRepository.save(modifiedMember);
+        return modifiedMember;
     }
 
     // 마이페이지
     @Override
     public MemberReadGetRes getMyInfo(Long memberId) {
+
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("Not Found Member : Member_id is " + memberId)
         );
 
         return MemberReadGetRes.of(member);
-
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface MemberService {
 //    void withdraw(Long memberId);
 
     // 회원정보수정
-    Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq);
+    Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
 
     // 회원정보조회
     MemberReadGetRes getMyInfo(Long memberId);
