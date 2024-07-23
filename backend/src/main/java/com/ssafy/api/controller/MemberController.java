@@ -5,20 +5,16 @@ import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.model.response.BaseResponseBody;
-import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
-import com.ssafy.dto.MemberDto;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 @Api(tags = {"멤버"})
 @RequiredArgsConstructor
@@ -39,10 +35,8 @@ public class MemberController {
     @PostMapping("/checkEmail")
     @Operation(summary = "이메일 중복체크", description = "사용자가 로그인 시 사용할 Email과<br/>중복되는 Email이 존재하는지 DB에서 확인합니다")
     public ResponseEntity<?> checkEmail(
-            @RequestParam String email,
-            Authentication authentication
+            @RequestParam String email
     ) {
-//        return ResponseEntity.ok().build();
         if (memberService.checkEmail(email))
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         else
@@ -50,7 +44,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/withdraw")
-    @ApiOperation( value="회원탈퇴" )
+    @ApiOperation(value = "회원탈퇴")
     @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
     public ResponseEntity<?> withdrawMember(@RequestHeader("Authorization") String token) {
 
@@ -65,8 +59,8 @@ public class MemberController {
 
     @PutMapping("/{member_id}")
     @ApiOperation(
-            value="회원정보수정",
-            notes="회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다"
+            value = "회원정보수정",
+            notes = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다"
     )
     @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
     public ResponseEntity<?> modifyMember(@RequestHeader("Authorization") String token, @RequestBody MemberModifyUpdateReq memberModifyUpdateReq) {
@@ -77,15 +71,15 @@ public class MemberController {
 
     @GetMapping
     @ApiOperation(
-            value="마이페이지",
-            notes="마이페이지입니다<br/>이메일, 이름 등의 정보를 조회합니다"
+            value = "마이페이지",
+            notes = "마이페이지입니다<br/>이메일, 이름 등의 정보를 조회합니다"
     ) // TODO JWT가 필요한 API에는 아래의 어노테이션을 추가하여 Swagger에 명시적으로 표시
     @ApiImplicitParam(name = "Authorization", value = "Bearer 로 시작하는 JWT 토큰 필요", required = false, dataType = "string", paramType = "header")
     public ResponseEntity<MemberReadGetRes> readMember(
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-         return ResponseEntity.ok(memberService.getMyInfo(memberId));
+        return ResponseEntity.ok(memberService.getMyInfo(memberId));
 //            MemberReadGetRes memberReadGetRes = memberService.readMemberByToken(token);
     }
 }

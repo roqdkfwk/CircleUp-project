@@ -8,7 +8,6 @@ import com.ssafy.common.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class AuthController {
             notes = "<strong>유효기간 1일</strong>의 임시 토큰을 발급합니다<br/>" +
                     "이 과정에서 해당 memberId가 실제로 존재하는지는 확인하지 않습니다<br/>" +
                     "반환값은 <strong>'접두사(Bearer ) + JWT토큰'</strong>입니다")
-    public String test(@RequestParam(required = true, name = "member_id") Long memberId) {
+    public String test(@RequestParam(name = "member_id") Long memberId) {
         return "Bearer "
                 + jwtUtil.createToken(new HashMap<>(), memberId.toString(), 86400000L, false);
     }
@@ -40,7 +39,7 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    @Operation(summary = "로그인")
+    @ApiOperation(value = "로그인")
     public ResponseEntity<?> login(@RequestBody MemberLoginPostReq loginReq) {
 
         try {

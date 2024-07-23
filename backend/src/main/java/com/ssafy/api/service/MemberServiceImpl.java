@@ -3,7 +3,7 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
-import com.ssafy.common.exception.handler.NotFoundException;
+import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.repository.MemberRepository;
