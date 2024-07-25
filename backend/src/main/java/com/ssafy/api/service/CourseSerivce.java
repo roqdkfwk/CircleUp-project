@@ -16,6 +16,7 @@ import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -117,19 +118,14 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesByView(int page, int size) {
+    public List<CoursesRes> getCoursesByTags(List<Long> tags, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return courseRepository.findAllByOrderByViewDesc(pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
-    }
-
-    public List<CoursesRes> getFreeCourses(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return courseRepository.findByPrice(0L, pageable)
+        return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
+
     }
 
     public List<CoursesRes> getOfferingCourses(int page, int size) {
@@ -145,6 +141,32 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
+    public List<CoursesRes> getCoursesByView(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return courseRepository.findAllByOrderByViewDesc(pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
+    }
+
+    public List<CoursesRes> getFreeCourses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return courseRepository.findByPrice(0L, pageable)
+                .stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<CoursesRes> getLatestCourses(int page, int size) {
+        System.out.println("=============================1");
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+        System.out.println("=============================2");
+        return courseRepository.findAll(pageable)
+                .stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    }
+
     public List<CoursesRes> getRegisteredCourses(Long memberId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -154,15 +176,6 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesByTags(List<Long> tags, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
-                .stream()
-                .map(CoursesRes::of)
-                .collect(Collectors.toList());
-
-    }
     //////////////////////////////////////////////////////////////////////////
 
     @Transactional

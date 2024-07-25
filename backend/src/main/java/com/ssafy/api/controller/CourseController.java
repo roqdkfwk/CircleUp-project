@@ -53,6 +53,8 @@ public class CourseController {
                 return ResponseEntity.ok().body(courseService.getCoursesByView(page, size));
             } else if (type.equals("free")) { // 무료
                 return ResponseEntity.ok().body(courseService.getFreeCourses(page, size));
+            } else if (type.equals("latest")) { //최신순
+                return ResponseEntity.ok().body(courseService.getLatestCourses(page, size));
             }
         }
         return ResponseEntity.badRequest().build();
