@@ -17,9 +17,9 @@ public class CurriculumPostReq {
         return Curriculum.builder()
                 .course(course)
                 .name(this.name)
-                .index_no(indexNo)
+                .indexNo(indexNo)
                 .description(this.description)
-                .img_url(imgUrl)
+                .imgUrl(imgUrl)
                 .time(0L).build();
     }
 }

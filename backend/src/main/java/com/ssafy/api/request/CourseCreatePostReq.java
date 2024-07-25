@@ -28,7 +28,7 @@ public class CourseCreatePostReq {
                 .instructor(instructor)
                 .createdAt(timestamp)
                 .name(this.name)
-                .img_url(imgUrl)
+                .imgUrl(imgUrl)
                 .view(0L)
                 .price(this.price)
                 .description(this.description)

@@ -25,8 +25,8 @@ public class Curriculum {
     @Column
     private String name;
 
-    @Column
-    private Long index_no;
+    @Column(name = "index_no")
+    private Long indexNo;
 
     @Column(length = 2000)
     private String description;
@@ -34,8 +34,8 @@ public class Curriculum {
     @Column
     private Long time;
 
-    @Column(length = 1000)
-    private String img_url;
+    @Column(name = "img_url", length = 1000)
+    private String imgUrl;
 
     //    @OneToMany(mappedBy = "curriculum")
 //    private List<CurrData> curr_data_list = new ArrayList<>();

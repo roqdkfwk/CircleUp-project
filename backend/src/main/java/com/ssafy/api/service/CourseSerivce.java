@@ -87,7 +87,7 @@ public class CourseSerivce {
 
                     String blobName = "curr_" + newCurr.getId() + "_banner";
                     BlobInfo blobInfo = bucket.create(blobName, currReq.getImg().getBytes(), currReq.getImg().getContentType());
-                    newCurr.setImg_url(blobInfo.getMediaLink());
+                    newCurr.setImgUrl(blobInfo.getMediaLink());
                     newCourse.addCurriculum(newCurr); // Course에 Curriculum 추가
                 }
             }
@@ -95,7 +95,7 @@ public class CourseSerivce {
             String blobName = "course_" + newCourse.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
             // img_url 넣어주기
-            newCourse.setImg_url(blobInfo.getMediaLink());
+            newCourse.setImgUrl(blobInfo.getMediaLink());
             // 3. 업데이트된 정보로 다시 저장
             return courseRepository.save(newCourse);
         } catch (Exception e) {
@@ -157,10 +157,8 @@ public class CourseSerivce {
     }
 
     public List<CoursesRes> getLatestCourses(int page, int size) {
-        System.out.println("=============================1");
         Pageable pageable = PageRequest.of(page, size,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
-        System.out.println("=============================2");
         return courseRepository.findAll(pageable)
                 .stream()
                 .map(CoursesRes::of)
@@ -240,5 +238,4 @@ public class CourseSerivce {
             throw new BadRequestException("Not Found Course or Member or Register");
         }
     }
-
 }

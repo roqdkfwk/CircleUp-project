@@ -37,8 +37,8 @@ public class JwtUtil {
         claims.put("email", member.getEmail());
         claims.put("name", member.getName());
         claims.put("role", member.getRole());
-        claims.put("contact", member.getContact());
-        claims.put("tel", member.getTel());
+        claims.put("contactEmail", member.getContactEmail());
+        claims.put("contactTel", member.getContactTel());
 
         return createToken(claims, member.getId().toString(), expiration, false);
     }

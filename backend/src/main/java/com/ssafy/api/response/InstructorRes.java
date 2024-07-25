@@ -12,7 +12,9 @@ public class InstructorRes {
     String name;
 
     String description;
-    String contact;
+    String contactEmail;
+    String contactTel;
 
-    protected InstructorRes(){}
+    protected InstructorRes() {
+    }
 }

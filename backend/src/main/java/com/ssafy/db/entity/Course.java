@@ -26,8 +26,8 @@ public class Course {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
-    @Column(length = 1000)
-    private String img_url;
+    @Column(name = "img_url", length = 1000)
+    private String imgUrl;
 
     @Column
     private String name;
@@ -42,9 +42,6 @@ public class Course {
     private Long price;
 
     @Column(length = 2000)
-    private String curriculum;
-
-    @Column
     private String description;
 
     @Column(name = "total_course")
@@ -54,22 +51,22 @@ public class Course {
     private Long completedCourse;
 
     @OneToMany(mappedBy = "course")
-    private List<CourseTag> course_tag_list = new ArrayList<>();
+    private List<CourseTag> courseTagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "course")
-    private List<Curriculum> curriculum_list;
+    private List<Curriculum> curriculumList;
 
     protected Course() {
     }
 
     // 커리큘럼 리스트 초기화
     public void initCurriculumList() {
-        this.curriculum_list = new ArrayList<>();
+        this.curriculumList = new ArrayList<>();
     }
 
     // 커리큘럼 추가
     public void addCurriculum(Curriculum curriculum) {
-        this.curriculum_list.add(curriculum);
+        this.curriculumList.add(curriculum);
         curriculum.setCourse(this);
     }
 

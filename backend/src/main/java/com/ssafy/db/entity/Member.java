@@ -30,17 +30,17 @@ public class Member {
     @Column(length = 45)
     private String name;
 
-    @Column(length = 1000)
+    @Column(name = "refresh_token", length = 1000)
     private String refreshToken;
 
     @Enumerated(EnumType.ORDINAL)
     private Role role;
 
-    @Column(length = 45)
-    private String contact;
+    @Column(name = "contact_email", length = 45)
+    private String contactEmail;
 
-    @Column(length = 45)
-    private String tel;
+    @Column(name = "contact_tel", length = 45)
+    private String contactTel;
 
     protected Member() {
     }
@@ -57,8 +57,8 @@ public class Member {
                 .pw(memberModifyUpdateReq.getPw())
                 .name(memberModifyUpdateReq.getName())
                 .role(memberModifyUpdateReq.getRole())
-                .contact(memberModifyUpdateReq.getContact())
-                .tel(memberModifyUpdateReq.getTel())
+                .contactEmail(memberModifyUpdateReq.getContactEmail())
+                .contactTel(memberModifyUpdateReq.getContactTel())
                 .build();
     }
 }

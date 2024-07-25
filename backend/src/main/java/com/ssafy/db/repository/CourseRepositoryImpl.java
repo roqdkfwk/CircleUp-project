@@ -50,7 +50,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
         Register register = new Register();
         register.setMember(member);
         register.setCourse(course);
-        register.setCreated_at(Timestamp.from(Instant.now()));
+        register.setCreatedAt(Timestamp.from(Instant.now()));
         em.merge(register);
 
         return true;

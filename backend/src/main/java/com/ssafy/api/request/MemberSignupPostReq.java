@@ -12,6 +12,6 @@ public class MemberSignupPostReq {
     private String pw;
     private String name;
     private Role role;
-    private String contact;
-    private String tel;
+    private String contactEmail;
+    private String contactTel;
 }

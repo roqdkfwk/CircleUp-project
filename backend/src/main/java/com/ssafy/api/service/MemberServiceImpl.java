@@ -33,8 +33,8 @@ public class MemberServiceImpl implements MemberService {
                 .pw(memberSignupPostReq.getPw())
                 .name(memberSignupPostReq.getName())
                 .role(memberSignupPostReq.getRole())
-                .tel(memberSignupPostReq.getTel())
-                .contact(memberSignupPostReq.getContact())
+                .contactTel(memberSignupPostReq.getContactTel())
+                .contactEmail(memberSignupPostReq.getContactEmail())
                 .build();
 
         memberRepository.save(member);
