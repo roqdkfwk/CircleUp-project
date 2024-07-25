@@ -1,5 +1,6 @@
 package com.ssafy.db.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,18 +14,17 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class Course {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instructor_id")
+    Instructor instructor;
     @Id
     @Column(name = "course_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "instructor_id")
-    Instructor instructor;
-
-    @Column
-    private Timestamp created_at;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
 
     @Column(length = 1000)
     private String img_url;
@@ -44,20 +44,23 @@ public class Course {
     @Column(length = 2000)
     private String curriculum;
 
-    @Column()
+    @Column
     private String description;
 
-    @Column
-    private Long total_course;
+    @Column(name = "total_course")
+    private Long totalCourse;
 
-    @Column
-    private Long completed_course;
+    @Column(name = "completed_course")
+    private Long completedCourse;
 
     @OneToMany(mappedBy = "course")
     private List<CourseTag> course_tag_list = new ArrayList<>();
 
     @OneToMany(mappedBy = "course")
     private List<Curriculum> curriculum_list;
+
+    protected Course() {
+    }
 
     // 커리큘럼 리스트 초기화
     public void initCurriculumList() {

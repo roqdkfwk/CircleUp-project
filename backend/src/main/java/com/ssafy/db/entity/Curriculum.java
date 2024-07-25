@@ -1,5 +1,6 @@
 package com.ssafy.db.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class Curriculum {
     @Id
     @Column(name = "curriculum_id")
@@ -35,6 +37,8 @@ public class Curriculum {
     @Column(length = 1000)
     private String img_url;
 
-//    @OneToMany(mappedBy = "curriculum")
+    //    @OneToMany(mappedBy = "curriculum")
 //    private List<CurrData> curr_data_list = new ArrayList<>();
+    protected Curriculum() {
+    }
 }

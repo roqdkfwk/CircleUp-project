@@ -26,14 +26,14 @@ public class CourseCreatePostReq {
     public Course toEntity(Instructor instructor, Timestamp timestamp, String imgUrl) {
         return Course.builder()
                 .instructor(instructor)
-                .created_at(timestamp)
+                .createdAt(timestamp)
                 .name(this.name)
                 .img_url(imgUrl)
                 .view(0L)
                 .price(this.price)
                 .description(this.description)
-                .total_course(0L)
-                .completed_course(0L)
+                .totalCourse(0L)
+                .completedCourse(0L)
                 .build();
     }
 }
