@@ -32,7 +32,6 @@ public class JwtUtil {
 
     // accessToken을 발급하는 메소드
     public String generateAccessToken(Member member) {
-
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", member.getEmail());
         claims.put("name", member.getName());
@@ -46,14 +45,12 @@ public class JwtUtil {
     // refreshToken을 발급하는 메소드
     // refreshToken의 유효기간은 1h * 24 * 15 = 15days
     public String generateRefreshToken(Long id) {
-
         // role, id, 만료 시간, refreshToken 여부
         return createToken(new HashMap<>(), id.toString(), expiration * 24 * 15, true);
     }
 
     // 토큰을 생성하는 메소드
     public String createToken(Map<String, Object> claims, String subject, Long expiration, boolean isRefreshToken) {
-
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256"); // 암호화 알고리즘
         header.put("typ", isRefreshToken ? "refresh" : "JWT");  // 토큰의 타입을 결정
@@ -70,7 +67,6 @@ public class JwtUtil {
     }
 
     public JwtParser getVerifier() {
-
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .requireIssuer(ISSUER)
@@ -84,9 +80,7 @@ public class JwtUtil {
 
     // 토큰에서 특정 클레임을 추출
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-
         final Claims claims = extractAllClaims(token);
-
         return claimsResolver.apply(claims);
     }
 
@@ -96,7 +90,7 @@ public class JwtUtil {
     }
 
     // 토큰이 만료되었는지 확인
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -107,11 +101,9 @@ public class JwtUtil {
 
     // 토큰이 유효한지 검증
     public Boolean validateToken(String token) {
-
         try {
             // 접두사 제거
             String memberToken = token.replace(TOKEN_PREFIX, "");
-
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .requireIssuer(ISSUER)
@@ -119,8 +111,7 @@ public class JwtUtil {
                     .parseClaimsJws(memberToken)
                     .getBody();
 
-            boolean isExpired = isTokenExpired(memberToken);
-            return !isExpired;
+            return !isTokenExpired(memberToken);
         } catch (ExpiredJwtException e) {
             return false;
         } catch (JwtException | IllegalArgumentException e) {
@@ -130,7 +121,6 @@ public class JwtUtil {
 
     // 주어진 토큰이 리프레시 토큰인지 확인
     public boolean isRefreshToken(String token) {
-
         // TOKEN_PREFIX ("Bearer ") 제거
         String actualToken = token.replace(TOKEN_PREFIX, "");
 
@@ -146,13 +136,11 @@ public class JwtUtil {
         // 토큰의 타입이 refresh라면
         if (header.get("typ").equals("refresh"))
             return true;
-
         return false;
     }
 
     // 새로 생긴 부분
     public void handleError(String token) {
-
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
@@ -176,7 +164,6 @@ public class JwtUtil {
 
     // 새로 추가된 JwtParser를 파라미터로 받는 handleError 메소드
     public void handleError(JwtParser verifier, String token) {
-
         try {
             verifier.parseClaimsJws(token.replace(TOKEN_PREFIX, ""));
         } catch (ExpiredJwtException ex) {
@@ -205,7 +192,8 @@ public class JwtUtil {
 
         return new UsernamePasswordAuthenticationToken(
                 new User(claims.getSubject(),
-                        "", authorities), token, authorities // 여기는 pw가 없기때문에 ""로
+                        "", // 여기는 pw가 없기때문에 ""로
+                        authorities), token, authorities
         ); // 인증정보를 담은 Authentication 객체 반환
     }
 }

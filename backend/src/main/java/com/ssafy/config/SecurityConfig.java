@@ -1,7 +1,7 @@
 package com.ssafy.config;
 
 import com.ssafy.api.service.MemberService;
-import com.ssafy.common.auth.JwtAuthenticationFilterM;
+import com.ssafy.common.auth.JwtAuthenticationFilter;
 import com.ssafy.common.auth.SsafyMemberDetailsService;
 import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.repository.MemberRepository;
@@ -64,8 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationFilterM jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilterM(memberService, jwtUtil);
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil);
     }
 
     @Override
