@@ -5,29 +5,24 @@ import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.db.entity.Member;
 
-import java.util.Optional;
-
 public interface MemberService {
-
     // 회원가입
     void signup(MemberSignupPostReq memberSignupPostReq);
 
-    // 이메일 중복체크
-    boolean checkEmail(String email);
-
+    //    // 이메일 중복체크
+//    boolean checkEmail(String email);
     // 회원탈퇴
     void withdrawMemberByToken(String token);
-//    void withdraw(Long memberId);
+
+//    void withdrawById(Long memberId, String token);
 
     // 회원정보수정
     Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
 
     // 회원정보조회
-    MemberReadGetRes getMyInfo(Long memberId);
+    MemberReadGetRes getMyInfo(Long memberId, String accessToken);
 
     // email로 회원찾기
-    Optional<Member> findByEmail(String email);
-
     Member getMemberByEmail(String email);
 
     Member getMemberById(Long memberId);
