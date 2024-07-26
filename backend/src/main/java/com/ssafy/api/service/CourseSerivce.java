@@ -106,7 +106,7 @@ public class CourseSerivce {
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
-        return courseRepository.getAllTag().stream().map(tag -> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
+        return tagRepository.findAll().stream().map(tag -> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ public class CourseSerivce {
     public List<CoursesRes> getOfferingCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Long tagSize = courseRepository.getTagSize();
+        Long tagSize = tagRepository.getTagSize();
         LocalDate today = LocalDate.now();
         Long randomTagId = today.getDayOfYear() % tagSize + 1;
 
@@ -166,7 +166,8 @@ public class CourseSerivce {
     }
 
     public List<CoursesRes> getRegisteredCourses(Long memberId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
         return courseRepository.findByRegisteredMemberId(memberId, pageable)
                 .stream()
@@ -187,7 +188,7 @@ public class CourseSerivce {
 
 
     public InstructorRes getInstructorByCourseId(Long id) {
-        return courseRepository.findInstructorByCourseId(id).orElseThrow(
+        return instructorRepository.findInstructorByCourseId(id).orElseThrow(
                 () -> new NotFoundException("Not Found Instructor of Course : Course_id is " + id)
         );
     }
@@ -195,12 +196,10 @@ public class CourseSerivce {
     //////////////////////////////////////////////////////////////////////////
 
     public List<CoursesRes> getCoursesImade(Long member_id) {
-        Instructor instructor = courseRepository.getInstructorById(member_id).orElseThrow(
+        Instructor instructor = instructorRepository.findById(member_id).orElseThrow(
                 () -> new NotFoundException("Not Found Instructor : Instructor_id is " + member_id)
         );
-//        Member member = courseRepository.getMemberById(instructor.getId()).orElseThrow(
-//                () -> new NotFoundException("Not Found Member : Member_id is " + member_id)
-//        );
+
         return courseRepository.findByInstructor(instructor).stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
