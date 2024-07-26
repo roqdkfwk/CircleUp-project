@@ -4,13 +4,17 @@ import com.ssafy.db.entity.enums.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class MemberModifyUpdateReq {
-
     private String pw;
     private String name;
     private Role role;
     private String contactEmail;
     private String contactTel;
+    // 추가
+    private List<Long> tags = new ArrayList<>();
 }
