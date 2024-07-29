@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -78,6 +79,30 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.delete(member);
     }
 
+    // 마이페이지
+    @Override
+    public MemberReadGetRes getMyInfo(Long memberId, String accessToken) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Not Found Member : Member_id is " + memberId)
+        );
+
+        // TODO
+        // access 토큰이 만료되었다면
+
+        // refresh 토큰의 유효성을 검사해서 새로운 access 토큰을 발급
+
+        // 해당 member가 선호하는 태그를 DB에서 찾음
+        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+
+        // 선호하는 태그의 이름을 DB에서 찾음
+        List<String> tagNameList = new ArrayList<>();
+        for (Favor favor : favors) {
+            String tagName = favor.getTag().getName();
+            tagNameList.add(tagName);
+        }
+        return MemberReadGetRes.of(member, tagNameList);
+    }
+
     // 회원정보수정
     @Override
     public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
@@ -117,23 +142,6 @@ public class MemberServiceImpl implements MemberService {
         // 수정된 정보를 DB에 반영
         memberRepository.save(member);
         return member;
-    }
-
-    // 마이페이지
-    @Override
-    public MemberReadGetRes getMyInfo(Long memberId, String accessToken) {
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Not Found Member : Member_id is " + memberId)
-        );
-
-//        // accessToken이 만료된 경우
-//        if (jwtUtil.isTokenExpired(accessToken)) {
-//            // refresh 토큰이 만료되지 않았다면
-//            if (!jwtUtil.isTokenExpired(member.getRefreshToken())) {
-//
-//            }
-//        }
-        return MemberReadGetRes.of(member);
     }
 
     @Override
