@@ -100,7 +100,7 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
         return (
             <div
                 className="
-                basis-3/4 w-[70%] h-dvh
+                basis-3/4 w-[70%] h-full
                 bg-white border border-gray-200
                 rounded-lg
                 my-5 mx-3
@@ -191,9 +191,9 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
                     {isCurriculum ? <CourseCurriculum /> : <></>}
                     {isNews ? <CourseNews /> : <></>}
                     {isComment ? <CourseComment /> : <></>}
-                    <button type="button" onClick={() => {
+                    {/* <button type="button" onClick={() => {
                         console.log(myCourse)
-                    }}>{myCourse.courseName}</button>
+                    }}>{myCourse.courseName}</button> */}
                 </div>
             </div>);
     }

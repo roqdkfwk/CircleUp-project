@@ -203,7 +203,7 @@ const MyCourseBanner = ({
                     {(
                         () => {
                             if (isDetail)
-                                return (<p className="text-4xl title text-white mb-2">{courseName}</p>);
+                                return (<p className="text-4xl GDtitle text-white mb-2">{courseName}</p>);
                             else if (isCreate)
                                 return <input type="text" ref={tilteInputRef} className="my-1" onChange={handleTitle}/>
                             else if(isModified)
