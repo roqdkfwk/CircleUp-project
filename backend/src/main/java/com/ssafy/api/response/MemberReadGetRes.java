@@ -7,6 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @ApiModel("MemberReadGetResponse")
@@ -30,7 +33,11 @@ public class MemberReadGetRes {
     @ApiModelProperty(name = "연락용 전화번호")
     private String contactTel;
 
-    public static MemberReadGetRes of(Member member) {
+    @ApiModelProperty(name = "선호하는 태그")
+    private List<String> tags = new ArrayList<>();
+
+    // List<String> tagNameList 추가
+    public static MemberReadGetRes of(Member member, List<String> tagNameList) {
         return MemberReadGetRes.builder()
                 .id(member.getId())
                 .email(member.getEmail())
@@ -38,6 +45,8 @@ public class MemberReadGetRes {
                 .role(member.getRole())
                 .contactEmail(member.getContactEmail())
                 .contactTel(member.getContactTel())
+                // 리턴값으로 선호하는 태그 추가
+                .tags(tagNameList)
                 .build();
     }
 }
