@@ -1,0 +1,15 @@
+package com.ssafy.api.request;
+
+import com.ssafy.db.entity.enums.Role;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class MemberModifyUpdateReq {
+
+    private String pw;
+    private Role role;
+    private String contact;
+    private String tel;
+}
