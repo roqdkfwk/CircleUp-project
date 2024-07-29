@@ -100,7 +100,7 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
         return (
             <div
                 className="
-                basis-3/4 w-full h-dvh
+                basis-3/4 w-[70%] h-dvh
                 bg-white border border-gray-200
                 rounded-lg
                 my-5 mx-3

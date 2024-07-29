@@ -42,7 +42,7 @@ const DetailCourse = () => {
     }, []);
 
     return (
-        <div className="flex flex-row">
+        <div className="flex flex-row w-[1300px] mx-auto">
             <CourseStatusBoard flag={"userDetail"} data={courseDetails} />
             <RightSideBar />
         </div>
