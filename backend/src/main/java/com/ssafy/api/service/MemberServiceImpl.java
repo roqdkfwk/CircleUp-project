@@ -87,8 +87,22 @@ public class MemberServiceImpl implements MemberService {
         );
 
         // 회원의 Favor 모두 찾아서 석제
+        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+        for (Favor favor : favors) {
+            favorRepository.delete(favor);
+        }
 
         // 수정된 Favor을 DB에 반영
+        List<Long> tags = memberModifyUpdateReq.getTags();
+        for (Long tagId : tags) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(
+                    () -> new NotFoundException("Not Found Tag : Tag is " + tagId)
+            );
+            Favor favor = new Favor();
+            favor.setMember(member);
+            favor.setTag(tag);
+            favorRepository.save(favor);
+        }
 
         // member의 정보를 수정
         MemberModifyUpdateRes.of(memberModifyUpdateReq, member);
