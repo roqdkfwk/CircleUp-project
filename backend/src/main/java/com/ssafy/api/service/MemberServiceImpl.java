@@ -105,7 +105,8 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보수정
     @Override
-    public Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+    // 메소드의 리턴값 변경 Member -> MemberModifyUpdateRes
+    public MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
         // DB에서 해당 회원 조회
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 회원입니다.")
@@ -119,6 +120,9 @@ public class MemberServiceImpl implements MemberService {
 
         // 수정된 Favor을 DB에 반영
         List<Long> tags = memberModifyUpdateReq.getTags();
+
+        // 선호하는 태그의 이름을 DB에서 찾음
+        List<String> tagNameList = new ArrayList<>();
         for (Long tagId : tags) {
             Tag tag = tagRepository.findById(tagId).orElseThrow(
                     () -> new NotFoundException("Not Found Tag : Tag is " + tagId)
@@ -127,6 +131,8 @@ public class MemberServiceImpl implements MemberService {
             favor.setMember(member);
             favor.setTag(tag);
             favorRepository.save(favor);
+
+            tagNameList.add(tag.getName());
         }
 
         // member의 정보를 수정
@@ -141,7 +147,9 @@ public class MemberServiceImpl implements MemberService {
 
         // 수정된 정보를 DB에 반영
         memberRepository.save(member);
-        return member;
+
+        // 회원정보, 새로 발급받은 access 토큰, 선호하는 태그 이름을 반환하는 객체
+        return MemberModifyUpdateRes.toEntity(member, newAccessToken, tagNameList);
     }
 
     @Override

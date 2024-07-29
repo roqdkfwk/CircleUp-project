@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
+import com.ssafy.api.response.MemberModifyUpdateRes;
 import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.db.entity.Member;
 
@@ -17,7 +18,7 @@ public interface MemberService {
 //    void withdrawById(Long memberId, String token);
 
     // 회원정보수정
-    Member modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
+    MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);
 
     // 회원정보조회
     MemberReadGetRes getMyInfo(Long memberId, String accessToken);
