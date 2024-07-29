@@ -24,9 +24,15 @@ body,
 }
 
 @font-face {
-    font-family: "GowunDodum-EB";
+    font-family: "Gothic-B";
     font-weight: normal;
-    src: url("./assets/fonts/NanumSquareRoundEB.ttf") format("truetype");
+    src: url("./assets/fonts/NanumBarunGothicBold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Gothic-R";
+    font-weight: normal;
+    src: url("./assets/fonts/NanumBarunGothic.ttf") format("truetype");
 }
 
 body {
@@ -37,6 +43,10 @@ body {
     font-family: "GowunDodum-B";
 }
 
-.EBtitle {
-    font-family: "GowunDodum-EB";
+.GD {
+    font-family: "Gothic-R";
+}
+
+.GDtitle {
+    font-family: "Gothic-B";
 }
