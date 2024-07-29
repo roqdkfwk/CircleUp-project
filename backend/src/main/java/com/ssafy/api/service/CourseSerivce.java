@@ -1,8 +1,10 @@
 package com.ssafy.api.service;
 
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseCreatePostReq;
+import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
@@ -18,12 +20,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,6 +104,57 @@ public class CourseSerivce {
             return courseRepository.save(newCourse);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to create course due to image processing error", e);
+        }
+    }
+
+    public Course updateCourse(Long courseId, CourseModifyUpdateReq courseModifyUpdateReq, Long memberId) {
+        // 1. 유효성 검증
+        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Instructor not found")
+        );
+
+        Optional<Course> courseOptional = courseRepository.findById(courseId);
+        if (!courseOptional.isPresent()) {
+            throw new BadRequestException("Course not found");
+        }
+        MultipartFile img = courseModifyUpdateReq.getImg();
+        if (img != null) {
+            String contentType = img.getContentType();
+            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                throw new BadRequestException("Not Image File");
+            }
+        }
+        try {
+            // 2. 서비스 로직
+            Course course = courseOptional.get();
+            // 변경사항 확인 후 적용
+            if (courseModifyUpdateReq.getName() != null) {
+                course.setName(courseModifyUpdateReq.getName());
+            }
+            if (courseModifyUpdateReq.getSummary() != null) {
+                course.setSummary(courseModifyUpdateReq.getSummary());
+            }
+            if (courseModifyUpdateReq.getPrice() != null) {
+                course.setPrice(courseModifyUpdateReq.getPrice());
+            }
+            if (courseModifyUpdateReq.getDescription() != null) {
+                course.setDescription(courseModifyUpdateReq.getDescription());
+            }
+            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장..
+                String blobName = "course_" + courseId + "_banner";
+
+                Blob blob = bucket.get(blobName);
+                blob.delete();
+
+                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
+                course.setImgUrl(blobInfo.getMediaLink());
+            }
+            // 3. 정보 업데이트
+            return courseRepository.save(course);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("==========***==============");
             throw new RuntimeException("Failed to create course due to image processing error", e);
         }
     }

@@ -1,6 +1,7 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.request.CourseCreatePostReq;
+import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -49,15 +51,19 @@ public class InstructionController {
     }
 
     // TODO 강의 수정 기능 구현
-    @PatchMapping(value = "/courses/instructions/{course_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/courses/instructions/{course_id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ApiOperation(value = "기존 강의 수정")
     public ResponseEntity<Void> updateCourse(
             @PathVariable(name = "course_id") Long courseId,
-            @ModelAttribute CourseCreatePostReq courseCreatePostReq,
+            @ModelAttribute CourseModifyUpdateReq courseModifyUpdateReq,
+            @RequestPart(name = "img", required = false) MultipartFile img,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-//        Course course = courseService.updateCourse(courseId, courseCreatePostReq, memberId);
+        Course course = courseService.updateCourse(courseId, courseModifyUpdateReq, memberId);
         return ResponseEntity.ok().build();
     }
 
