@@ -43,7 +43,10 @@ export const getCourseDetail = (id: number) => {
 // 4. 강의 추가
 export const PostNewCourse = (data : FormData) => {
     return axiosClient.post(`/courses/instructions`, data, {
-        headers: { 'Requires-Auth': true }
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
     })
 }
 
@@ -100,13 +103,13 @@ axiosClient.interceptors.response.use(
             
             const refreshToken = localStorage.getItem("refreshToken")
 
-            const response = await axiosClient.post('auth/reissue', {
+            const response = await axiosClient.post('/auth/reissue', {}, {
                 headers : {'refresh' : refreshToken}
             });
             console.log(response)
             // const refreshToken = await axiosClient.get('getRefreshToken')
             try {
-                originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
+                originalRequest.headers.Authorization = `${response.headers['refresh']}`;
                 localStorage.setItem("accessToken", refreshToken!);
 
                 return originalRequest;

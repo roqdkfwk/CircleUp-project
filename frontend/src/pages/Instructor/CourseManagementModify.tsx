@@ -14,7 +14,8 @@ const CourseManagementModify = () => {
     const [modifiedCourses, setModifiedCourses] = useState<CourseDetail>({
         id: 0,
         courseName: "",
-        img_url: "",
+        imgUrl: "",
+        price : 0,
         imgData: null,
         instructorName: "",
         description: "",

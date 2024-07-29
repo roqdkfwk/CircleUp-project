@@ -28,7 +28,13 @@ const CourseManagementMake = () => {
     }
 
     const fetchPostNewCourse = async(data : FormData) => {
-        return await PostNewCourse(data);
+        try {
+            const response = await PostNewCourse(data);
+            console.log('Response : ', response.data)
+        }
+        catch (error) {
+            console.log('error : ', error)
+        }
     }
 
     // <To Do> :
@@ -45,11 +51,10 @@ const CourseManagementMake = () => {
         // STEP 1. formdata 만들기
         const formData = new FormData();
 
-        // STEP 2. FormData에 데이터 넣기
-        for (let i = 0; i < newCourse.imgData!.length ; i++) {
-            formData.append("img", newCourse.imgData![i])
-        }
-
+       // STEP 2. FormData에 데이터 넣기
+       for (let i = 0; i < newCourse.imgData!.length ; i++) {
+        formData.append("img", newCourse.imgData![i])
+    }
         formData.append("name", newCourse.courseName)
         formData.append("description", newCourse.description)
 
@@ -59,9 +64,11 @@ const CourseManagementMake = () => {
         formData.append("summary", "dummyData")
         formData.append("price", newCourse.price.toString())
 
-        // STEP 3. Access Token 넣은 후, POST 보내기
-        
-
+        // STEP 3. Access Token 넣은 후, POST 보내기'
+        for (const pair of formData.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        fetchPostNewCourse(formData);
     }
 
     return (
