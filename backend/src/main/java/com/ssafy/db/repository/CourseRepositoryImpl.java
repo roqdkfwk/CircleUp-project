@@ -1,7 +1,9 @@
 package com.ssafy.db.repository;
 
 
-import com.ssafy.db.entity.*;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.Register;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -9,34 +11,12 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
 
 public class CourseRepositoryImpl implements CourseRepositoryCustom {
 
     @PersistenceContext
     private EntityManager em;
 
-
-    @Override
-    public List<Tag> getAllTag() {
-        return em.createQuery("select t from Tag t").getResultList();
-    }
-
-    @Override
-    public Long getTagSize() {
-        return (Long) em.createQuery("select count(t) from Tag t").getSingleResult();
-    }
-
-    @Override
-    public Optional<Instructor> getInstructorById(Long id) {
-        return Optional.ofNullable(em.find(Instructor.class, id));
-    }
-
-    @Override
-    public Optional<Member> getMemberById(Long id) {
-        return Optional.of(em.find(Member.class, id));
-    }
 
     @Override
     @Transactional

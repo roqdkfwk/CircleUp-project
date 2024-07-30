@@ -1,6 +1,7 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.request.MemberLoginPostReq;
+import com.ssafy.api.response.MemberLoginPostRes;
 import com.ssafy.api.service.AuthService;
 import com.ssafy.common.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -41,7 +42,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(code = 401, message = "아이디 또는 비밀번호가 틀렸습니다")
     })
-    public ResponseEntity<?> login(
+    public ResponseEntity<MemberLoginPostRes> login(
             @RequestBody MemberLoginPostReq loginReq
     ) {
         return ResponseEntity.ok().body(authService.login(loginReq));

@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
+import com.ssafy.api.response.MemberModifyUpdateRes;
 import com.ssafy.api.response.MemberReadGetRes;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.custom.RequiredAuth;
@@ -28,7 +29,7 @@ public class MemberController {
             notes = "이메일과 비밀번호를 통해 회원가입을 진행합니다<br/>별도 인증과정은 필요없습니다"
     )
     @ApiResponses(@ApiResponse(code = 404, message = "잘못된 선호 태그"))
-    public ResponseEntity<?> signup(
+    public ResponseEntity<Void> signup(
             @RequestBody MemberSignupPostReq memberSignupPostReq
     ) {
         memberService.signup(memberSignupPostReq);
@@ -38,7 +39,7 @@ public class MemberController {
     @DeleteMapping("/withdraw")
     @ApiOperation(value = "회원탈퇴")
     @RequiredAuth
-    public ResponseEntity<?> withdrawMember(
+    public ResponseEntity<Void> withdrawMember(
             @RequestHeader("Authorization") String token
     ) {
         memberService.withdrawMemberByToken(token);
@@ -68,9 +69,11 @@ public class MemberController {
             value = "회원정보수정",
             notes = "회원의 정보를 수정합니다<br/>로그인 시 아이디로 사용하는 이메일과 토큰 외의 정보를 수정할 수 있습니다"
     )
-    @ApiResponses(@ApiResponse(code = 401, message = "유효하지 않은 토큰"))
+    @ApiResponses(
+            @ApiResponse(code = 401, message = "유효하지 않은 토큰")
+    )
     @RequiredAuth
-    public ResponseEntity<?> modifyMember(
+    public ResponseEntity<MemberModifyUpdateRes> modifyMember(
             Authentication authentication,
             @RequestBody MemberModifyUpdateReq memberModifyUpdateReq
     ) {

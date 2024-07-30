@@ -4,6 +4,7 @@ import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
+//@ToString
 public class CourseCreatePostReq {
     MultipartFile img;
     String name;
