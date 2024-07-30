@@ -177,8 +177,6 @@ public class CourseSerivce {
             return courseRepository.save(course);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("==========***==============");
-            throw new RuntimeException("Failed to create course due to image processing error", e);
         }
     }
 
