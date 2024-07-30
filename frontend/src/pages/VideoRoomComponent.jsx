@@ -9,6 +9,19 @@ import ToolbarComponent from "../WebRtc/toolbar/ToolbarComponent";
 import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
 import UserModel from "../WebRtc/models/user-model";
 
+/////////////////////////////////////////클래스 컴포넌트라 래퍼 함수
+import { useLocation, useParams } from "react-router";
+function useTest() {
+  const params = useParams();
+  const location = useLocation();
+  return (
+    <VideoRoomComponent
+      course_id={params.course_id}
+      member_id={location.state.memberId}
+    ></VideoRoomComponent>
+  );
+}
+
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL = "http://localhost:8080/";
 
@@ -18,10 +31,10 @@ class VideoRoomComponent extends Component {
     super(props);
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
-    let sessionName = this.props.sessionName ? this.props.sessionName : "SessionA";
-    let userName = this.props.user
-      ? this.props.user
-      : "OpenVidu_User" + Math.floor(Math.random() * 100);
+    let sessionName = this.props.course_id;
+    // this.props.sessionName ? this.props.sessionName : "SessionA";
+    let userName = this.props.member_id + "번 유저";
+    // this.props.user? this.props.user : "OpenVidu_User" + Math.floor(Math.random() * 100);
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
@@ -578,9 +591,11 @@ class VideoRoomComponent extends Component {
   async createSession(sessionId) {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "api/sessions",
-      { customSessionId: sessionId },
       {
-        headers: { "Content-Type": "application/json" },
+        customSessionId: sessionId,
+      },
+      {
+        headers: { "Content-Type": "application/json", memberId: this.props.member_id },
       }
     );
     return response.data; // The sessionId
@@ -597,4 +612,4 @@ class VideoRoomComponent extends Component {
     return response.data; // The token
   }
 }
-export default VideoRoomComponent;
+export default useTest;
