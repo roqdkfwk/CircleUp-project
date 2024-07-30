@@ -14,7 +14,7 @@ interface MyCourseListProps {
 const CourseManagementList = ({ myCourses } : MyCourseListProps) => {
 
     const navigate = useNavigate();
-
+    
     // 2. 강의 추가 버튼 이벤트 핸들러
     function handleConsole() {
         console.log('hello');

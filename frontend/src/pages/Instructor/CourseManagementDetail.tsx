@@ -15,7 +15,6 @@ const CourseManagementDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  //console.log(location)
   const [courseDetails, setCourseDetails] = useState({
     id: location.state.courseId,
     courseName: "",
@@ -26,6 +25,7 @@ const CourseManagementDetail = () => {
     tags: [],
     curriculum: "",
     view: 0,
+    price: 0,
   });
 
   const fetchDetailCourseData = async () => {
@@ -35,20 +35,14 @@ const CourseManagementDetail = () => {
   useEffect(() => {
     const fetchDetailCourse = async () => {
       const response = await fetchDetailCourseData();
-      //console.log(response.data)
-
       setCourseDetails(response.data);
     };
 
     fetchDetailCourse();
-    //console.log(courseDetails)
   }, []);
 
   // Modfiy로 연결시키는 Btn event handler
   function handleModify() {
-    console.log("========== go to modify ===========")
-    console.log(courseDetails)
-    console.log("=====================")
     navigate(`/courseManagementModify`, { state : courseDetails});
   }
   // <To Do> : Delete로 연결시키는 Btn event handler

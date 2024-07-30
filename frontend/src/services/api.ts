@@ -63,7 +63,6 @@ export const deleteMyCourse = (id: number) => {
     return axiosClient.delete(`/courses/instructions/${id}`, {
         headers: {
             'Requires-Auth': true,
-            'Content-Type': 'multipart/form-data',
         }
     })
 }

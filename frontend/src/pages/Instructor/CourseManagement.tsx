@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import CourseManagementList from "../../components/List/CourseManagementList";
-import RightSideBar from "../../components/RightSideBar";
 import { getMyCourse } from "../../services/api";
 
 // Course Type

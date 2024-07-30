@@ -84,6 +84,9 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
         console.log("inital_Course : " + flag)
         if (data) {
             
+            console.log("get data ==== ")
+            console.log(data)
+
             setMyCourse(data);
             setIsReady(true);
 
