@@ -23,7 +23,7 @@ function useTest() {
 }
 
 var localUser = new UserModel();
-const APPLICATION_SERVER_URL = "http://localhost:8080/";
+const APPLICATION_SERVER_URL = import.meta.env.VITE_BACKEND_ADDRESS;
 
 class VideoRoomComponent extends Component {
   constructor(props) {
@@ -589,21 +589,15 @@ class VideoRoomComponent extends Component {
   }
 
   async createSession(sessionId) {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
-      {
-        customSessionId: sessionId,
-      },
-      {
-        headers: { "Content-Type": "application/json", memberId: this.props.member_id },
-      }
-    );
+    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/${sessionId}`, null, {
+      headers: { "Content-Type": "application/json", memberId: this.props.member_id },
+    });
     return response.data; // The sessionId
   }
 
   async createToken(sessionId) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      APPLICATION_SERVER_URL + "/sessions/" + sessionId + "/connections",
       {},
       {
         headers: { "Content-Type": "application/json" },
