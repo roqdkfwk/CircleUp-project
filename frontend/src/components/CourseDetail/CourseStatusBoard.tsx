@@ -122,14 +122,16 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
                             case "instructorMake":
                                 return <CourseBanner
                                     isCreate={true} isModified={false} isDetail={false}
-                                    imgUrl={myCourse.imgUrl} courseName="" instructorName="" tags={[]} courseId={data.id}
+                                    imgUrl={myCourse.imgUrl} courseName="" instructorName="" tags={[]}
+                                    price={0} courseId={data.id}
                                     onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags}
                                 />
                             case "instructorModify":
                                 return <CourseBanner
                                     isCreate={false} isModified={true} isDetail={false} 
                                     imgUrl={myCourse.imgUrl} courseName={myCourse.courseName}
-                                    instructorName={myCourse.instructorName} tags={myCourse.tags} courseId={data.id}
+                                    instructorName={myCourse.instructorName} tags={myCourse.tags}
+                                    price={myCourse.price} courseId={data.id}
                                     onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags}
                                 />
                             default:

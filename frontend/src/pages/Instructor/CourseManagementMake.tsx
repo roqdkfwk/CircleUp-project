@@ -59,10 +59,10 @@ const CourseManagementMake = () => {
         formData.append("description", newCourse.description)
 
         const numToTag: number[] = tagMapping(newCourse.tags)
-        formData.append("tags", JSON.stringify(numToTag))
+        formData.append("tags", numToTag)
         
         formData.append("summary", "dummyData")
-        formData.append("price", newCourse.price.toString())
+        formData.append("price", newCourse.price)
 
         // STEP 3. Access Token 넣은 후, POST 보내기'
         for (const pair of formData.entries()) {
