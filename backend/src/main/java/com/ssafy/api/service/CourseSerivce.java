@@ -50,6 +50,7 @@ public class CourseSerivce {
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
+
             // 빈 파일일때
             if (courseCreatePostReq.getImg() == null) {
                 throw new BadRequestException("Not File");
@@ -105,30 +106,35 @@ public class CourseSerivce {
             return courseRepository.save(newCourse);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Failed to create course due to image processing error", e);
+            throw new RuntimeException("Failed to create course", e);
         }
     }
 
     public Course updateCourse(Long courseId, CourseModifyUpdateReq courseModifyUpdateReq, Long memberId) {
-        // 1. 유효성 검증
-        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Instructor not found")
-        );
-
-        Optional<Course> courseOptional = courseRepository.findById(courseId);
-        if (!courseOptional.isPresent()) {
-            throw new BadRequestException("Course not found");
-        }
-        MultipartFile img = courseModifyUpdateReq.getImg();
-        if (img != null) {
-            String contentType = img.getContentType();
-            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
-                throw new BadRequestException("Not Image File");
-            }
-        }
         try {
-            // 2. 서비스 로직
+            // 1. 유효성 검증
+            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("Instructor not found")
+            );
+
+            Optional<Course> courseOptional = courseRepository.findById(courseId);
+            if (!courseOptional.isPresent()) {
+                throw new NotFoundException("Course not found");
+            }
+
             Course course = courseOptional.get();
+            if(!course.getInstructor().equals(instructor)){
+                throw new BadRequestException("Instructor doesn't own the course");
+            }
+
+            MultipartFile img = courseModifyUpdateReq.getImg();
+            if (img != null) {
+                String contentType = img.getContentType();
+                if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                    throw new BadRequestException("Not Image File");
+                }
+            }
+            // 2. 서비스 로직
             // 변경사항 확인 후 적용
             if (courseModifyUpdateReq.getName() != null) {
                 course.setName(courseModifyUpdateReq.getName());
@@ -153,8 +159,6 @@ public class CourseSerivce {
             }
 
             List<CourseTag> oldTags = course.getCourseTagList();
-
-            for(CourseTag ct: oldTags) System.out.println(ct.getTag().getId());
             courseTagRepository.deleteAll(oldTags);
             course.getCourseTagList().clear();
 
@@ -177,7 +181,31 @@ public class CourseSerivce {
             return courseRepository.save(course);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to update course", e);
         }
+    }
+
+    public void deleteCourse(Long courseId, Long memberId){
+        // 1. 유효성 검증
+        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Instructor not found")
+        );
+
+        Optional<Course> courseOptional = courseRepository.findById(courseId);
+        if (!courseOptional.isPresent()) {
+            throw new NotFoundException("Course not found");
+        }
+
+        Course course = courseOptional.get();
+        if(!course.getInstructor().equals(instructor)){
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        String blobName = "course_" + courseId + "_banner";
+        Blob blob = bucket.get(blobName);
+        blob.delete();
+
+        courseRepository.delete(course);
     }
 
     //////////////////////////////////////////////////////////////////////////

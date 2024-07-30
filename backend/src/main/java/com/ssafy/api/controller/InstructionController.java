@@ -71,10 +71,11 @@ public class InstructionController {
     @DeleteMapping(value = "/courses/instructions/{course_id}")
     @ApiOperation(value = "강의 삭제", notes = "수강생이 아무도 없는 경우에만 삭제할 수 있습니다")
     public ResponseEntity<Void> deleteCourse(
-            @PathVariable(name = "course_id") Long courseId
+            @PathVariable(name = "course_id") Long courseId,
+            Authentication authentication
     ) {
-        Authentication authentication;
-//        courseService.deleteCourse(courseId, memberId);
+        Long memberId = Long.valueOf(authentication.getName());
+        courseService.deleteCourse(courseId, memberId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
