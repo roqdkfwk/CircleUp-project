@@ -10,12 +10,8 @@ public interface MemberService {
     // 회원가입
     void signup(MemberSignupPostReq memberSignupPostReq);
 
-    //    // 이메일 중복체크
-//    boolean checkEmail(String email);
     // 회원탈퇴
     void withdrawMemberByToken(String token);
-
-//    void withdrawById(Long memberId, String token);
 
     // 회원정보수정
     MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq);

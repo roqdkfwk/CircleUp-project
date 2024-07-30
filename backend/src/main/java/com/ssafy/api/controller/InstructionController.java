@@ -8,6 +8,7 @@ import com.ssafy.db.entity.Course;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +30,9 @@ public class InstructionController {
 
     @GetMapping("/courses/instructions")
     @ApiOperation(value = "내가 개설한 강의 목록 조회")
-    @ApiResponse(code = 404, message = "존재하지 않는 회원이거나 강사가 아님")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "존재하지 않는 회원이거나 강사가 아님")
+    })
     public ResponseEntity<List<CoursesRes>> madeCourses(
             Authentication authentication
     ) {
@@ -71,6 +74,4 @@ public class InstructionController {
 //        courseService.deleteCourse(courseId, memberId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-
 }

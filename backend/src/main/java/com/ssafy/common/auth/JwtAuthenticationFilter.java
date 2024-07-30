@@ -18,7 +18,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    // TODO DB 접근 로직 없애기(memberService)
     private final JwtUtil jwtUtil;
 
     @Override
