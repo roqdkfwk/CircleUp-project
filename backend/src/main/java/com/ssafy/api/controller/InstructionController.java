@@ -50,7 +50,7 @@ public class InstructionController {
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
-    // TODO 강의 수정 기능 구현
+
     @PatchMapping(value = "/courses/instructions/{course_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -59,7 +59,7 @@ public class InstructionController {
     public ResponseEntity<Void> updateCourse(
             @PathVariable(name = "course_id") Long courseId,
             @ModelAttribute CourseModifyUpdateReq courseModifyUpdateReq,
-            @RequestPart(name = "img", required = false) MultipartFile img,
+            @RequestPart(name = "img", required = true) MultipartFile img,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
+//@ToString
 public class CourseCreatePostReq {
     MultipartFile img;
     String name;

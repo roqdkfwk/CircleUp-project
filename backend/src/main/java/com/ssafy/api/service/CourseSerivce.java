@@ -26,6 +26,7 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -150,6 +151,28 @@ public class CourseSerivce {
                 BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
                 course.setImgUrl(blobInfo.getMediaLink());
             }
+
+            List<CourseTag> oldTags = course.getCourseTagList();
+
+            for(CourseTag ct: oldTags) System.out.println(ct.getTag().getId());
+            courseTagRepository.deleteAll(oldTags);
+            course.getCourseTagList().clear();
+
+            if(courseModifyUpdateReq.getTags() != null){
+                List<Tag> tagsToAdd = tagRepository.findAllById(courseModifyUpdateReq.getTags());
+                List<CourseTag> newTags = new ArrayList<>();
+                for(Tag tag : tagsToAdd){
+                    tag.getId();
+                    CourseTag courseTag = new CourseTag();
+                    courseTag.setTag(tag);
+                    courseTag.setCourse(course);
+
+                    newTags.add(courseTag);
+                    courseTagRepository.save(courseTag);
+                }
+                course.setCourseTagList(newTags);
+            }
+
             // 3. 정보 업데이트
             return courseRepository.save(course);
         } catch (Exception e) {
