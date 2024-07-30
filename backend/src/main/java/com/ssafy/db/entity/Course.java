@@ -50,8 +50,8 @@ public class Course {
     @Column(name = "completed_course")
     private Long completedCourse;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE)
-    private List<CourseTag> courseTagList = new ArrayList<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseTag> courseTagList;
 
     @OneToMany(mappedBy = "course")
     private List<Curriculum> curriculumList;
