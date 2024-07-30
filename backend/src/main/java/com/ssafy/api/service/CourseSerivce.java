@@ -1,5 +1,7 @@
 package com.ssafy.api.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
@@ -70,33 +72,38 @@ public class CourseSerivce {
             Course newCourse = courseCreatePostReq.toEntity(instructor, timestamp, null);
             newCourse = courseRepository.save(newCourse);
 
-            // CourseTag에 등록
-            List<Long> tags = courseCreatePostReq.getTags();
-            if (tags != null) {
-                for (Long tagId : tags) {
-                    CourseTag newCoursTag = new CourseTag();
-                    Tag tag = tagRepository.getOne(tagId);
-                    newCoursTag.setCourse(newCourse);
-                    newCoursTag.setTag(tag);
-                    courseTagRepository.save(newCoursTag);
+            String tags = courseCreatePostReq.getTags();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
+
+            List<CourseTag> courseTags = newCourse.getCourseTagList();
+
+            if(tagIds != null){
+                List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
+                for(Tag tag : tagsToAdd){
+                    CourseTag courseTag = new CourseTag();
+                    courseTag.setTag(tag);
+                    courseTag.setCourse(newCourse);
+
+                    courseTags.add(courseTag);
                 }
             }
 
-            // Curriculum 생성 및 추가
-            List<CurriculumPostReq> curriculumRequests = courseCreatePostReq.getCurriculums();
-            if (curriculumRequests != null) {
-                Long idx = 0L;
-                newCourse.initCurriculumList();
-                for (CurriculumPostReq currReq : curriculumRequests) {
-                    Curriculum newCurr = currReq.toEntity(newCourse, idx++, null);
-                    newCurr = curriculumRepository.save(newCurr);
-
-                    String blobName = "curr_" + newCurr.getId() + "_banner";
-                    BlobInfo blobInfo = bucket.create(blobName, currReq.getImg().getBytes(), currReq.getImg().getContentType());
-                    newCurr.setImgUrl(blobInfo.getMediaLink());
-                    newCourse.addCurriculum(newCurr); // Course에 Curriculum 추가
-                }
-            }
+//            // Curriculum 생성 및 추가
+//            List<CurriculumPostReq> curriculumRequests = courseCreatePostReq.getCurriculums();
+//            if (curriculumRequests != null) {
+//                Long idx = 0L;
+//                newCourse.initCurriculumList();
+//                for (CurriculumPostReq currReq : curriculumRequests) {
+//                    Curriculum newCurr = currReq.toEntity(newCourse, idx++, null);
+//                    newCurr = curriculumRepository.save(newCurr);
+//
+//                    String blobName = "curr_" + newCurr.getId() + "_banner";
+//                    BlobInfo blobInfo = bucket.create(blobName, currReq.getImg().getBytes(), currReq.getImg().getContentType());
+//                    newCurr.setImgUrl(blobInfo.getMediaLink());
+//                    newCourse.addCurriculum(newCurr); // Course에 Curriculum 추가
+//                }
+//            }
             // 이미지 파일 네이밍
             String blobName = "course_" + newCourse.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
@@ -143,12 +150,12 @@ public class CourseSerivce {
                 course.setSummary(courseModifyUpdateReq.getSummary());
             }
             if (courseModifyUpdateReq.getPrice() != null) {
-                course.setPrice(courseModifyUpdateReq.getPrice());
+                course.setPrice(Long.parseLong(courseModifyUpdateReq.getPrice()));
             }
             if (courseModifyUpdateReq.getDescription() != null) {
                 course.setDescription(courseModifyUpdateReq.getDescription());
             }
-            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장..
+            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
                 String blobName = "course_" + courseId + "_banner";
 
                 Blob blob = bucket.get(blobName);
@@ -158,25 +165,23 @@ public class CourseSerivce {
                 course.setImgUrl(blobInfo.getMediaLink());
             }
 
-            List<CourseTag> oldTags = course.getCourseTagList();
-            courseTagRepository.deleteAll(oldTags);
+            List<CourseTag> courseTags = course.getCourseTagList();
             course.getCourseTagList().clear();
 
-            if(courseModifyUpdateReq.getTags() != null){
-                List<Tag> tagsToAdd = tagRepository.findAllById(courseModifyUpdateReq.getTags());
-                List<CourseTag> newTags = new ArrayList<>();
+            String tags = courseModifyUpdateReq.getTags();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
+
+            if(tagIds != null){
+                List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
                 for(Tag tag : tagsToAdd){
-                    tag.getId();
                     CourseTag courseTag = new CourseTag();
                     courseTag.setTag(tag);
                     courseTag.setCourse(course);
 
-                    newTags.add(courseTag);
-                    courseTagRepository.save(courseTag);
+                    courseTags.add(courseTag);
                 }
-                course.setCourseTagList(newTags);
             }
-
             // 3. 정보 업데이트
             return courseRepository.save(course);
         } catch (Exception e) {
