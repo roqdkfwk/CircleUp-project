@@ -1,3 +1,4 @@
+import axios from "axios";
 import { axiosClient } from './axios';
 
 // 필요한 데이터 타입 명시
@@ -64,6 +65,12 @@ export const deleteMyCourse = (id: number) => {
         headers: {
             'Requires-Auth': true,
         }
+    })
+}
+// 7. 원본 강의 이미지 가져오기
+export const getOriginalImage = (url: string) => {
+    return axios.get(url, {
+        responseType: 'blob',
     })
 }
 

@@ -18,8 +18,6 @@ export const tagMapping = (tags : string[]): number[] => {
     tags.forEach(tag => {
         if (tag in tagMap) {
             arr.push(tagMap[tag]);
-            console.log("arr add!")
-            console.log(arr)
         } else {
             console.error(`Tag "${tag}" not found in tagMap`);
         }

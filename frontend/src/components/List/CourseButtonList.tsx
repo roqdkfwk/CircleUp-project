@@ -1,6 +1,16 @@
 import CourseDetailButton from "../Card/CourseDetailButton";
 
-const CourseButtonList = ({ data }) => {
+interface CourseBtnProps {
+    buttonName: string,
+    color: 'green' | 'blue' | 'red';
+    url : string
+}
+
+interface ListProps {
+    data : CourseBtnProps[]
+}
+
+const CourseButtonList = ({ data }: ListProps) => {
 
 
     return (
@@ -10,7 +20,7 @@ const CourseButtonList = ({ data }) => {
             p-6
             flex flex-row
         ">
-            {data.map((btnD: { buttonName: string; color: string; url: string; }, idx) => (
+            {data.map((btnD: CourseBtnProps, idx : number) => (
                 <CourseDetailButton
                     key={idx}
                     buttonName={btnD.buttonName}

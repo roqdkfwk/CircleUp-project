@@ -48,6 +48,7 @@ const CourseManagementDetail = () => {
   // <To Do> : Delete로 연결시키는 Btn event handler
   function handleDelete() {
     console.log("delete");
+    // STEP 1. 만약 강의 수강 중인 학생이 한 명도 없음을 체크하기!
     // return Delete Modal(props:courseId) -> if Ok, delete REST API
   }
 
