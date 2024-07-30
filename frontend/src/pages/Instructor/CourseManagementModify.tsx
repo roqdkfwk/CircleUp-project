@@ -38,20 +38,21 @@ const CourseManagementModify = () => {
         }
     }, [originalCourse])
     
-    // <To Do> : newCourse state update func
     const updateModifiedCourse = (getCourse: CourseDetail) => {
         console.log("@@@@@@@@@@From status Board@@@@@@@@")
         console.log(getCourse)
         setModifiedCourses({ ...getCourse });
     }
     
+
     // event handler
     // 버튼 누르면 Update api 호출하여 갱신된 값으로 업데이트 하도록
     // Update 해서, 단순히 내용들을 모두 갱신하도록 REST API 호출!
     const AddModifiedCourse = () => {
         console.log("get a new Course!!!!!!!!!!!!!!!!!!!!!")
         console.log(modifiedCourses)
-        }
+        // STEP 1. 만약 강의 수강 중인 학생이 한 명도 없다면..?
+    }
     
     if (!isReady) {
         return <div>Loading....</div>

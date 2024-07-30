@@ -7,6 +7,7 @@ import CourseCurriculum from "./Content/CourseCurriculum";
 import CourseNews from "./Content/CourseNews";
 import CourseComment from "./Content/CourseComment";
 import { CourseDetail } from "../../types/CourseDetail";
+import useUserStore from "../../store/store";
 
 interface CourseStatusBoardProps {
     flag: string,
@@ -17,13 +18,14 @@ interface CourseStatusBoardProps {
 
 const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps) => {
 
+    const { nickName } = useUserStore();
     const [isReady, setIsReady] = useState(false);
     const [myCourse, setMyCourse] = useState<CourseDetail>({
         id: 0,
         courseName: '',
         imgUrl: '',
         imgData: null,
-        instructorName: '',
+        instructorName: nickName,
         description: '',
         tags: [],
         curriculum: '',
@@ -122,7 +124,8 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
                             case "instructorMake":
                                 return <CourseBanner
                                     isCreate={true} isModified={false} isDetail={false}
-                                    imgUrl={myCourse.imgUrl} courseName="" instructorName="" tags={[]}
+                                    imgUrl={myCourse.imgUrl} courseName=""
+                                    instructorName={myCourse.instructorName} tags={[]}
                                     price={0} courseId={data.id}
                                     onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags}
                                 />

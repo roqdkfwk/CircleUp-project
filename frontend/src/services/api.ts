@@ -49,6 +49,29 @@ export const PostNewCourse = (data : FormData) => {
         }
     })
 }
+// 5. 강의 수정
+export const updateMyCourse = (id: number, data: FormData) => {
+    return axiosClient.patch(`/courses/instructions/${id}`, data, {
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
+// 6. 강의 삭제
+export const deleteMyCourse = (id: number) => {
+    return axiosClient.delete(`/courses/instructions/${id}`, {
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
+
+// 1. 커리큘럼 조회
+// 2. 커리큘럼 추가
+// 3. 커리큘럼 수정
+// 4. 커리큘럼 삭제
 
 // 로그인 요청
 export const postLogin = (data: Login) => {

@@ -37,12 +37,6 @@ const CourseManagementMake = () => {
         }
     }
 
-    // <To Do> :
-    // func 2. 현재 강사의 이름을 얻어오기
-    // 강사 이름은 전역적으로 존재한다고 한다. ( RESP API에서도 이미 있다고 한다는데..? )
-    // 1. REST API에서 강사의 이름을 바로 받아오기
-    // 2. 아니면, 애초에 Login 할 때 zustand에 강사 이름 역시 저장해 놓기.. (토의)
-
     // event handler
     const AddNewCourse = () => {
         console.log("get a new Course!!!!!!!!!!!!!!!!!!!!!")
