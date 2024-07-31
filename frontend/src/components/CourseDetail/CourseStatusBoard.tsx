@@ -39,40 +39,30 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
     const [isComment, setIsComment] = useState<boolean>(false);
 
     function updateFlag(intro: boolean, curr: boolean, news: boolean, comm: boolean) {
-        //console.log(`intro : ${intro}, curri : ${curr}, news : ${news}, comm : ${comm}`)
         setIsIntroduce(intro)
         setIsCurriculum(curr)
         setIsNews(news)
         setIsComment(comm)
     }
 
-    // <Refactoring> : 추후, GCP로 이미지 처리 구현, Make & Modfiy Add Btn에서 설정하기..
     const updateImg = (newImg: string) => {
-        console.log("img from banner, " + newImg)
         myCourse.imgUrl = newImg
         onNewMyCourse!(myCourse)
-        console.log("<--- New Course 근황판 {Img} --->")
-        console.log(myCourse)
     }
 
     const updateImgData = (newFile : FileList) => {
         myCourse.imgData = newFile
-        console.log("<--- New Course 근황판 {ImgFile} --->")
         onNewMyCourse!(myCourse)
     }
 
     const updateTitle = (newTitle: string) => {
         myCourse.courseName = newTitle
         onNewMyCourse!(myCourse)
-        console.log("<--- New Course 근황판 {title} --->")
-        console.log(myCourse)
      }
 
      const updateTags = (newTags: string[]) => {
         myCourse.tags = newTags
         onNewMyCourse!(myCourse)
-        console.log("<--- New Course 근황판 {tags} --->")
-        console.log(myCourse)
     }
 
     const updateDescription = (newContent: string) => {
@@ -81,23 +71,14 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
     }
 
     useEffect(() => {
-        console.log("inital_Course : " + flag)
+ 
         if (data) {
-            
-            console.log("get data ==== ")
-            console.log(data)
-
             setMyCourse(data);
             setIsReady(true);
-
-            console.log("after updating inital")
-            console.log(myCourse)
-            console.log(isReady)
         }
     }, [data]);
     
     if (!isReady) {
-        console.log("FALSE!!")
         return <div>Loading....</div>;
     }
 
@@ -149,9 +130,6 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
                 <div className="
                 w-auto h-auto
             ">
-                    {/* select inner banner - introduce / curriculum / comment  */}
-                    {/* TO DO : Create & Modfiy 경우에는, 배너 탭 클릭 시 수정 가능하도록 추가 구현 */}
-                    {/* header 자식 요소 : Introduce 콘텐츠 / curriculum / comment 구현 */}
                     {(
                         () => {
                             switch (flag) {
@@ -199,9 +177,6 @@ const CourseStatusBoard = ({ flag, data , onNewMyCourse}: CourseStatusBoardProps
                     {isCurriculum ? <CourseCurriculum /> : <></>}
                     {isNews ? <CourseNews /> : <></>}
                     {isComment ? <CourseComment /> : <></>}
-                    {/* <button type="button" onClick={() => {
-                        console.log(myCourse)
-                    }}>{myCourse.courseName}</button> */}
                 </div>
             </div>);
     }

@@ -18,9 +18,9 @@ const Tag = ({ name, onClick } : TagProps) => {
                 role={role}
                 onClick={() => {
                     onClick?.(name)
-                }}
- 
-            >{name}</span>
+                }}>
+                {name}
+            </span>
         </div>
     )
 }

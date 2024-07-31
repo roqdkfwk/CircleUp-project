@@ -41,12 +41,10 @@ const MyCourseBanner = ({
     
     const toggleModal = () => {
         setShowModal(!showModal);
-        console.log("modal : " + showModal)
     };
     
     const handleClick = () => {
         hiddenFileInput.current?.click();
-        console.log("handleClick")
     }
 
     const handleRegisterCourseByUser = async () => {
@@ -58,22 +56,15 @@ const MyCourseBanner = ({
             }
         };
     const handleAddImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // STEP 1. File 경로를 통해서, 파일을 가져온다.
-        console.log("go new img")
         const Files = e.target?.files;
         const fileUploaded = Files?.[0];
-        console.log("btn add")
-        console.log(fileUploaded)
-        /*
-            Error 처리를 따로 해 주기 => checkImg(fileUploaded)
-        */
-        // 2. decode 64 형식의 파일을 버튼에 적용한다.
+        /*<ToDo> - Error 처리를 따로 해 주기 => checkImg(fileUploaded)*/
+        
         if (fileUploaded) {
             const imageUrl = URL.createObjectURL(fileUploaded);
             setBackgroundImage(imageUrl);
             setNewImage(imageUrl)
             setNewFile(Files);
-            console.log("send Img to statusboard : " + imageUrl)
         }
     }
 
@@ -83,28 +74,18 @@ const MyCourseBanner = ({
     }
 
     function handleTags(Tags : string[]) {
-        // Tags 없뎃
-        console.log("from tag modal")
-        console.log(Tags)
         setNewTags([...Tags])
     }
     
-    // <To Do> - courseStateBoard에 tags update 시키기
-    // const updateBannerTags = () => {
-    //     console.log("<---- CourseBanner가 받은 태그들 ---->")
-    //     console.log(newTags)
-    //     onTags(newTags)
-    // }
     useEffect(() => {
-        console.log(newCourseName)
         onTitle(newCourseName)
     }, [newCourseName])
+
     useEffect(() => {
-        console.log(newTags)
         onTags(newTags)
     }, [newTags])
+
     useEffect(() => {
-        console.log(newImage)
         onImg(newImage)
         if(newFile !== null)
             onImgData!(newFile)
@@ -260,10 +241,8 @@ const MyCourseBanner = ({
                 {/* <div className="text-white title flex items-center">
                     <p className="ml-2">누적 수강생 : </p>
                 </div> */}
-                {/* <div className="text-white">star & comment & subscribe Area</div> */}
             </div>
         </div>
-
     )
 }
 

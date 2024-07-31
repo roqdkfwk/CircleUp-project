@@ -20,10 +20,7 @@ const CourseManagementMake = () => {
         view: 0,
     })
 
-    // <To Do> : newCourse state update func
     const updateNewCourse = (getCourse: CourseDetail) => {
-        console.log("@@@@@@@@@@From status Board@@@@@@@@")
-        console.log(getCourse)
         setNewCourse({ ...getCourse });
     }
 
@@ -37,15 +34,10 @@ const CourseManagementMake = () => {
         }
     }
 
-    // event handler
     const AddNewCourse = () => {
-        console.log("get a new Course!!!!!!!!!!!!!!!!!!!!!")
-        console.log(newCourse)
-        
-        // STEP 1. formdata 만들기
+
         const formData = new FormData();
 
-       // STEP 2. FormData에 데이터 넣기
        for (let i = 0; i < newCourse.imgData!.length ; i++) {
         formData.append("img", newCourse.imgData![i])
     }
@@ -58,10 +50,6 @@ const CourseManagementMake = () => {
         formData.append("summary", "dummyData")
         formData.append("price", newCourse.price.toString())
 
-        // STEP 3. Access Token 넣은 후, POST 보내기'
-        for (const pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
         fetchPostNewCourse(formData);
     }
 

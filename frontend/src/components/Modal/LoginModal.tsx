@@ -30,18 +30,18 @@ function LoginModal({ show, onClose }: ModalProps) {
         event.preventDefault();
         try {
             const response = await postLogin(loginInfo)
-            console.log(response.data)
+            
             localStorage.setItem("refreshToken", response.data.refreshToken);
             localStorage.setItem("accessToken", response.data.accessToken);
             localStorage.setItem("userId", response.data.email);
-            // localStorage.setItem("role", response.data.role);
+            
             setEmail(response.data.email)
             setNickName(response.data.name)
             setRole(response.data.role)
             alert('로그인 성공!')
             onClose()
             navigate("/")
-            // alert(`Response: ${response.data}`);
+            
         } catch (error) {
             alert('로그인에 실패하셨습니다.')
         }

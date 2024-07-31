@@ -2,16 +2,10 @@ import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 import RightSideBar from "../../components/RightSideBar";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getCourseDetail } from "../../services/api";
-
-// interface CourseManagementDetailProps {
-//     courseId: string,
-//     imgUrl: string,
-//     description: string,
-// }
+import { getCourseDetail, deleteMyCourse } from "../../services/api";
 
 const CourseManagementDetail = () => {
-  // onMount => fetchData ( course total data, description 얻기 )
+  
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -41,15 +35,25 @@ const CourseManagementDetail = () => {
     fetchDetailCourse();
   }, []);
 
-  // Modfiy로 연결시키는 Btn event handler
   function handleModify() {
     navigate(`/courseManagementModify`, { state : courseDetails});
   }
-  // <To Do> : Delete로 연결시키는 Btn event handler
+  
+  const fetchDeleteCourse = async () => {
+    return await deleteMyCourse(courseDetails.id);
+  } 
+
   function handleDelete() {
-    console.log("delete");
-    // STEP 1. 만약 강의 수강 중인 학생이 한 명도 없음을 체크하기!
-    // return Delete Modal(props:courseId) -> if Ok, delete REST API
+    
+    const fetchDeleteMyCourse = async () => {
+      const response = await fetchDeleteCourse();
+      
+      console.log("!!!!Delete MyCourse!!!!")
+      console.log(response.data)
+    }
+
+    fetchDeleteMyCourse();
+    navigate(`/courseManagement`)
   }
 
   return (

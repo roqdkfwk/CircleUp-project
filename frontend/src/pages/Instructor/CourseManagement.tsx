@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import CourseManagementList from "../../components/List/CourseManagementList";
 import { getMyCourse } from "../../services/api";
 
-// Course Type
 interface MyCourseType {
     imgUrl: (string | undefined),
     name: string,
@@ -13,7 +12,6 @@ const CourseManagement = () => {
 
     const [myCourses, setMyCourse] = useState<MyCourseType[]>([]);
 
-    // 1. 현재 내가 만든 강의들을 불러오는 비동기 함수
     const fetchMyCourseData = async() => {
         return await getMyCourse();
     }
@@ -48,7 +46,6 @@ const CourseManagement = () => {
 
     return (
         <div className="flex flex-row">
-            {/* CourseMangementList 는 가로형태 정렬 */}
             <div className="
                 basis-3/4
                 w-full
@@ -62,10 +59,6 @@ const CourseManagement = () => {
             ">
                 <CourseManagementList myCourses={myCourses} />
             </div>
-            
-            {/* <div className="basis-1/4">
-              <RightSideBar />
-            </div> */}
         </div>
     )
 };

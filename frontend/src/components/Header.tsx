@@ -24,11 +24,6 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      // const token = localStorage.getItem("accessToken")
-      // const response = await postLogout()
-      // localStorage.removeItem("accessToken")
-      // localStorage.removeItem("refreshToken")
-      // localStorage.removeItem("userId")
       localStorage.clear()
       alert("로그아웃")
       setIsLoggedIn(false);

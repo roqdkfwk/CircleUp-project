@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Tag from "../Card/Tag";
-//import TagMakeSuccessModal from "./TagMakeSuccessModal";
 
 interface TagsModalProps {
     show: boolean,
@@ -17,9 +16,6 @@ const MakeTagModal = ({ show, onClose, tags, updateFunc } : TagsModalProps) => {
     
     const [newTags, setNewTags] = useState<string[]>(tags);
     const [newTag, setNewTag] = useState<string>("");
-    //const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-
-    // Func
 
     const selectNewTag = (data : string) => {
         const getName = data;
