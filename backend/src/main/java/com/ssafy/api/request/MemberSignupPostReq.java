@@ -10,11 +10,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class MemberSignupPostReq {
-    private String email;
-    private String pw;
-    private String name;
-    private Role role;
-    private String contactEmail;
-    private String contactTel;
-    private List<Long> tags = new ArrayList<>();
+    String email;
+    String pw;
+    String name;
+    Role role;
+    String contactEmail;
+    String contactTel;
+    List<Long> tags = new ArrayList<>();
 }
