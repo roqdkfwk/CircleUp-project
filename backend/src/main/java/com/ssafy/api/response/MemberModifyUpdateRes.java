@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 @ApiModel("MemberModifyUpdateRes")
 public class MemberModifyUpdateRes {
-
     Member member;
     String accessToken;
     List<String> tags = new ArrayList<>();
@@ -22,14 +21,12 @@ public class MemberModifyUpdateRes {
             MemberModifyUpdateReq memberModifyUpdateReq,
             Member member
     ) {
-        // member의 정보를 수정
         member.setPw(memberModifyUpdateReq.getPw());
         member.setRole(memberModifyUpdateReq.getRole());
         member.setContactEmail(memberModifyUpdateReq.getContactEmail());
         member.setContactTel(memberModifyUpdateReq.getContactTel());
     }
 
-    // 반환 객체를 만들 toEntity() 메소드 추가
     public static MemberModifyUpdateRes toEntity(
             Member member,
             String accessToken,

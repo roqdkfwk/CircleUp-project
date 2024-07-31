@@ -7,10 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class InstructorRes {
-
     Long id;
     String name;
-
     String description;
     String contactEmail;
     String contactTel;

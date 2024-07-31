@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CoursesRes {
-
     Long id;
     String imgUrl;
     String name;
@@ -16,7 +15,11 @@ public class CoursesRes {
     Long view;
 
     public static CoursesRes of(Course course) {
-        return new CoursesRes(course.getId(), course.getImgUrl(), course.getName(),
-                course.getSummary(), course.getPrice(), course.getView());
+        return new CoursesRes(course.getId(),
+                course.getImgUrl(),
+                course.getName(),
+                course.getSummary(),
+                course.getPrice(),
+                course.getView());
     }
 }

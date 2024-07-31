@@ -61,7 +61,9 @@ public class RegisterController {
 
     @DeleteMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 취소")
-    @ApiResponse(code = 400, message = "잘못된 요청")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "잘못된 요청")
+    })
     public ResponseEntity<Void> cancelRegister(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
