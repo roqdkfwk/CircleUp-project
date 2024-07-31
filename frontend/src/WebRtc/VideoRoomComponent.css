@@ -283,9 +283,9 @@
   transform-origin: 50% 50%;
 } */
 
-video {
+/* video {
   transform: scale(-1, 1) !important;
-}
+} */
 
 .OT_subscriber_error {
   background-color: #000;

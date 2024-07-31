@@ -1,21 +1,13 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "./StreamComponent.css";
 import OvVideoComponent from "./OvVideo";
 
-import { MicOff, VideocamOff, VolumeUp, VolumeOff, HighlightOff } from "@mui/icons-material";
+import { MicOff, VideocamOff, VolumeUp, VolumeOff, HighlightOff, PanTool } from "@mui/icons-material";
 import { FormControl, Input, InputLabel, IconButton, FormHelperText } from "@mui/material";
 
-// import MicOff from '@material-ui/icons/MicOff';
-// import VideocamOff from '@material-ui/icons/VideocamOff';
-// import VolumeUp from '@material-ui/icons/VolumeUp';
-// import VolumeOff from '@material-ui/icons/VolumeOff';
-// import HighlightOff from '@material-ui/icons/HighlightOff';
-
-// import FormControl from '@material-ui/core/FormControl';
-// import Input from '@material-ui/core/Input';
-// import InputLabel from '@material-ui/core/InputLabel';
-// import IconButton from '@material-ui/core/IconButton';
-// import FormHelperText from '@material-ui/core/FormHelperText';
+import { Hands } from "@mediapipe/hands";
+import { Camera } from "@mediapipe/camera_utils";
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
 export default class StreamComponent extends Component {
   constructor(props) {
@@ -25,11 +17,90 @@ export default class StreamComponent extends Component {
       showForm: false,
       mutedSound: false,
       isFormValid: true,
+      isHandRaised: false,
+      handRaiseStartTime: null,
+      showSpeechText: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePressKey = this.handlePressKey.bind(this);
     this.toggleNicknameForm = this.toggleNicknameForm.bind(this);
     this.toggleSound = this.toggleSound.bind(this);
+
+    // MediaPipe 관련 Ref
+    this.videoRef = createRef();
+    this.canvasRef = createRef();
+  }
+
+  componentDidMount() {
+    if (this.props.user && this.props.user.getStreamManager()) {
+      this.props.user.getStreamManager().addVideoElement(this.videoRef.current);
+      this.initializeMediaPipe();
+    }
+  }
+
+  initializeMediaPipe() {
+    const videoElement = this.videoRef.current;
+    const canvasElement = this.canvasRef.current;
+    const canvasCtx = canvasElement.getContext("2d");
+
+    const hands = new Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+    });
+
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    });
+
+    hands.onResults((results) => {
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        for (const landmarks of results.multiHandLandmarks) {
+          drawConnectors(canvasCtx, landmarks, Hands.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 5 });
+          drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+
+          // 손들기 제스처 인식
+          if (this.isHandRaised(landmarks)) {
+            if (!this.state.isHandRaised) {
+              this.setState({ isHandRaised: true, handRaiseStartTime: new Date() });
+            } else {
+              const now = new Date();
+              const duration = (now - this.state.handRaiseStartTime) / 1000;
+              if (duration >= 2) {
+                this.setState({ showSpeechText: true });
+              }
+            }
+          } else {
+            this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
+          }
+        }
+      } else {
+        this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
+      }
+      canvasCtx.restore();
+    });
+
+    const camera = new Camera(videoElement, {
+      onFrame: async () => {
+        await hands.send({ image: videoElement });
+      },
+      width: 640,
+      height: 480,
+    });
+
+    camera.start();
+  }
+
+  isHandRaised(landmarks) {
+    // 손들기 제스처 인식 로직
+    // 여기서는 간단히 손목의 y좌표가 중지 끝의 y좌표보다 높으면 손든 것으로 인식
+    const wrist = landmarks[0];
+    const middleFingerTip = landmarks[12];
+    return wrist.y > middleFingerTip.y;
   }
 
   handleChange(event) {
@@ -97,7 +168,8 @@ export default class StreamComponent extends Component {
 
         {this.props.user !== undefined && this.props.user.getStreamManager() !== undefined ? (
           <div className="streamComponent">
-            <OvVideoComponent user={this.props.user} mutedSound={this.state.mutedSound} />
+            <video ref={this.videoRef} className="video" autoPlay={true} />
+            <canvas ref={this.canvasRef} width="640" height="480" className="canvas" />
             <div id="statusIcons">
               {!this.props.user.isVideoActive() ? (
                 <div id="camIcon">
@@ -110,6 +182,12 @@ export default class StreamComponent extends Component {
                   <MicOff id="statusMic" />
                 </div>
               ) : null}
+
+              {this.state.isHandRaised ? (
+                <div id="handRaisedIcon">
+                  <PanTool id="statusHandRaised" />
+                </div>
+              ) : null}
             </div>
             <div>
               {!this.props.user.isLocal() && (
@@ -118,6 +196,11 @@ export default class StreamComponent extends Component {
                 </IconButton>
               )}
             </div>
+            {this.state.showSpeechText && (
+              <div className="speechText">
+                <span>발표 희망!</span>
+              </div>
+            )}
           </div>
         ) : null}
       </div>
