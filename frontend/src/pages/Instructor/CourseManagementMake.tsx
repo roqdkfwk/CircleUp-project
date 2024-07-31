@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import RightSideBar from "../../components/RightSideBar";
 import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 import { useState } from "react";
@@ -7,6 +6,7 @@ import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
 
 const CourseManagementMake = () => {
+
     const [newCourse, setNewCourse] = useState<CourseDetail>({
         id: 0,
         courseName: "",
@@ -28,6 +28,8 @@ const CourseManagementMake = () => {
         try {
             const response = await PostNewCourse(data);
             console.log('Response : ', response.data)
+
+            window.location.href = '/courseManagement';
         }
         catch (error) {
             console.log('error : ', error)
@@ -38,18 +40,22 @@ const CourseManagementMake = () => {
 
         const formData = new FormData();
 
-       for (let i = 0; i < newCourse.imgData!.length ; i++) {
-        formData.append("img", newCourse.imgData![i])
-    }
+        for (let i = 0; i < newCourse.imgData!.length; i++)
+            formData.append("img", newCourse.imgData![i])
+            
         formData.append("name", newCourse.courseName)
         formData.append("description", newCourse.description)
 
         const numToTag: number[] = tagMapping(newCourse.tags)
+
         formData.append("tags", JSON.stringify(numToTag))
         
         formData.append("summary", "dummyData")
         formData.append("price", newCourse.price.toString())
 
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}:`, value instanceof File ? value.name : value);
+          }
         fetchPostNewCourse(formData);
     }
 
