@@ -77,7 +77,7 @@ function Header() {
                 type="button"
               >
                 <span className="sr-only">Open user menu</span>
-                <img className="w-7 h-7 me-2 rounded-full" src="src/assets/images/certified.png" alt="user photo" />
+                <img className="w-7 h-7 me-2 rounded-full" src="/src/assets/images/certified.png" alt="user photo" />
                 {nickName}
                 <svg
                   className="w-2.5 h-2.5 ms-3"
