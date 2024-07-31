@@ -91,21 +91,6 @@ public class CourseSerivce {
                 }
             }
 
-//            // Curriculum 생성 및 추가
-//            List<CurriculumPostReq> curriculumRequests = courseCreatePostReq.getCurriculums();
-//            if (curriculumRequests != null) {
-//                Long idx = 0L;
-//                newCourse.initCurriculumList();
-//                for (CurriculumPostReq currReq : curriculumRequests) {
-//                    Curriculum newCurr = currReq.toEntity(newCourse, idx++, null);
-//                    newCurr = curriculumRepository.save(newCurr);
-//
-//                    String blobName = "curr_" + newCurr.getId() + "_banner";
-//                    BlobInfo blobInfo = bucket.create(blobName, currReq.getImg().getBytes(), currReq.getImg().getContentType());
-//                    newCurr.setImgUrl(blobInfo.getMediaLink());
-//                    newCourse.addCurriculum(newCurr); // Course에 Curriculum 추가
-//                }
-//            }
             // 이미지 파일 네이밍
             String blobName = "course_" + newCourse.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
@@ -249,15 +234,18 @@ public class CourseSerivce {
 
             // Curriculum 생성 및 추가
             List<Curriculum> curriculums = course.getCurriculumList();
-            Long idx = (long) curriculums.size() + 1L; // 강의에 등록되어있는 커리큘럼 개수 확인
 
-            String blobName = "curriculm_" + course.getId() + "_" + idx + "_banner";
-            BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
-
-            Curriculum newCurr = curriculumPostReq.toEntity(course, idx, blobInfo.getMediaLink());
+            Curriculum newCurr = curriculumPostReq.toEntity(course);
             newCurr = curriculumRepository.save(newCurr);
 
+            String blobName = "curriculum_" + newCurr.getId() + "_banner";
+            BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
+
+            newCurr.setImgUrl(blobInfo.getMediaLink());
+
+            newCurr = curriculumRepository.save(newCurr);
             curriculums.add(newCurr);
+
             return courseRepository.save(course);
         } catch (Exception e){
             e.printStackTrace();

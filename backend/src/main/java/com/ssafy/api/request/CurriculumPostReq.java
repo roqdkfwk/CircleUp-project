@@ -13,13 +13,21 @@ public class CurriculumPostReq {
     String name;
     String description;
 
-    public Curriculum toEntity(Course course, Long indexNo, String imgUrl) {
+//    public Curriculum toEntity(Course course, Long indexNo, String imgUrl) {
+//        return Curriculum.builder()
+//                .course(course)
+//                .name(this.name)
+//                .indexNo(indexNo)
+//                .description(this.description)
+//                .imgUrl(imgUrl)
+//                .time(0L)
+//                .build();
+//    }
+    public Curriculum toEntity(Course course) {
         return Curriculum.builder()
                 .course(course)
                 .name(this.name)
-                .indexNo(indexNo)
                 .description(this.description)
-                .imgUrl(imgUrl)
                 .time(0L)
                 .build();
     }

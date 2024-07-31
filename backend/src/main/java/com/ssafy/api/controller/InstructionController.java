@@ -3,6 +3,7 @@ package com.ssafy.api.controller;
 import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.request.CurriculumPostReq;
+import com.ssafy.api.request.CurriculumUpdateReq;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -84,7 +86,7 @@ public class InstructionController {
 
     ////////////////////////////////////////////
     @PostMapping(value = "/courses/{course_id}/curriculum", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "새로운 강의 만들기")
+    @ApiOperation(value = "새로운 커리큘럼 만들기")
     public ResponseEntity<Long> createCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @ModelAttribute CurriculumPostReq curriculumPostReq,
