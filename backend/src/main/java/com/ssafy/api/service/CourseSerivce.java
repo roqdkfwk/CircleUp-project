@@ -208,7 +208,7 @@ public class CourseSerivce {
         }
 
         Long students =  registerRepository.countByCourseId(courseId);
-        if(students != 0 ){
+        if(students == 0 ){
             throw new BadRequestException("More than one registered");
         }
 

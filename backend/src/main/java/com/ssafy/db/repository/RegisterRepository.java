@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface RegisterRepository extends JpaRepository<Register, Long> {
-    @Query("SELECT count(*) FROM Register r WHERE r.course_id = :courseId")
+    @Query("SELECT count(*) FROM Register r WHERE r.course.id = :courseId")
     Long countByCourseId(@Param("courseId") Long courseId);
 }

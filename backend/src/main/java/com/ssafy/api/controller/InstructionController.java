@@ -70,7 +70,6 @@ public class InstructionController {
         return ResponseEntity.ok().build();
     }
 
-    // TODO 강의 삭제 기능 구현
     @DeleteMapping(value = "/courses/instructions/{course_id}")
     @ApiOperation(value = "강의 삭제", notes = "수강생이 아무도 없는 경우에만 삭제할 수 있습니다")
     public ResponseEntity<Void> deleteCourse(
