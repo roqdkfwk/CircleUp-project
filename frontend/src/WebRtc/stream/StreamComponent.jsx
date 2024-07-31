@@ -36,20 +36,24 @@ export default class StreamComponent extends Component {
 
   componentDidMount() {
     if (this.props.user.isLocal()) {
-      console.log("나임");
       this.initializeMediaPipe();
       if (this.props.user && this.props.user.getStreamManager()) {
         this.props.user.getStreamManager().addVideoElement(this.videoRef.current);
       }
     }
   }
-
   initializeMediaPipe() {
     const videoElement = this.videoRef.current;
     const canvasElement = this.canvasRef.current;
     const canvasCtx = canvasElement.getContext("2d");
 
-    const hands = new Hands({
+    // Canvas 스트림 설정
+    const stream = canvasElement.captureStream(30); // 30fps로 스트림 생성
+    if (this.props.user && this.props.user.getStreamManager()) {
+      this.props.user.getStreamManager().replaceTrack(stream.getVideoTracks()[0]);
+    }
+
+    const hands = new window.Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
 
@@ -59,41 +63,69 @@ export default class StreamComponent extends Component {
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
+    let handRaiseTimer = null;
+    let showHandRaiseAnimation = false;
 
-    hands.onResults((results) => {
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        for (const landmarks of results.multiHandLandmarks) {
-          drawConnectors(canvasCtx, landmarks, Hands.HAND_CONNECTIONS, {
-            color: "#00FF00",
-            lineWidth: 5,
-          });
-          drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+    const animate = () => {
+      hands.onResults((results) => {
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-          // 손들기 제스처 인식
-          if (this.isHandRaised(landmarks)) {
-            if (!this.state.isHandRaised) {
-              this.setState({ isHandRaised: true, handRaiseStartTime: new Date() });
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          for (const landmarks of results.multiHandLandmarks) {
+            window.drawConnectors(canvasCtx, landmarks, window.Hands.HAND_CONNECTIONS, {
+              color: "#00FF00",
+              lineWidth: 5,
+            });
+
+            // 손들기 제스처 인식
+            if (this.isHandRaised(landmarks)) {
+              if (!this.state.isHandRaised) {
+                this.setState({ isHandRaised: true, handRaiseStartTime: new Date() });
+                // 2초 후에 애니메이션을 표시하는 타이머 설정
+                handRaiseTimer = setTimeout(() => {
+                  showHandRaiseAnimation = true;
+                }, 2000);
+              }
             } else {
-              const now = new Date();
-              const duration = (now - this.state.handRaiseStartTime) / 1000;
-              if (duration >= 2) {
-                this.setState({ showSpeechText: true });
+              if (this.state.isHandRaised) {
+                this.setState({ isHandRaised: false, handRaiseStartTime: null });
+                showHandRaiseAnimation = false;
+                if (handRaiseTimer) {
+                  clearTimeout(handRaiseTimer);
+                  handRaiseTimer = null;
+                }
               }
             }
-          } else {
-            this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
+          }
+        } else {
+          if (this.state.isHandRaised) {
+            this.setState({ isHandRaised: false, handRaiseStartTime: null });
+            showHandRaiseAnimation = false;
+            if (handRaiseTimer) {
+              clearTimeout(handRaiseTimer);
+              handRaiseTimer = null;
+            }
           }
         }
-      } else {
-        this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
-      }
-      canvasCtx.restore();
-    });
 
-    const camera = new Camera(videoElement, {
+        // 손들기 애니메이션 (2초 후에 표시)
+        if (showHandRaiseAnimation) {
+          canvasCtx.font = "60px Arial";
+          canvasCtx.fillStyle = "white";
+          canvasCtx.textAlign = "center";
+          canvasCtx.textBaseline = "middle";
+          canvasCtx.fillText("✋", canvasElement.width / 2, canvasElement.height / 2);
+        }
+
+        canvasCtx.restore();
+      });
+
+      requestAnimationFrame(animate);
+    };
+
+    const camera = new window.Camera(videoElement, {
       onFrame: async () => {
         await hands.send({ image: videoElement });
       },
@@ -102,6 +134,7 @@ export default class StreamComponent extends Component {
     });
 
     camera.start();
+    animate();
   }
 
   isHandRaised(landmarks) {
@@ -216,11 +249,11 @@ export default class StreamComponent extends Component {
                 </IconButton>
               )}
             </div>
-            {this.state.showSpeechText && (
+            {/* {this.state.showSpeechText && (
               <div className="speechText">
                 <span>발표 희망!</span>
               </div>
-            )}
+            )} */}
           </div>
         ) : null}
       </div>
