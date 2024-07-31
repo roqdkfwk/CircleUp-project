@@ -1,5 +1,7 @@
 import React, { Component, createRef } from "react";
 import "./StreamComponent.css";
+import OvVideoComponent from "./OvVideo";
+
 import {
   MicOff,
   VideocamOff,
@@ -8,13 +10,11 @@ import {
   HighlightOff,
   PanTool,
 } from "@mui/icons-material";
-import {
-  FormControl,
-  Input,
-  InputLabel,
-  IconButton,
-  FormHelperText,
-} from "@mui/material";
+import { FormControl, Input, InputLabel, IconButton, FormHelperText } from "@mui/material";
+
+import { Hands } from "@mediapipe/hands";
+import { Camera } from "@mediapipe/camera_utils";
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 
 export default class StreamComponent extends Component {
   constructor(props) {
@@ -39,19 +39,12 @@ export default class StreamComponent extends Component {
   }
 
   componentDidMount() {
-    this.updateStreamManager();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.updateStreamManager();
-    }
-  }
-
-  updateStreamManager() {
-    if (this.props.user && this.props.user.getStreamManager()) {
-      this.props.user.getStreamManager().addVideoElement(this.videoRef.current);
+    if (this.props.user.isLocal()) {
+      console.log("나임");
       this.initializeMediaPipe();
+      if (this.props.user && this.props.user.getStreamManager()) {
+        this.props.user.getStreamManager().addVideoElement(this.videoRef.current);
+      }
     }
   }
 
@@ -60,7 +53,7 @@ export default class StreamComponent extends Component {
     const canvasElement = this.canvasRef.current;
     const canvasCtx = canvasElement.getContext("2d");
 
-    const hands = new window.Hands({
+    const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
 
@@ -77,15 +70,13 @@ export default class StreamComponent extends Component {
       canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (const landmarks of results.multiHandLandmarks) {
-          window.drawConnectors(canvasCtx, landmarks, window.HAND_CONNECTIONS, {
+          drawConnectors(canvasCtx, landmarks, Hands.HAND_CONNECTIONS, {
             color: "#00FF00",
             lineWidth: 5,
           });
-          window.drawLandmarks(canvasCtx, landmarks, {
-            color: "#FF0000",
-            lineWidth: 2,
-          });
+          drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
 
+          // 손들기 제스처 인식
           if (this.isHandRaised(landmarks)) {
             if (!this.state.isHandRaised) {
               this.setState({ isHandRaised: true, handRaiseStartTime: new Date() });
@@ -97,24 +88,16 @@ export default class StreamComponent extends Component {
               }
             }
           } else {
-            this.setState({
-              isHandRaised: false,
-              handRaiseStartTime: null,
-              showSpeechText: false,
-            });
+            this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
           }
         }
       } else {
-        this.setState({
-          isHandRaised: false,
-          handRaiseStartTime: null,
-          showSpeechText: false,
-        });
+        this.setState({ isHandRaised: false, handRaiseStartTime: null, showSpeechText: false });
       }
       canvasCtx.restore();
     });
 
-    const camera = new window.Camera(videoElement, {
+    const camera = new Camera(videoElement, {
       onFrame: async () => {
         await hands.send({ image: videoElement });
       },
@@ -126,6 +109,8 @@ export default class StreamComponent extends Component {
   }
 
   isHandRaised(landmarks) {
+    // 손들기 제스처 인식 로직
+    // 여기서는 간단히 손목의 y좌표가 중지 끝의 y좌표보다 높으면 손든 것으로 인식
     const wrist = landmarks[0];
     const middleFingerTip = landmarks[12];
     return wrist.y > middleFingerTip.y;
@@ -148,6 +133,7 @@ export default class StreamComponent extends Component {
 
   handlePressKey(event) {
     if (event.key === "Enter") {
+      console.log(this.state.nickname);
       if (this.state.nickname.length >= 3 && this.state.nickname.length <= 20) {
         this.props.handleNickname(this.state.nickname);
         this.toggleNicknameForm();
@@ -195,8 +181,19 @@ export default class StreamComponent extends Component {
 
         {this.props.user !== undefined && this.props.user.getStreamManager() !== undefined ? (
           <div className="streamComponent">
-            <video ref={this.videoRef} className="video" autoPlay={true} />
-            <canvas ref={this.canvasRef} width="640" height="480" className="canvas" />
+            {this.props.user.isLocal() ? (
+              <>
+                <video ref={this.videoRef} className="video" autoPlay={true} />
+                <canvas ref={this.canvasRef} width="640" height="480" className="canvas" />
+              </>
+            ) : (
+              <OvVideoComponent
+                user={this.props.user}
+                mutedSound={this.state.mutedSound}
+                isHandRaised={this.state.isHandRaised}
+              />
+            )}
+
             <div id="statusIcons">
               {!this.props.user.isVideoActive() ? (
                 <div id="camIcon">
