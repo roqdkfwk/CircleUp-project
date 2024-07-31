@@ -12,10 +12,6 @@ import {
 } from "@mui/icons-material";
 import { FormControl, Input, InputLabel, IconButton, FormHelperText } from "@mui/material";
 
-import { Hands } from "@mediapipe/hands";
-import { Camera } from "@mediapipe/camera_utils";
-import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-
 export default class StreamComponent extends Component {
   constructor(props) {
     super(props);
