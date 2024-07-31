@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
+import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
@@ -79,5 +80,18 @@ public class InstructionController {
         Long memberId = Long.valueOf(authentication.getName());
         courseService.deleteCourse(courseId, memberId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    ////////////////////////////////////////////
+    @PostMapping(value = "/courses/{course_id}/curriculum", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "새로운 강의 만들기")
+    public ResponseEntity<Long> createCurriculum(
+            @PathVariable(name = "course_id") Long courseId,
+            @ModelAttribute CurriculumPostReq curriculumPostReq,
+            Authentication authentication
+    ) {
+        Long memberId = Long.valueOf(authentication.getName());
+        Course course = courseService.createCurriculum(curriculumPostReq, courseId, memberId);
+        return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 }

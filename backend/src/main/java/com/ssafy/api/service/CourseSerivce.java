@@ -208,7 +208,7 @@ public class CourseSerivce {
         }
 
         Long students =  registerRepository.countByCourseId(courseId);
-        if(students == 0 ){
+        if(students > 0 ){
             throw new BadRequestException("More than one registered");
         }
 
@@ -217,6 +217,52 @@ public class CourseSerivce {
         blob.delete();
 
         courseRepository.delete(course);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+//    public Curriculum createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
+    public Course createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
+        try{
+            // 요청자가 강사가 아닐 때
+            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("Instructor not found")
+            );
+            // 강의가 유효하지 않을 때
+            Optional<Course> courseOptional = courseRepository.findById(courseId);
+            if (!courseOptional.isPresent()) {
+                throw new NotFoundException("Course not found");
+            }
+            // 강의의 강사가 아닐 때
+            Course course = courseOptional.get();
+            if(!course.getInstructor().equals(instructor)){
+                throw new BadRequestException("Instructor doesn't own the course");
+            }
+            // 빈 파일일때
+            if (curriculumPostReq.getImg() == null) {
+                throw new BadRequestException("Not File");
+            }
+            // 이미지 파일이 아닐때
+            String contentType = curriculumPostReq.getImg().getContentType();
+            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                throw new BadRequestException("Not Image File");
+            }
+
+            // Curriculum 생성 및 추가
+            List<Curriculum> curriculums = course.getCurriculumList();
+            Long idx = (long) curriculums.size() + 1L; // 강의에 등록되어있는 커리큘럼 개수 확인
+
+            String blobName = "curriculm_" + course.getId() + "_" + idx + "_banner";
+            BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
+
+            Curriculum newCurr = curriculumPostReq.toEntity(course, idx, blobInfo.getMediaLink());
+            newCurr = curriculumRepository.save(newCurr);
+
+            curriculums.add(newCurr);
+            return courseRepository.save(course);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create curriculum", e);
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
