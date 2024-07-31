@@ -2,15 +2,13 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
 import "../WebRtc/VideoRoomComponent.css";
-// import DialogExtensionComponent from "../components/WebRtc/dialog-extension/DialogExtension";
 import StreamComponent from "../WebRtc/stream/StreamComponent";
 import ChatComponent from "../WebRtc/chat/ChatComponent";
 import ToolbarComponent from "../WebRtc/toolbar/ToolbarComponent";
 import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
 import UserModel from "../WebRtc/models/user-model";
-
-/////////////////////////////////////////클래스 컴포넌트라 래퍼 함수
 import { useLocation, useParams } from "react-router";
+
 function useTest() {
   const params = useParams();
   const location = useLocation();
@@ -27,14 +25,11 @@ const APPLICATION_SERVER_URL = import.meta.env.VITE_BACKEND_ADDRESS;
 
 class VideoRoomComponent extends Component {
   constructor(props) {
-    ////////////////////////////////////////////////////////////////////////////////////
     super(props);
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
     let sessionName = this.props.course_id;
-    // this.props.sessionName ? this.props.sessionName : "SessionA";
     let userName = this.props.member_id + "번 유저";
-    // this.props.user? this.props.user : "OpenVidu_User" + Math.floor(Math.random() * 100);
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
@@ -66,16 +61,16 @@ class VideoRoomComponent extends Component {
 
   componentDidMount() {
     const openViduLayoutOptions = {
-      maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
-      minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
-      fixedRatio: false, // If this is true then the aspect ratio of the video is maintained and minRatio and maxRatio are ignored (default false)
-      bigClass: "OV_big", // The class to add to elements that should be sized bigger
-      bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
-      bigFixedRatio: false, // fixedRatio for the big ones
-      bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
-      bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
-      bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
-      animate: true, // Whether you want to animate the transitions
+      maxRatio: 3 / 2,
+      minRatio: 9 / 16,
+      fixedRatio: false,
+      bigClass: "OV_big",
+      bigPercentage: 0.8,
+      bigFixedRatio: false,
+      bigMaxRatio: 3 / 2,
+      bigMinRatio: 9 / 16,
+      bigFirst: true,
+      animate: true,
     };
 
     this.layout.initLayoutContainer(document.getElementById("layout"), openViduLayoutOptions);
@@ -124,7 +119,7 @@ class VideoRoomComponent extends Component {
         if (this.props.error) {
           this.props.error({
             error: error.error,
-            messgae: error.message,
+            message: error.message,
             code: error.code,
             status: error.status,
           });
@@ -144,7 +139,7 @@ class VideoRoomComponent extends Component {
         if (this.props.error) {
           this.props.error({
             error: error.error,
-            messgae: error.message,
+            message: error.message,
             code: error.code,
             status: error.status,
           });
@@ -158,7 +153,7 @@ class VideoRoomComponent extends Component {
     await this.OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
-
+  
     let publisher = this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: videoDevices[0].deviceId,
@@ -169,7 +164,7 @@ class VideoRoomComponent extends Component {
       insertMode: "APPEND",
       mirror: false,
     });
-
+  
     if (this.state.session.capabilities.publish) {
       publisher.on("accessAllowed", () => {
         this.state.session.publish(publisher).then(() => {
@@ -181,14 +176,16 @@ class VideoRoomComponent extends Component {
         });
       });
     }
+  
     localUser.setNickname(this.state.myUserName);
     localUser.setConnectionId(this.state.session.connection.connectionId);
     localUser.setScreenShareActive(false);
     localUser.setStreamManager(publisher);
+  
     this.subscribeToUserChanged();
     this.subscribeToStreamDestroyed();
     this.sendSignalUserChanged({ isScreenShareActive: localUser.isScreenShareActive() });
-
+  
     this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, () => {
       this.state.localUser.getStreamManager().on("streamPlaying", (e) => {
         this.updateLayout();
@@ -224,7 +221,6 @@ class VideoRoomComponent extends Component {
       mySession.disconnect();
     }
 
-    // Empty all properties...
     this.OV = null;
     this.setState({
       session: undefined,
@@ -237,6 +233,7 @@ class VideoRoomComponent extends Component {
       this.props.leaveSession();
     }
   }
+
   camStatusChanged() {
     localUser.setVideoActive(!localUser.isVideoActive());
     localUser.getStreamManager().publishVideo(localUser.isVideoActive());
@@ -272,29 +269,28 @@ class VideoRoomComponent extends Component {
 
   subscribeToStreamCreated() {
     this.state.session.on("streamCreated", (event) => {
-      const subscriber = this.state.session.subscribe(event.stream, undefined);
-      // var subscribers = this.state.subscribers;
-      subscriber.on("streamPlaying", (e) => {
-        this.checkSomeoneShareScreen();
-        subscriber.videos[0].video.parentElement.classList.remove("custom-class");
-      });
-      const newUser = new UserModel();
-      newUser.setStreamManager(subscriber);
-      newUser.setConnectionId(event.stream.connection.connectionId);
-      newUser.setType("remote");
-      const nickname = event.stream.connection.data.split("%")[0];
-      newUser.setNickname(JSON.parse(nickname).clientData);
-      this.remotes.push(newUser);
-      if (this.localUserAccessAllowed) {
-        this.updateSubscribers();
+      if (event.stream.connection.connectionId !== this.state.session.connection.connectionId) {
+        const subscriber = this.state.session.subscribe(event.stream, undefined);
+        subscriber.on("streamPlaying", (e) => {
+          this.checkSomeoneShareScreen();
+          subscriber.videos[0].video.parentElement.classList.remove("custom-class");
+        });
+        const newUser = new UserModel();
+        newUser.setStreamManager(subscriber);
+        newUser.setConnectionId(event.stream.connection.connectionId);
+        newUser.setType("remote");
+        const nickname = event.stream.connection.data.split("%")[0];
+        newUser.setNickname(JSON.parse(nickname).clientData);
+        this.remotes.push(newUser);
+        if (this.localUserAccessAllowed) {
+          this.updateSubscribers();
+        }
       }
     });
   }
-
+  
   subscribeToStreamDestroyed() {
-    // On every Stream destroyed...
     this.state.session.on("streamDestroyed", (event) => {
-      // Remove the stream from 'subscribers' array
       this.deleteSubscriber(event.stream);
       setTimeout(() => {
         this.checkSomeoneShareScreen();
@@ -310,7 +306,6 @@ class VideoRoomComponent extends Component {
       remoteUsers.forEach((user) => {
         if (user.getConnectionId() === event.from.connectionId) {
           const data = JSON.parse(event.data);
-          console.log("EVENTO REMOTE: ", event.data);
           if (data.isAudioActive !== undefined) {
             user.setAudioActive(data.isAudioActive);
           }
@@ -390,8 +385,6 @@ class VideoRoomComponent extends Component {
         );
 
         if (newVideoDevice.length > 0) {
-          // Creating a new publisher with specific videoSource
-          // In mobile devices the default and first camera is the front one
           var newPublisher = this.OV.initPublisher(undefined, {
             audioSource: undefined,
             videoSource: newVideoDevice[0].deviceId,
@@ -400,7 +393,6 @@ class VideoRoomComponent extends Component {
             mirror: false,
           });
 
-          //newPublisher.once("accessAllowed", () => {
           await this.state.session.unpublish(this.state.localUser.getStreamManager());
           await this.state.session.publish(newPublisher);
           this.state.localUser.setStreamManager(newPublisher);
@@ -465,7 +457,6 @@ class VideoRoomComponent extends Component {
 
   checkSomeoneShareScreen() {
     let isScreenShared;
-    // return true if at least one passes the test
     isScreenShared =
       this.state.subscribers.some((user) => user.isScreenShareActive()) ||
       localUser.isScreenShareActive();
@@ -494,7 +485,6 @@ class VideoRoomComponent extends Component {
     if (display === "block") {
       this.setState({ chatDisplay: display, messageReceived: false });
     } else {
-      console.log("chat", display);
       this.setState({ chatDisplay: display });
     }
     this.updateLayout();
@@ -505,6 +495,7 @@ class VideoRoomComponent extends Component {
       messageReceived: this.state.chatDisplay === "none",
     });
   }
+
   checkSize() {
     if (document.getElementById("layout").offsetWidth <= 700 && !this.hasBeenUpdated) {
       this.toggleChat("none");
@@ -536,12 +527,6 @@ class VideoRoomComponent extends Component {
           toggleChat={this.toggleChat}
         />
 
-        {/* Extension 사라짐 */}
-        {/* <DialogExtensionComponent
-          showDialog={this.state.showExtensionDialog}
-          cancelClicked={this.closeDialogExtension}
-        /> */}
-
         <div id="layout" className="bounds">
           {localUser !== undefined && localUser.getStreamManager() !== undefined && (
             <div className="OT_root OT_publisher custom-class" id="localUser">
@@ -568,21 +553,6 @@ class VideoRoomComponent extends Component {
     );
   }
 
-  /**
-   * --------------------------------------------
-   * GETTING A TOKEN FROM YOUR APPLICATION SERVER
-   * --------------------------------------------
-   * The methods below request the creation of a Session and a Token to
-   * your application server. This keeps your OpenVidu deployment secure.
-   *
-   * In this sample code, there is no user control at all. Anybody could
-   * access your application server endpoints! In a real production
-   * environment, your application server must identify the user to allow
-   * access to the endpoints.
-   *
-   * Visit https://docs.openvidu.io/en/stable/application-server to learn
-   * more about the integration of OpenVidu in your application server.
-   */
   async getToken() {
     const sessionId = await this.createSession(this.state.mySessionId);
     return await this.createToken(sessionId);
@@ -592,7 +562,7 @@ class VideoRoomComponent extends Component {
     const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/${sessionId}`, null, {
       headers: { "Content-Type": "application/json", memberId: this.props.member_id },
     });
-    return response.data; // The sessionId
+    return response.data;
   }
 
   async createToken(sessionId) {
@@ -603,7 +573,8 @@ class VideoRoomComponent extends Component {
         headers: { "Content-Type": "application/json" },
       }
     );
-    return response.data; // The token
+    return response.data;
   }
 }
+
 export default useTest;
