@@ -39,6 +39,7 @@ public class CourseSerivce {
 
     private final CourseRepository courseRepository;
     private final InstructorRepository instructorRepository;
+    private final RegisterRepository registerRepository;
     private final CourseTagRepository courseTagRepository;
     private final TagRepository tagRepository;
     private final CurriculumRepository curriculumRepository;
@@ -206,6 +207,11 @@ public class CourseSerivce {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
+        Long students =  registerRepository.countByCourseId(courseId);
+        if(students != 0 ){
+            throw new BadRequestException("More than one registered");
+        }
+
         String blobName = "course_" + courseId + "_banner";
         Blob blob = bucket.get(blobName);
         blob.delete();
@@ -257,7 +263,7 @@ public class CourseSerivce {
     }
 
     public List<CoursesRes> getFreeCourses(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findByPrice(0L, pageable)
                 .stream()
