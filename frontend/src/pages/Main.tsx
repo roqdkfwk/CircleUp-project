@@ -29,22 +29,18 @@ const Main = () => {
     useEffect(() => {
         const fetchHotCourses = async() => {
             const response = await fetchData("hot",10);
-            console.log(response.data)
             setHotCourses(response.data)
         }
         const fetchFreeCourses = async() => {
             const response = await fetchData("free",10);
-            console.log(response.data)
             setFreeCourses(response.data)
         }
         const fetchRecCourses = async() => {
             const response = await fetchData("offer",10);
-            console.log(response.data)
             setRecCourses(response.data)
         }
         const fetchNewCourses = async() => {
             const response = await fetchData("latest",10);
-            console.log(response.data)
             setNewCourses(response.data)
         }
         fetchHotCourses()

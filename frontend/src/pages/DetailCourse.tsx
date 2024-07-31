@@ -6,10 +6,6 @@ import { useEffect, useState } from "react";
 
 const DetailCourse = () => {
     
-    /*
-        const state = useLocation(); 코드를 활용해, Course에서 보낸 데이터를 받는다.
-            -> 데이터를 detailProps에 맞게 값들을 적절하게 넣는다.
-    */
     const location = useLocation();
     const [courseDetails, setCourseDetails] = useState({
         id: location.state.courseId.courseId,
@@ -23,8 +19,6 @@ const DetailCourse = () => {
         view: 0,
         price: 0,
     });
-
-    //console.log(courseId + " : " + title)
     
     const fetchDetailCourseData = async() => {
         return await getCourseDetail(courseDetails.id);

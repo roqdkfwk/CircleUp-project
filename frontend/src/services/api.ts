@@ -22,9 +22,6 @@ export interface NewCourse {
     img: Blob
 
 }
-// 2. 강사가 관리하는 강의 타입
-// interface MyCourse {
-// }
 
 // 필요한 비동기 함수 구현
 // 1. 메인페이지 강의 리스트 렌더링 위한 조회 -> course?size={}&type={}

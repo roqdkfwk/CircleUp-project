@@ -21,18 +21,13 @@ const CourseInputArea = ({original_content_title, original_content, onContent} :
 
     const { content_title, content } = inputData;
 
-    // input에서 발생하는 event || textarea에서 발생하는 event
     const onChange = (e : (React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)) => {
         
         const value = e.target.value;
-        
-        // console.log("desc?????? ")
-        // console.log(nextInputData)
         setInputData({...inputData, content : value});
     }
 
     useEffect(() => {
-        console.log("description : " + content)
         onContent(content!)
     }, [content])
 
@@ -62,5 +57,4 @@ const CourseInputArea = ({original_content_title, original_content, onContent} :
     )
 }
 
-// 중요! 해당 데이터들을 CoureStatusBoard -> CourseManagementMake 로 올려보내야 함...
 export default CourseInputArea;
