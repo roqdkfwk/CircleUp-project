@@ -1,18 +1,12 @@
-// import CourseButtonList from "../../List/CourseButtonList";
 
 interface CourseDescAreaProps {
     desc: string,
     isUser: boolean
 }
 
-// const buttonData = [
-//     { buttonName: '구매하기', color: 'green', url: '/' },
-//     { buttonName: '좋아요!', color: 'blue', url: '/' },
-//     { buttonName: '공유', color: 'red', url: '/' },
-// ]
-// isUser
-
 const CourseDescArea = ({ desc } : CourseDescAreaProps ) => {
+    
+    // <ToDo> - 강사인 경우, 해당 강의에 속하는 수강생들의 목록을 출력하기
     return (
         <div className="text-center my-6">
             <h1>Title Area</h1>

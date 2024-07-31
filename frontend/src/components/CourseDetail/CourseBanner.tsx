@@ -152,6 +152,7 @@ const MyCourseBanner = ({
                                         className="
                                         rounded-lg h-60 w-[250px]    
                                         hover:scale-105
+                                        bg-[url('./assets/images/Img_Default.jpg')]
                                         bg-contain
                                         "
                             

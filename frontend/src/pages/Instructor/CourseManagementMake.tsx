@@ -1,12 +1,15 @@
-// import { useState } from "react";
 import RightSideBar from "../../components/RightSideBar";
 import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 import { useState } from "react";
 import { CourseDetail } from "../../types/CourseDetail";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
+import { useNavigate } from "react-router";
 
 const CourseManagementMake = () => {
+
+    const navigate = useNavigate();
+
     const [newCourse, setNewCourse] = useState<CourseDetail>({
         id: 0,
         courseName: "",
@@ -38,9 +41,9 @@ const CourseManagementMake = () => {
 
         const formData = new FormData();
 
-       for (let i = 0; i < newCourse.imgData!.length ; i++) {
-        formData.append("img", newCourse.imgData![i])
-    }
+        for (let i = 0; i < newCourse.imgData!.length; i++)
+            formData.append("img", newCourse.imgData![i])
+            
         formData.append("name", newCourse.courseName)
         formData.append("description", newCourse.description)
 
@@ -50,7 +53,11 @@ const CourseManagementMake = () => {
         formData.append("summary", "dummyData")
         formData.append("price", newCourse.price.toString())
 
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}:`, value instanceof File ? value.name : value);
+          }
         fetchPostNewCourse(formData);
+        navigate(`/courseManagement`)
     }
 
     return (
