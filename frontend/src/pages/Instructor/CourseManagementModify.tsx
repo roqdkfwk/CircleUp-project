@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 import RightSideBar from "../../components/RightSideBar";
 import { CourseDetail } from "../../types/CourseDetail";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
 import { getOriginalImage, updateMyCourse } from "../../services/api";
 
@@ -10,6 +10,7 @@ const CourseManagementModify = () => {
 
     // useState & location으로 데이터 받기
     const location = useLocation();
+    const navigate = useNavigate();
     const originalCourse: CourseDetail = location.state;
     const [isReady, setIsReady] = useState(false);
 
@@ -45,6 +46,8 @@ const CourseManagementModify = () => {
         try {
             const response = await updateMyCourse(modifiedCourses.id, data);
             console.log('Response : ', response.data)
+
+            window.location.href = '/courseManagement';
         }
         catch (error) {
             console.log('error : ', error)

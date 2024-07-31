@@ -48,10 +48,10 @@ const CourseManagementDetail = () => {
     const fetchDeleteMyCourse = async () => {
       const response = await fetchDeleteCourse();
       console.log(response.data)
+      window.location.href = '/courseManagement';
     }
 
     fetchDeleteMyCourse();
-    navigate(`/courseManagement`)
   }
 
   return (

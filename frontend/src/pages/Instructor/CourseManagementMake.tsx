@@ -4,11 +4,8 @@ import { useState } from "react";
 import { CourseDetail } from "../../types/CourseDetail";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
-import { useNavigate } from "react-router";
 
 const CourseManagementMake = () => {
-
-    const navigate = useNavigate();
 
     const [newCourse, setNewCourse] = useState<CourseDetail>({
         id: 0,
@@ -31,6 +28,8 @@ const CourseManagementMake = () => {
         try {
             const response = await PostNewCourse(data);
             console.log('Response : ', response.data)
+
+            window.location.href = '/courseManagement';
         }
         catch (error) {
             console.log('error : ', error)
@@ -48,6 +47,7 @@ const CourseManagementMake = () => {
         formData.append("description", newCourse.description)
 
         const numToTag: number[] = tagMapping(newCourse.tags)
+
         formData.append("tags", JSON.stringify(numToTag))
         
         formData.append("summary", "dummyData")
@@ -57,7 +57,6 @@ const CourseManagementMake = () => {
             console.log(`${key}:`, value instanceof File ? value.name : value);
           }
         fetchPostNewCourse(formData);
-        navigate(`/courseManagement`)
     }
 
     return (
