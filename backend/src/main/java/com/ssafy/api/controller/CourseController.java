@@ -38,8 +38,6 @@ public class CourseController {
             @RequestParam(required = false, value = "tag") List<Long> tags,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = true) int size) {
-        List<CoursesRes> courseList;
-
         if (keyword != null) {
             // 강의 제목으로 검색
             return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, page, size));
