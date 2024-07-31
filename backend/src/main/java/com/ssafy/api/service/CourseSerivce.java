@@ -311,6 +311,38 @@ public class CourseSerivce {
         }
     }
 
+    public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId){
+        // 1. 유효성 검증
+        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Instructor not found")
+        );
+
+        Optional<Course> courseOptional = courseRepository.findById(courseId);
+        if (!courseOptional.isPresent()) {
+            throw new NotFoundException("Course not found");
+        }
+
+        Course course = courseOptional.get();
+        if(!course.getInstructor().equals(instructor)){
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
+        if(!curriculumOptional.isPresent()){
+            throw new NotFoundException("Curriculum not found");
+        }
+
+        Curriculum curriculum = curriculumOptional.get();
+        if(curriculum.getTime()>)
+        course.getCurriculumList().remove(curriculum);
+        courseRepository.save(course);
+
+        String blobName = "curriculum_" + curriculumId + "_banner";
+        Blob blob = bucket.get(blobName);
+        blob.delete();
+
+        curriculumRepository.delete(curriculum);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {

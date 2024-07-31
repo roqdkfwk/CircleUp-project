@@ -111,4 +111,16 @@ public class InstructionController {
 
         return ResponseEntity.ok().body(course.getId());
     }
+
+    @DeleteMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}")
+    @ApiOperation(value = "커리큘럼 삭제", notes = "실시간 강의 진행 전인 커리큘럼만 삭제 가능합니다.")
+    public ResponseEntity<Void> deleteCourse(
+            @PathVariable(name = "course_id") Long courseId,
+            @PathVariable(name = "curriculum_id") Long curriculumId,
+            Authentication authentication
+    ) {
+        Long memberId = Long.valueOf(authentication.getName());
+        courseService.deleteCurriculum(courseId, curriculumId, memberId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
