@@ -79,10 +79,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberRepository), LogoutFilter.class)
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/**", "/api/member/checkEmail", "/api/member/signup").permitAll()
+                .antMatchers("/swagger-ui/**",
+                        "/api/member/signup").permitAll()
                 .antMatchers("/api/courses/instructions/**",
                         "/api/courses/registers/**",
-                        "/api/member/**", "/api/auth/logout").authenticated()
+                        "/api/member/**",
+                        "/api/auth/logout").authenticated()
                 .anyRequest().permitAll()
                 .and().cors();
     }

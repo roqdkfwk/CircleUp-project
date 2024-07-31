@@ -29,7 +29,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-    private final TokenBlacklistService tokenBlacklistService;
     private final MemberRepository memberRepository;
     private final InstructorRepository instructorRepository;
     private final TagRepository tagRepository;
@@ -65,7 +64,7 @@ public class MemberServiceImpl implements MemberService {
     public void withdrawMemberByToken(String token) {
         String accessToken = token.replace("Bearer ", "");
         // 만료된 토큰이거나 블랙리스트에 등록된 토큰이라면
-        if (!jwtUtil.validateToken(accessToken) || tokenBlacklistService.isBlacklisted(accessToken)) {
+        if (!jwtUtil.validateToken(accessToken)) {
             throw new UnAuthorizedException("Unauthorized access");
         }
 
@@ -90,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberReadGetRes getMyInfo(Long memberId, String accessToken) {
         // 만료된 토큰이거나 블랙리스트에 등록된 토큰이라면
-        if (!jwtUtil.validateToken(accessToken) || tokenBlacklistService.isBlacklisted(accessToken)) {
+        if (!jwtUtil.validateToken(accessToken)) {
             throw new UnAuthorizedException("Unauthorized access");
         }
 

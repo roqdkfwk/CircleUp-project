@@ -24,8 +24,10 @@ public class JwtUtil {
     private final Long expiration;
 
     // 유효 기간 = 1h
-    public JwtUtil(@Value("${jwt.secret}") String secret,
-                   @Value("${jwt.expiration}") Long expiration) {
+    public JwtUtil(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") Long expiration
+    ) {
         this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
         this.expiration = expiration;
     }
