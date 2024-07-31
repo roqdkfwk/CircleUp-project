@@ -94,4 +94,19 @@ public class InstructionController {
         Course course = courseService.createCurriculum(curriculumPostReq, courseId, memberId);
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
+
+    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "기존 커리큘럼 수정")
+    public ResponseEntity<Long> updateCurriculum(
+            @PathVariable(name = "course_id") Long courseId,
+            @PathVariable(name = "curriculum_id") Long curriculumId,
+            @ModelAttribute CurriculumUpdateReq curriculumUpdateReq,
+            @RequestPart(name = "img", required = false) MultipartFile img,
+            Authentication authentication
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+        Course course = courseService.updateCurriculum(curriculumUpdateReq, courseId, curriculumId, memberId);
+
+        return ResponseEntity.ok().body(course.getId());
+    }
 }

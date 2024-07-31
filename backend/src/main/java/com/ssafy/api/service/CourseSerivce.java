@@ -8,6 +8,7 @@ import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.request.CurriculumPostReq;
+import com.ssafy.api.request.CurriculumUpdateReq;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.InstructorRes;
@@ -220,7 +221,6 @@ public class CourseSerivce {
     }
 
     //////////////////////////////////////////////////////////////////////////
-//    public Curriculum createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
     public Course createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
         try{
             // 요청자가 강사가 아닐 때
@@ -264,6 +264,65 @@ public class CourseSerivce {
             throw new RuntimeException("Failed to create curriculum", e);
         }
     }
+
+    public Course updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId){
+        try{
+            // 요청자가 강사가 아닐 때
+            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("Instructor not found")
+            );
+            // 강의가 유효하지 않을 때
+            Optional<Course> courseOptional = courseRepository.findById(courseId);
+            if (!courseOptional.isPresent()) {
+                throw new NotFoundException("Course not found");
+            }
+            // 강의의 강사가 아닐 때
+            Course course = courseOptional.get();
+            if(!course.getInstructor().equals(instructor)){
+                throw new BadRequestException("Instructor doesn't own the course");
+            }
+            // 커리큘럼이 유효하지 않을 때
+            Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
+            if(!curriculumOptional.isPresent()){
+                throw new NotFoundException("Curriculum not found");
+            }
+            // 이미지가 유효하지 않을 때
+            MultipartFile img = curriculumUpdateReq.getImg();
+            if (img != null) {
+                String contentType = img.getContentType();
+                if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                    throw new BadRequestException("Not Image File");
+                }
+            }
+
+            Curriculum curriculum = curriculumOptional.get();
+            // 변경사항 확인 후 적용
+            if (curriculumUpdateReq.getName() != null) {
+                curriculum.setName(curriculumUpdateReq.getName());
+            }
+            if (curriculumUpdateReq.getDescription() != null) {
+                curriculum.setDescription(curriculumUpdateReq.getDescription());
+            }
+            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
+                String blobName = "curriculum_" + curriculum.getId() + "_banner";
+
+                Blob blob = bucket.get(blobName);
+                if(blob.delete()) {
+                    System.out.println("!!!deleted!!!");
+                }
+
+                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
+                curriculum.setImgUrl(blobInfo.getMediaLink());
+            }
+            curriculumRepository.save(curriculum);
+
+            return courseRepository.save(course);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update curriculum", e);
+        }
+    }
+
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
