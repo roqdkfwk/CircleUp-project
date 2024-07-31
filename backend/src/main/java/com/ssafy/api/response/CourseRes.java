@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,17 +12,14 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 public class CourseRes {
-
     Long id;
     String courseName;
     String imgUrl;
     Long price;
     Long view;
-
     String instructorName;
     String description;
-
-    List<String> tags = new ArrayList<>();
+    List<String> tags;
 
     public static CourseRes of(Course course) {
         return CourseRes.builder()

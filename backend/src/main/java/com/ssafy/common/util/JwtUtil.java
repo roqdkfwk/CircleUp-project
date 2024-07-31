@@ -23,7 +23,7 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final Long expiration;
 
-    // jwt.expiration = 1h
+    // 유효 기간 = 1h
     public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration}") Long expiration) {
         this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
