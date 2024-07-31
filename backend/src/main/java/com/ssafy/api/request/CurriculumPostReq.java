@@ -20,6 +20,7 @@ public class CurriculumPostReq {
                 .indexNo(indexNo)
                 .description(this.description)
                 .imgUrl(imgUrl)
-                .time(0L).build();
+                .time(0L)
+                .build();
     }
 }

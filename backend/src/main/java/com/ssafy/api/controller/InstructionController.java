@@ -62,7 +62,7 @@ public class InstructionController {
     public ResponseEntity<Void> updateCourse(
             @PathVariable(name = "course_id") Long courseId,
             @ModelAttribute CourseModifyUpdateReq courseModifyUpdateReq,
-            @RequestPart(name = "img", required = true) MultipartFile img,
+            @RequestPart(name = "img", required = false) MultipartFile img,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());

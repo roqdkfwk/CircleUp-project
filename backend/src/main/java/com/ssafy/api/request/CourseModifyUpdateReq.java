@@ -14,7 +14,7 @@ public class CourseModifyUpdateReq {
     MultipartFile img;
     String name;
     String summary;
-    Long price;
+    String price;
     String description;
-    List<Long> tags;
+    String tags;
 }
