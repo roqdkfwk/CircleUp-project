@@ -8,8 +8,8 @@ const DetailCourse = () => {
     
     const location = useLocation();
     const [courseDetails, setCourseDetails] = useState({
-        id: location.state.courseId.courseId,
-        courseName: location.state.title.name,
+        id: location.state.courseId,
+        courseName: location.state.title,
         imgUrl: '',
         imgData: null,
         instructorName: '',

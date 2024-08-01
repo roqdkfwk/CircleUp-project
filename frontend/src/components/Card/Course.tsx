@@ -13,11 +13,11 @@ const Course = ({imageSrc, name, courseId, summary} : CourseProps) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
-            <Link to="/detailCourse" state={{courseId : {courseId}, title : {name} }}>
+            <Link to="/detailCourse" state={{courseId : courseId, title : name }}>
                 <img className="w-[100%] h-[170px] rounded-lg shadow " src={imageSrc} alt="product image" />
             </Link>
             <div className="px-5 pt-5">
-                <Link to="/detailCourse" state={{courseId : {courseId}, title : {name} }}>
+                <Link to="/detailCourse" state={{courseId : courseId, title : name}}>
                     <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{name}</h5>
                     <h5 className="text-sm tracking-tight text-gray-900 dark:text-white">{summary}</h5>
                 </Link>

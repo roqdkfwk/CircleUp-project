@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../store/store";
 
 // props
 interface MyCourseProps {
@@ -10,9 +11,13 @@ interface MyCourseProps {
 const MyCourse = ({ imgUrl, courseId, name } : MyCourseProps) => {
 
     const navigate = useNavigate();
+    const { role } = useUserStore();
 
     function navigateToMyCourseDetail() {
-        navigate("/courseManagementDetail", {state : { courseId : courseId}});
+        if(role === 'Instructor')
+            navigate("/courseManagementDetail", { state: { courseId: courseId } });
+        else
+            navigate('/courseDetail', {state: { courseId: courseId, title : name }})
     }
 
     return (
