@@ -35,7 +35,7 @@ const MyCourseList = ({ myCourses, title, onMyPage }: MyCourseListProps) => {
                 {// eslint-disable-next-line @typescript-eslint/no-unused-vars
                     myCourses.map((c, idx) => (
                         onMyPage ?
-                        <Course imageSrc={c.imgUrl} name={c.name} courseId={c.courseId} />    :
+                        <Course key={idx} imageSrc={c.imgUrl} name={c.name} courseId={c.courseId} />    :
                         <MyCourse key={idx} imgUrl={c.imgUrl} name={c.name} courseId={c.courseId} />
                     ))
                 }

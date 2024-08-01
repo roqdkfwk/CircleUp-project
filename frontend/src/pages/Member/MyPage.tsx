@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUserCourse } from "../../services/api";
 import MyCourseList from "../../components/List/MyCourseList";
+import MemberModfiyModal from "../../components/Modal/MemeberModfiyModal";
 
 interface MyCourseType {
     imgUrl: string | undefined;
@@ -10,7 +11,14 @@ interface MyCourseType {
 }
 
 const MyPage = () => {
+
     const [myCourses, setMyCourse] = useState<MyCourseType[]>([]);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [isTokenRefreshing, setIsTokenRefreshing] = useState<boolean>(false);
+
+    const toggleModal = () => {
+        setShowModal(!showModal);
+    };
     // <Todo>
     // 1. 강의 리스트 반환 : MyCourse < User > List 렌더링
     const fetchUserCourses = async () => {
@@ -19,6 +27,7 @@ const MyPage = () => {
     // 2. 회원 정보 수정 버튼 : MemeberModify< User, Instructor > 이동
     const handleModfiyUser = () => {
         console.log("회원수정");
+        toggleModal();
     };
 
     const handleDeleteUser = () => {
@@ -27,8 +36,10 @@ const MyPage = () => {
     // { 추가 구현 } : 기타 정보, 연속 수강 or 랭킹 정보..
 
     // useEffect
-    useEffect(() => {
-        const fetchMyCourses = async () => {
+    const fetchMyCourses = async () => {
+
+        setIsTokenRefreshing(true);
+        try {
             const response = await fetchUserCourses();
 
             const stateArr: MyCourseType[] = response.data.map(
@@ -44,7 +55,7 @@ const MyPage = () => {
                         imgUrl: course.imgUrl,
                         name: course.name,
                         courseId: course.id,
-                        summary : course.summary,
+                        summary: course.summary,
                     };
 
                     return newCourse;
@@ -52,15 +63,24 @@ const MyPage = () => {
             );
 
             setMyCourse(stateArr);
-        };
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+        } finally {
+            setIsTokenRefreshing(false);
+        }
+    };
 
+    useEffect(() => {
         fetchMyCourses();
     }, []);
 
-    if (myCourses.length === 0) return <div>Token 재갱신 중 || Loading...</div>;
+    if (myCourses.length === 0 && isTokenRefreshing) {
+        return <div>Token 재갱신 중 || Loading...</div>;
+    }
 
     return (
         <div>
+            <MemberModfiyModal show={showModal} onClose={toggleModal} />
             <div className="flex flex-row">
                 <div className="
                 basis-4/5
@@ -77,11 +97,11 @@ const MyPage = () => {
                     <MyCourseList onMyPage={true} title={"수강 중인 강의"} myCourses={myCourses} />
                 </div>
             </div>
-                <div className="flex flex-row">
-                    <div className="flex basis-2/3 justify-end ml-10">
-                        <button
-                            type="button"
-                            className="
+            <div className="flex flex-row">
+                <div className="flex basis-2/3 justify-end ml-10">
+                    <button
+                        type="button"
+                        className="
                             text-white bg-blue-700 hover:bg-blue-800
                             focus:ring-4 focus:ring-blue-300 
                             font-medium 
@@ -91,13 +111,13 @@ const MyPage = () => {
                             dark:bg-blue-600 dark:hover:bg-blue-700 
                             focus:outline-none dark:focus:ring-blue-800            
                             "
-                            onClick={handleModfiyUser}
-                        >
-                            회원 수정
-                        </button>
-                        <button
-                            type="button"
-                            className="
+                        onClick={handleModfiyUser}
+                    >
+                        회원 수정
+                    </button>
+                    <button
+                        type="button"
+                        className="
                             text-white bg-blue-700 hover:bg-blue-800
                             focus:ring-4 focus:ring-blue-300 
                             font-medium 
@@ -107,13 +127,13 @@ const MyPage = () => {
                             dark:bg-blue-600 dark:hover:bg-blue-700 
                             focus:outline-none dark:focus:ring-blue-800
                             "
-                            onClick={handleDeleteUser}
-                        >
-                            회원 탈퇴
-                        </button>
-                    </div>
+                        onClick={handleDeleteUser}
+                    >
+                        회원 탈퇴
+                    </button>
                 </div>
             </div>
+        </div>
     );
 };
 

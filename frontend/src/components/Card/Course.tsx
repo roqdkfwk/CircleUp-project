@@ -12,7 +12,7 @@ interface CourseProps {
 const Course = ({imageSrc, name, courseId, summary} : CourseProps) => {
 
     return (
-        <div className="bg-white dark:bg-gray-800 items-center dark:border-gray-700 w-[220px]">
+        <div className="bg-white mx-1 dark:bg-gray-800 items-center dark:border-gray-700 w-[220px]">
             <Link to="/detailCourse" state={{courseId : courseId, title : name }}>
                 <img className="w-[100%] h-[170px] rounded-lg shadow " src={imageSrc} alt="product image" />
             </Link>

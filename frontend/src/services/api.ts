@@ -136,6 +136,23 @@ export const postLogin = (data: Login) => {
 export const postLogout = () => {
     return axiosClient.get('auth/logout');
 }
+// 회원 변경 요청
+export const updateMember = (id: string, member: FormData) => {
+    return axiosClient.patch(`/member/modify`, member, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+// 회원 탈퇴 요청
+export const deleteMember = () => {
+    return axiosClient.delete(`/member/withdraw`, {
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
 // 수강신청
 export const postCourseByUser = (courseId: number) => {
     return axiosClient.post(`courses/registers/${courseId}`)
@@ -176,18 +193,20 @@ axiosClient.interceptors.response.use(
         if (error.response && error.response.status === 403 && !originalRequest._retry) {
 
             originalRequest._retry = true;
-            const refreshToken = localStorage.getItem("refreshToken")
-            const response = await axiosClient.post('/auth/reissue', {}, {
-                headers : {'refresh' : refreshToken}
-            });
             
-            const newRefreshToken = response.headers['refresh'];
             try {
+                const refreshToken = localStorage.getItem("refreshToken")
+                const response = await axiosClient.post('/auth/reissue', {}, {
+                    headers : {'refresh' : refreshToken}
+                });
+            
+                const newRefreshToken = response.headers['refresh'];
+                
                 originalRequest.headers.Authorization = `${newRefreshToken}`;
                 
                 localStorage.setItem("accessToken", newRefreshToken);
                 //localStorage.setItem("refreshToken", newRefreshToken);
-                return await originalRequest;
+                return axiosClient(originalRequest);
 
             } catch (error) {
                 localStorage.removeItem('userId');
