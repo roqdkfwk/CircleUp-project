@@ -1,4 +1,4 @@
-export interface CourseDetailBySearch {
+export interface CourseDetailInfoBySearch {
     id: number,
     imgUrl: string,
     name: string,

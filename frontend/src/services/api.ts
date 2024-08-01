@@ -4,6 +4,11 @@ import { axiosClient } from './axios';
 // 필요한 데이터 타입 명시
 // 1. 강의 타입, type={keywords} + size Type
 interface Course {
+    type: string,
+    size: number
+}
+
+interface SearchCourse {
     keyword: string,
     size: number
 }
@@ -26,13 +31,13 @@ export interface NewCourse {
 // 필요한 비동기 함수 구현
 // 1. 메인페이지 강의 리스트 렌더링 위한 조회 -> course?size={}&type={}
 export const getSpecialCourse = (params: Course) => {
-    return axiosClient.get(`/courses?size=${params.size}&type=${params.keyword}`);
+    return axiosClient.get(`/courses?size=${params.size}&type=${params.type}`);
 };
 
 
 // 강의 검색 조회
-export const getCourseBySearch = (params: Course) => {
-    return axiosClient.get(`/courses?size=${params.size}&keyword=${params.keyword}`);
+export const getCourseBySearch = (params: SearchCourse) => {
+    return axiosClient.get(`/courses/search?size=${params.size}&keyword=${params.keyword}`);
 };
 
 // 태그 조회
