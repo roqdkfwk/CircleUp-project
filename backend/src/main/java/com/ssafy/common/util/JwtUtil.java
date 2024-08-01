@@ -92,7 +92,7 @@ public class JwtUtil {
     }
 
     // 토큰이 만료되었는지 확인
-    public Boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -102,12 +102,11 @@ public class JwtUtil {
     }
 
     // 토큰이 유효한지 검증
-    public Boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             // 접두사 제거
             String memberToken = token.replace(TOKEN_PREFIX, "");
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
+            Jwts.parserBuilder().setSigningKey(secretKey)
                     .requireIssuer(ISSUER)
                     .build()
                     .parseClaimsJws(memberToken)
@@ -136,9 +135,7 @@ public class JwtUtil {
         Header header = jwsClaims.getHeader();
 
         // 토큰의 타입이 refresh라면
-        if (header.get("typ").equals("refresh"))
-            return true;
-        return false;
+        return header.get("typ").equals("refresh");
     }
 
     // 새로 생긴 부분
