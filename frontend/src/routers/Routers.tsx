@@ -8,6 +8,7 @@ import CourseManagementModify from "../pages/Instructor/CourseManagementModify";
 import VideoRoomComponent from "../pages/VideoRoomComponent";
 import GateTemp from "../pages/GateTemp";
 import MainLayout from "../components/MainLayout";
+import Search from "../pages/Search";
 
 const Router = () => {
   return (
@@ -19,6 +20,7 @@ const Router = () => {
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
         <Route path="/courseManagementDetail" element={<CourseManagementDetail />} />
+        <Route path="/search" element={<Search />} />
       </Route>
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />

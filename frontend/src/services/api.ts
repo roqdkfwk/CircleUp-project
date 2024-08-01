@@ -28,6 +28,18 @@ export interface NewCourse {
 export const getSpecialCourse = (params: Course) => {
     return axiosClient.get(`/courses?size=${params.size}&type=${params.keyword}`);
 };
+
+
+// 강의 검색 조회
+export const getCourseBySearch = (params: Course) => {
+    return axiosClient.get(`/courses?size=${params.size}&keyword=${params.keyword}`);
+};
+
+// 태그 조회
+export const getAllTages = () => {
+    return axiosClient.get(`/tag`);
+}
+
 // 2. 강사가 자기가 가진 강의 조회할 때 사용
 export const getMyCourse = () => {
     return axiosClient.get(`/courses/instructions`, {
