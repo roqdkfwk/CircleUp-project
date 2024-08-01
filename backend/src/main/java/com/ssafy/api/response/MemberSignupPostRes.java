@@ -3,7 +3,11 @@ package com.ssafy.api.response;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.db.entity.Member;
 
-public class MemberSignupPostRes {
+public final class MemberSignupPostRes {
+
+    private MemberSignupPostRes() {
+        throw new AssertionError("Utility class should not be instantiated");
+    }
 
     public static Member of(MemberSignupPostReq memberSignupPostReq) {
         return Member.builder()
