@@ -35,6 +35,7 @@ public class CourseCreatePostReq {
                 .price(parsedPrice)
                 .description(this.description)
                 .courseTagList(new ArrayList<>())
+                .curriculumList(new ArrayList<>())
                 .totalCourse(0L)
                 .completedCourse(0L)
                 .build();
