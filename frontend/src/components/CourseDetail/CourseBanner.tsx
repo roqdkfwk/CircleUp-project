@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import MakeTagModal from "../Modal/MakeTagModal";
 import { FaUser, FaWonSign } from "react-icons/fa";
 import { postCourseByUser } from "../../services/api";
+import useUserStore from "../../store/store";
 
 interface BannerProps {
     isDetail: boolean,
@@ -26,6 +27,8 @@ interface BannerProps {
 const MyCourseBanner = ({
     isDetail, isCreate, isModified,
     imgUrl, courseName, instructorName, tags, price, courseId, onImg, onTitle, onTags, onImgData}: BannerProps) => {
+    
+    const { role } = useUserStore();
     
     const hiddenFileInput = useRef<HTMLInputElement | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string | null>(imgUrl);
@@ -236,9 +239,16 @@ const MyCourseBanner = ({
                     <FaWonSign style={{color: 'gray'}} />
                     <p className="ml-2">{ price==0 ? "무료" : price }</p>
                 </div>
-                <button 
-                    onClick={handleRegisterCourseByUser}
-                    type="button" className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">수강신청</button>
+                {
+                    role === 'User' && isDetail ?
+                        <button 
+                            onClick={handleRegisterCourseByUser}
+                            type="button"
+                            className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 
+                            hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5
+                            text-center me-2 mb-2">수강신청</button>
+                    : <></>
+                }
                 {/* <div className="text-white title flex items-center">
                     <p className="ml-2">누적 수강생 : </p>
                 </div> */}

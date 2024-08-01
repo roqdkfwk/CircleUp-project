@@ -132,11 +132,11 @@ axiosClient.interceptors.response.use(
             const response = await axiosClient.post('/auth/reissue', {}, {
                 headers : {'refresh' : refreshToken}
             });
-            console.log(response)
-            // const refreshToken = await axiosClient.get('getRefreshToken')
+            
+            const newRefreshToken = response.headers['refresh'];
             try {
-                originalRequest.headers.Authorization = `${response.headers['refresh']}`;
-                localStorage.setItem("accessToken", refreshToken!);
+                originalRequest.headers.Authorization = `${newRefreshToken}`;
+                localStorage.setItem("accessToken", newRefreshToken);
 
                 return originalRequest;
 
