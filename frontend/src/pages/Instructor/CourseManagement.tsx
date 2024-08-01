@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CourseManagementList from "../../components/List/CourseManagementList";
+import MyCourseList from "../../components/List/MyCourseList";
 import { getMyCourse } from "../../services/api";
 
 interface MyCourseType {
@@ -57,7 +57,7 @@ const CourseManagement = () => {
                 sm:p-8 
                 dark:bg-gray-800 dark:border-gray-700
             ">
-                <CourseManagementList myCourses={myCourses} />
+                <MyCourseList myCourses={myCourses} />
             </div>
         </div>
     )

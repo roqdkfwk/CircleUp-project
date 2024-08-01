@@ -23,7 +23,7 @@ export interface NewCourse {
 
 }
 
-// 필요한 비동기 함수 구현
+///////////////////////////////////////////////////////////////////////
 // 1. 메인페이지 강의 리스트 렌더링 위한 조회 -> course?size={}&type={}
 export const getSpecialCourse = (params: Course) => {
     return axiosClient.get(`/courses?size=${params.size}&type=${params.keyword}`);
@@ -70,37 +70,87 @@ export const getOriginalImage = (url: string) => {
         responseType: 'blob',
     })
 }
+// 8. 수강생이 수강 중의 강의들 조회
+export const getUserCourse = () => {
+    return axiosClient.get(`/courses/registers`, {
+        headers: { 'Requires-Auth': true }
+    })
+}
+// 9. 수강생이 강의 수강 중으로 추가
+export const postUserCourse = (course_id: number) => {
+    return axiosClient.post(`/courses/registers/${course_id}`, {}, {
+        headers: { 'Requires-Auth': true }
+    })
+}
+// 10. 수강생이 강의 수강 취소
+export const deleteUserCourse = (course_id: number) => {
+    return axiosClient.delete(`/courses/registers/${course_id}`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+// 11. 수강생이 특정 강의 수강여부 확인
+export const checkUserCourse = (course_id: number) => {
+    return axiosClient.get(`/courses/registers/${course_id}` , {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
 
 // 1. 커리큘럼 조회
+export const getCurriculum = () => {}
 // 2. 커리큘럼 추가
+export const postCurriculum = (data: FormData, course_id : number) => {
+    return axiosClient.post(`/courses/${course_id}/curriculum`, data,  {
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
 // 3. 커리큘럼 수정
+export const updateCurriculum = (course_id : number, curriculum_id : number, data: FormData) => {
+    return axiosClient.patch(`/courses/${course_id}/curriculum/${curriculum_id}`, data, {
+        headers: {
+            'Requires-Auth': true,
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+}
 // 4. 커리큘럼 삭제
+export const deleteCurriculum = (course_id : number, curriculum_id : number) => {
+    return axiosClient.delete(`/courses/${course_id}/curriculum/${curriculum_id}`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
 
 // 로그인 요청
 export const postLogin = (data: Login) => {
     return axiosClient.post('auth/login', data);
 }
-
 // 로그아웃 요청
 export const postLogout = () => {
     return axiosClient.get('auth/logout');
 }
-
 // 수강신청
 export const postCourseByUser = (courseId: number) => {
     return axiosClient.post(`courses/registers/${courseId}`)
 }
 
+////////////////////////////////////////////////////////////
 // Interceptor - JWT 로직 ( AccessToken & RefreshToken )
 axiosClient.interceptors.request.use(
     (config) => {
         
         const user = localStorage.getItem("userId");
 
-        if (!user) {
+        if (!user) 
             return config;
-        }
-
+        
         const accessToken = localStorage.getItem("accessToken");
 
         if(accessToken)
@@ -124,11 +174,9 @@ axiosClient.interceptors.response.use(
         const originalRequest = error.config;
 
         if (error.response && error.response.status === 403 && !originalRequest._retry) {
-            //alert("You do not have permission to access this resource.");
-            originalRequest._retry = true;
-            
-            const refreshToken = localStorage.getItem("refreshToken")
 
+            originalRequest._retry = true;
+            const refreshToken = localStorage.getItem("refreshToken")
             const response = await axiosClient.post('/auth/reissue', {}, {
                 headers : {'refresh' : refreshToken}
             });

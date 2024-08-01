@@ -1,3 +1,4 @@
+import useUserStore from "../../store/store";
 import MyCourse from "../Card/MyCourse";
 import { useNavigate } from "react-router-dom";
 
@@ -11,9 +12,10 @@ interface MyCourseListProps {
     myCourses: CourseType[]
 }
 
-const CourseManagementList = ({ myCourses } : MyCourseListProps) => {
+const MyCourseList = ({ myCourses } : MyCourseListProps) => {
 
     const navigate = useNavigate();
+    const { role } = useUserStore();
     
     function handleConsole() {
         navigate(`/courseManagementMake`);
@@ -29,8 +31,8 @@ const CourseManagementList = ({ myCourses } : MyCourseListProps) => {
                     <MyCourse key={idx} imgUrl={c.imgUrl} name={c.name} courseId={c.courseId} />
                 ))
             }
-
-            <button className="
+            {role === 'Instructor' ?
+                <button className="
                 text-white bg-blue-700 hover:bg-blue-800 
                 focus:ring-4 focus:ring-blue-300 
                 font-medium 
@@ -39,9 +41,11 @@ const CourseManagementList = ({ myCourses } : MyCourseListProps) => {
                 px-5 py-2.5 me-2 mb-2 
                 dark:bg-blue-600 dark:hover:bg-blue-700 
                 focus:outline-none dark:focus:ring-blue-800
-            " onClick={handleConsole}>Create New Course!</button>
+                " onClick={handleConsole}>Create New Course!</button>
+                : <></>
+            }
         </div>
     );
 }
 
-export default CourseManagementList;
+export default MyCourseList;
