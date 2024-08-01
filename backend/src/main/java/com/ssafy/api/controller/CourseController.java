@@ -80,14 +80,14 @@ public class CourseController {
     }
 
 
-    @GetMapping("/courses/curriculum/{curriculum_id}")
+    @GetMapping("/curriculums")
     @ApiOperation(value = "커리큘럼 정보 조회")
     @ApiResponses({
             @ApiResponse(code = 404, message = "커리큘럼 없음")
     })
-    public ResponseEntity<CurriculumRes> curriculumList(
-            @PathVariable(name = "curriculum_id") Long id
+    public ResponseEntity<List<CurriculumRes>> curriculumList(
+            @RequestParam(required = false, value = "id") List<Long> ids
     ) {
-        return ResponseEntity.ok().body(courseService.getCurriculumById(id));
+        return ResponseEntity.ok().body(courseService.getCurriculumById(ids));
     }
 }

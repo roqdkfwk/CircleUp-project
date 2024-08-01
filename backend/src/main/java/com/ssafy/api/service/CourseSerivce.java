@@ -341,11 +341,11 @@ public class CourseSerivce {
         curriculumRepository.delete(curriculum);
     }
 
-    public CurriculumRes getCurriculumById(Long id){
-        Curriculum curriculum = curriculumRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Not Found Curriculum")
-        );
-        return CurriculumRes.of(curriculum);
+    public List<CurriculumRes> getCurriculumById(List<Long> ids){
+        return curriculumRepository.findAllById(ids)
+                .stream()
+                .map(CurriculumRes::of)
+                .collect(Collectors.toList());
     }
 
     //////////////////////////////////////////////////////////////////////////
