@@ -1,121 +1,120 @@
-import { useEffect, useState } from "react";
-import CourseStatusBoard from "../../components/CourseDetail/CourseDetailLeftBoard";
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
-import { CourseDetail } from "../../types/CourseDetailInfo";
-import { useLocation, useNavigate } from "react-router-dom";
-import { tagMapping } from "../../services/tagMapping";
-import { getOriginalImage, updateMyCourse } from "../../services/api";
+// import { useEffect, useState } from "react";
+// import CourseStatusBoard from "../../components/CourseDetail/CourseDetailLeftBoard";
+// import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
+// import { CourseDetailInfo } from "../../types/CourseDetailInfo";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import { tagMapping } from "../../services/tagMapping";
+// import { getOriginalImage, updateMyCourse } from "../../services/api";
 
-const CourseManagementModify = () => {
+// const CourseManagementModify = () => {
 
-    // useState & location으로 데이터 받기
-    const location = useLocation();
-    const navigate = useNavigate();
-    const originalCourse: CourseDetail = location.state;
-    const [isReady, setIsReady] = useState(false);
+//     // useState & location으로 데이터 받기
+//     const location = useLocation();
+//     const originalCourse: CourseDetail = location.state;
+//     const [isReady, setIsReady] = useState(false);
 
-    const [modifiedCourses, setModifiedCourses] = useState<CourseDetail>({
-        id: 0,
-        courseName: "",
-        imgUrl: "",
-        price : 0,
-        imgData: null,
-        instructorName: "",
-        description: "",
-        tags: [],
-        curriculum: "",
-        view: 0,
-      });
+//     const [modifiedCourses, setModifiedCourses] = useState<CourseDetail>({
+//         id: 0,
+//         courseName: "",
+//         imgUrl: "",
+//         price : 0,
+//         imgData: null,
+//         instructorName: "",
+//         description: "",
+//         tags: [],
+//         curriculum: "",
+//         view: 0,
+//       });
     
-    useEffect(() => {
-        if (originalCourse) {
-            setModifiedCourses(originalCourse);
-            setIsReady(true);
-        }
-    }, [originalCourse])
+//     useEffect(() => {
+//         if (originalCourse) {
+//             setModifiedCourses(originalCourse);
+//             setIsReady(true);
+//         }
+//     }, [originalCourse])
     
-    const updateModifiedCourse = (getCourse: CourseDetail) => {
-        setModifiedCourses({ ...getCourse });
-    }
+//     const updateModifiedCourse = (getCourse: CourseDetail) => {
+//         setModifiedCourses({ ...getCourse });
+//     }
     
-    const fetchOriginalImage = async () => {
-        return await getOriginalImage(originalCourse.imgUrl);
-    }
+//     const fetchOriginalImage = async () => {
+//         return await getOriginalImage(originalCourse.imgUrl);
+//     }
 
-    const fetchModifiedCourse = async (data : FormData) => {
-        try {
-            const response = await updateMyCourse(modifiedCourses.id, data);
-            console.log('Response : ', response.data)
+//     const fetchModifiedCourse = async (data : FormData) => {
+//         try {
+//             const response = await updateMyCourse(modifiedCourses.id, data);
+//             console.log('Response : ', response.data)
 
-            window.location.href = '/courseManagement';
-        }
-        catch (error) {
-            console.log('error : ', error)
-        }
-    }
+//             window.location.href = '/courseManagement';
+//         }
+//         catch (error) {
+//             console.log('error : ', error)
+//         }
+//     }
 
-    const AddModifiedCourse = () => {
+//     const AddModifiedCourse = () => {
         
-        const fetchInitialImgData = async () => { 
-            const response = await fetchOriginalImage();
-            modifiedCourses['imgData'] = response.data;
-        }
+//         const fetchInitialImgData = async () => { 
+//             const response = await fetchOriginalImage();
+//             modifiedCourses['imgData'] = response.data;
+//         }
 
-        const formData = new FormData();
+//         const formData = new FormData();
 
-        if (modifiedCourses.imgData === undefined) {
-            fetchInitialImgData();
-        }
-        else {
-            for (let i = 0; i < modifiedCourses.imgData!.length ; i++)
-                formData.append("img", modifiedCourses.imgData![i])
-        }
+//         if (modifiedCourses.imgData === undefined) {
+//             fetchInitialImgData();
+//         }
+//         else {
+//             for (let i = 0; i < modifiedCourses.imgData!.length ; i++)
+//                 formData.append("img", modifiedCourses.imgData![i])
+//         }
         
-        formData.append("name", modifiedCourses.courseName)
-        formData.append("description", modifiedCourses.description)
+//         formData.append("name", modifiedCourses.courseName)
+//         formData.append("description", modifiedCourses.description)
 
-        const numToTag: number[] = tagMapping(modifiedCourses.tags)
-        formData.append("tags", JSON.stringify(numToTag))
+//         const numToTag: number[] = tagMapping(modifiedCourses.tags)
+//         formData.append("tags", JSON.stringify(numToTag))
         
-        formData.append("summary", "dummyData")
-        formData.append("price", modifiedCourses.price.toString())
+//         formData.append("summary", "dummyData")
+//         formData.append("price", modifiedCourses.price.toString())
 
-        fetchModifiedCourse(formData);
-    }
+//         fetchModifiedCourse(formData);
+//     }
     
-    if (!isReady) {
-        return <div>Loading....</div>
-    }
+//     if (!isReady) {
+//         return <div>Loading....</div>
+//     }
     
-    return (
-        <div>
-            <div className="flex flex-row">
-                <CourseStatusBoard flag={"instructorModify"} data={modifiedCourses} onNewMyCourse={updateModifiedCourse} />
-                <RightSideBar />
-            </div>
-            <div className="flex flex-row">
-                <div className="basis-3/4 flex justify-end mr-2">
-                <button
-                        type="button"
-                        className="
-                        text-white bg-blue-700 hover:bg-blue-800
-                        focus:ring-4 focus:ring-blue-300 
-                        font-medium 
-                        rounded-lg 
-                        text-sm 
-                        px-5 py-2.5 me-4 mb-2 
-                        dark:bg-blue-600 dark:hover:bg-blue-700 
-                        focus:outline-none dark:focus:ring-blue-800
-                        "
-                        onClick={AddModifiedCourse}
-                    >
-                        Confirm
-                    </button>
+//     return (
+//         <div>
+//             <div className="flex flex-row">
+//                 <CourseStatusBoard flag={"instructorModify"} data={modifiedCourses} onNewMyCourse={updateModifiedCourse} />
+//                 <RightSideBar />
+//             </div>
+//             <div className="flex flex-row">
+//                 <div className="basis-3/4 flex justify-end mr-2">
+//                 <button
+//                         type="button"
+//                         className="
+//                         text-white bg-blue-700 hover:bg-blue-800
+//                         focus:ring-4 focus:ring-blue-300 
+//                         font-medium 
+//                         rounded-lg 
+//                         text-sm 
+//                         px-5 py-2.5 me-4 mb-2 
+//                         dark:bg-blue-600 dark:hover:bg-blue-700 
+//                         focus:outline-none dark:focus:ring-blue-800
+//                         "
+//                         onClick={AddModifiedCourse}
+//                     >
+//                         Confirm
+//                     </button>
                     
-                </div>
-            </div>
-        </div>
-    );
-}
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
 
-export default CourseManagementModify;
+// export default CourseManagementModify;

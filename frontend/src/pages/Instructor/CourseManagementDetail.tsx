@@ -61,7 +61,7 @@ const CourseManagementDetail = () => {
         <RightSideBar />
       </div>
       <div className="flex flex-row">
-        <div className="basis-3/4 flex justify-end mr-2">
+        <div className="flex basis-2/3 justify-end ml-10">
           <button
             type="button"
             className="
@@ -70,7 +70,7 @@ const CourseManagementDetail = () => {
                     font-medium 
                     rounded-lg 
                     text-sm 
-                    px-5 py-2.5 me-2 mb-2 
+                    px-5 py-2.5 me-2
                     dark:bg-blue-600 dark:hover:bg-blue-700 
                     focus:outline-none dark:focus:ring-blue-800
                     "
@@ -87,7 +87,7 @@ const CourseManagementDetail = () => {
                 font-medium 
                 rounded-lg 
                 text-sm 
-                px-5 py-2.5 me-4 mb-2 
+                px-5 py-2.5
                 dark:bg-blue-600 dark:hover:bg-blue-700 
                 focus:outline-none dark:focus:ring-blue-800
                 "
