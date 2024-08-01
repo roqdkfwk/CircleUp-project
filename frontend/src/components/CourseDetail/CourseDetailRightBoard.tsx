@@ -1,6 +1,6 @@
 import { FaDownload } from "react-icons/fa";
 
-const RightSideBar = () => {
+const CourseDetailRightBoard = () => {
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-[33%] mt-5 h-full">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -76,4 +76,4 @@ const RightSideBar = () => {
     )
 }
 
-export default RightSideBar;
+export default CourseDetailRightBoard;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
-import RightSideBar from "../../components/RightSideBar";
-import { CourseDetail } from "../../types/CourseDetail";
+import CourseStatusBoard from "../../components/CourseDetail/CourseDetailLeftBoard";
+import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
+import { CourseDetail } from "../../types/CourseDetailInfo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
 import { getOriginalImage, updateMyCourse } from "../../services/api";

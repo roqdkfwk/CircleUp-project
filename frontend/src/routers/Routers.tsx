@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Main from "../pages/Main";
-import DetailCourse from "../pages/DetailCourse";
+import CourseDetail from "../pages/CourseDetail";
 import CourseManagement from "../pages/Instructor/CourseManagement";
 import CourseManagementDetail from "../pages/Instructor/CourseManagementDetail";
 import CourseManagementMake from "../pages/Instructor/CourseManagementMake";
@@ -15,12 +15,12 @@ const Router = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Main />} />
-        <Route path="/detailCourse" element={<DetailCourse />} />
+        <Route path="/courseDetail/:courseId" element={<CourseDetail />} />
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
         <Route path="/courseManagementDetail" element={<CourseManagementDetail />} />
-        <Route path="/search" element={<Search />} />
+        <Route path="/search/:searchKeyword" element={<Search />} />
       </Route>
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />

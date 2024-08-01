@@ -10,7 +10,7 @@ const Course = ({ data } : CourseProps) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
-            <Link to="/detailCourse:courseId">
+            <Link to={`/courseDetail/${data.id}`}>
                 <img className="w-[100%] h-[170px] rounded-lg shadow " src={data.imgUrl} alt="product image" />
                 <div className="px-5 pt-5">
                 <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{data.name}</h5>

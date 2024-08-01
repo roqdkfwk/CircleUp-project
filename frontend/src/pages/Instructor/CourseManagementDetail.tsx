@@ -1,5 +1,5 @@
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
-import RightSideBar from "../../components/RightSideBar";
+import CourseStatusBoard from "../../components/CourseDetail/CourseDetailLeftBoard";
+import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";

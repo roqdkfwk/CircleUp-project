@@ -1,7 +1,7 @@
-import RightSideBar from "../../components/RightSideBar";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
+import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
+import CourseStatusBoard from "../../components/CourseDetail/CourseDetailLeftBoard";
 import { useState } from "react";
-import { CourseDetail } from "../../types/CourseDetail";
+import { CourseDetail } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
 
