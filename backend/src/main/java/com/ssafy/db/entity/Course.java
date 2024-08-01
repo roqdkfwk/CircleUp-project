@@ -53,21 +53,10 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Curriculum> curriculumList;
 
     protected Course() {
-    }
-
-    // 커리큘럼 리스트 초기화
-    public void initCurriculumList() {
-        this.curriculumList = new ArrayList<>();
-    }
-
-    // 커리큘럼 추가
-    public void addCurriculum(Curriculum curriculum) {
-        this.curriculumList.add(curriculum);
-        curriculum.setCourse(this);
     }
 
     public void upView() {

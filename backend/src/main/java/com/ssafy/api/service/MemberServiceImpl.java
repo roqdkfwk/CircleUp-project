@@ -1,5 +1,7 @@
 package com.ssafy.api.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberModifyUpdateRes;
@@ -124,7 +126,15 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 수정된 Favor을 DB에 반영
-        List<Long> tags = memberModifyUpdateReq.getTags();
+        String tagIds = memberModifyUpdateReq.getTags();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Long> tags;
+        try{
+            tags = objectMapper.readValue(tagIds, new TypeReference<List<Long>>() {});
+        } catch (Exception e){
+            throw new RuntimeException("tags parsing error");
+        }
+
 
         // 선호하는 태그의 이름을 DB에서 찾음
         List<String> tagNameList = new ArrayList<>();

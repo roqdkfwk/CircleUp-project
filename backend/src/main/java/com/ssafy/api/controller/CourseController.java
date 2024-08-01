@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.db.entity.Curriculum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -85,4 +86,15 @@ public class CourseController {
         return ResponseEntity.ok().body(courseService.getInstructorByCourseId(id));
     }
 
+
+    @GetMapping("/curriculums")
+    @ApiOperation(value = "커리큘럼 정보 조회")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "커리큘럼 없음")
+    })
+    public ResponseEntity<List<CurriculumRes>> curriculumList(
+            @RequestParam(required = false, value = "id") List<Long> ids
+    ) {
+        return ResponseEntity.ok().body(courseService.getCurriculumById(ids));
+    }
 }
