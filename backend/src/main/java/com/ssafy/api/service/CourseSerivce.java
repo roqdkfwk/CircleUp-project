@@ -13,10 +13,7 @@ import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
-import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.CourseTag;
-import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.entity.Tag;
+import com.ssafy.db.entity.*;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -324,7 +321,7 @@ public class CourseSerivce {
         }
 
         Curriculum curriculum = curriculumOptional.get();
-        if(curriculum.getTime()==null || curriculum.getTime()>0){
+        if(curriculum.getTime()!=null && curriculum.getTime()>0){
             throw new BadRequestException("Curriculum already done");
         }
 
