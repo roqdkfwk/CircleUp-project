@@ -7,7 +7,7 @@ import CourseCurriculum from "./Content/CourseCurriculum";
 import CourseNews from "./Content/CourseNews";
 import CourseComment from "./Content/CourseComment";
 import { CourseDetail } from "../../types/CourseDetail";
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
 
 interface CourseStatusBoardProps {
     flag: string,

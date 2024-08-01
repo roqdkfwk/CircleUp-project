@@ -17,7 +17,7 @@ interface Store {
     setRole: (newRole: string) => void;
 }
 
-const useUserStore = create(persist<Store>((set) => ({
+export const useUserStore = create(persist<Store>((set) => ({
     // authorizedLevel: 2,
     nickName: "hybrid",
     email: "hyunho656@gmail.com",
@@ -31,4 +31,12 @@ const useUserStore = create(persist<Store>((set) => ({
       },
 ))
 
-export default useUserStore;
+interface SearchState {
+    searchValue: string;
+    setSearchValue: (value: string) => void;
+  }
+  
+  export const useSearchStore = create<SearchState>((set) => ({
+    searchValue: '',
+    setSearchValue: (value) => set({ searchValue: value }),
+  }));
