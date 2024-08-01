@@ -13,7 +13,10 @@ import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
-import com.ssafy.db.entity.*;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.CourseTag;
+import com.ssafy.db.entity.Instructor;
+import com.ssafy.db.entity.Tag;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,8 +29,8 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -73,7 +76,8 @@ public class CourseSerivce {
 
             String tags = courseCreatePostReq.getTags();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
+            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {
+            });
 
             List<CourseTag> courseTags = newCourse.getCourseTagList();
 
@@ -150,7 +154,8 @@ public class CourseSerivce {
 
             String tags = courseModifyUpdateReq.getTags();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
+            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {
+            });
 
 
             List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
@@ -169,7 +174,7 @@ public class CourseSerivce {
         }
     }
 
-    public void deleteCourse(Long courseId, Long memberId){
+    public void deleteCourse(Long courseId, Long memberId) {
         // 1. 유효성 검증
         Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("Instructor not found")
@@ -181,7 +186,7 @@ public class CourseSerivce {
         }
 
         Course course = courseOptional.get();
-        if(!course.getInstructor().equals(instructor)){
+        if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
@@ -343,20 +348,39 @@ public class CourseSerivce {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    public List<CoursesRes> getCoursesByTitle(String name, int page, int size) {
+    public List<SearchRes> getCoursesByTitle(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        Map<Long, Long> countRegistersByCourseId = courseRepository.countRegistersByCourse().stream()
+                .collect(Collectors.toMap(
+                        arr -> (Long) arr[0],
+                        arr -> (Long) arr[1]
+                ));
+
         return courseRepository.findByKeyword(name, pageable)
                 .stream()
-                .map(CoursesRes::of)
+                .map(course ->
+                        SearchRes.of(course,
+                                countRegistersByCourseId.get(course.getId()),
+                                course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
+                )
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesByTags(List<Long> tags, int page, int size) {
+    public List<SearchRes> getCoursesByTags(List<Long> tags, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        Map<Long, Long> countRegistersByCourseId = courseRepository.countRegistersByCourse().stream()
+                .collect(Collectors.toMap(
+                        arr -> (Long) arr[0],
+                        arr -> (Long) arr[1]
+                ));
 
         return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
                 .stream()
-                .map(CoursesRes::of)
+                .map(course ->
+                        SearchRes.of(course,
+                                countRegistersByCourseId.get(course.getId()),
+                                course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
+                )
                 .collect(Collectors.toList());
 
     }

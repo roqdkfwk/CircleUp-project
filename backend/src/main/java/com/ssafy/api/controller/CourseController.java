@@ -31,8 +31,25 @@ public class CourseController {
     @GetMapping("/courses")
     @ApiOperation(value = "강의 목록 조회")
     public ResponseEntity<List<CoursesRes>> courselist(
-            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = true) int size) {
+        if (type.equals("offer")) { // 추천순
+            return ResponseEntity.ok().body(courseService.getOfferingCourses(page, size));
+        } else if (type.equals("hot")) { // 인기순
+            return ResponseEntity.ok().body(courseService.getCoursesByView(page, size));
+        } else if (type.equals("free")) { // 무료
+            return ResponseEntity.ok().body(courseService.getFreeCourses(page, size));
+        } else if (type.equals("latest")) { //최신순
+            return ResponseEntity.ok().body(courseService.getLatestCourses(page, size));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/courses/search")
+    @ApiOperation(value = "강의 검색 결과 조회")
+    public ResponseEntity<List<SearchRes>> searchResults(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false, value = "tag") List<Long> tags,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = true) int size) {
@@ -41,21 +58,11 @@ public class CourseController {
             return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, page, size));
         } else if (tags != null) {
             // 태그 목록으로 검색
+//            return ResponseEntity.ok().body(null);
             return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, page, size));
-        } else if (type != null) {
-            if (type.equals("offer")) { // 추천순
-                return ResponseEntity.ok().body(courseService.getOfferingCourses(page, size));
-            } else if (type.equals("hot")) { // 인기순
-                return ResponseEntity.ok().body(courseService.getCoursesByView(page, size));
-            } else if (type.equals("free")) { // 무료
-                return ResponseEntity.ok().body(courseService.getFreeCourses(page, size));
-            } else if (type.equals("latest")) { //최신순
-                return ResponseEntity.ok().body(courseService.getLatestCourses(page, size));
-            }
         }
         return ResponseEntity.badRequest().build();
     }
-
 
     @GetMapping("/courses/{course_id}")
     @ApiOperation(value = "강의 정보 상세 조회")

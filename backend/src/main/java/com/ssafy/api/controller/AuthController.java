@@ -58,6 +58,8 @@ public class AuthController {
     public ResponseEntity<String> reissue(
             @RequestHeader String refresh
     ) {
-        return ResponseEntity.ok().body(authService.createNewAccessToken(refresh));
+        return ResponseEntity.ok()
+                .header("Authorization", authService.createNewAccessToken(refresh))
+                .build();
     }
 }
