@@ -44,7 +44,7 @@ public class CourseSerivce {
     private final Bucket bucket;
 
     //////////////////////////////////////////////////////////////////////////
-    public Course createCourse(CourseCreatePostReq courseCreatePostReq, Long memberId) {
+    public CourseRes createCourse(CourseCreatePostReq courseCreatePostReq, Long memberId) {
         try {
             // 1. 유효성 검증
             // 요청자가 강사가 아닐때
@@ -94,26 +94,24 @@ public class CourseSerivce {
             // img_url 넣어주기
             newCourse.setImgUrl(blobInfo.getMediaLink());
             // 3. 업데이트된 정보로 다시 저장
-            return courseRepository.save(newCourse);
+            return CourseRes.of(courseRepository.save(newCourse));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create course", e);
         }
     }
 
-    public Course updateCourse(Long courseId, CourseModifyUpdateReq courseModifyUpdateReq, Long memberId) {
+    public CourseRes updateCourse(Long courseId, CourseModifyUpdateReq courseModifyUpdateReq, Long memberId) {
         try {
             // 1. 유효성 검증
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
 
-            Optional<Course> courseOptional = courseRepository.findById(courseId);
-            if (!courseOptional.isPresent()) {
-                throw new NotFoundException("Course not found");
-            }
+            Course course = courseRepository.findById(courseId).orElseThrow(
+                    () -> new NotFoundException("Course not found")
+            );
 
-            Course course = courseOptional.get();
             if(!course.getInstructor().equals(instructor)){
                 throw new BadRequestException("Instructor doesn't own the course");
             }
@@ -167,7 +165,7 @@ public class CourseSerivce {
                 }
             }
             // 3. 정보 업데이트
-            return courseRepository.save(course);
+            return CourseRes.of(courseRepository.save(course));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to update course", e);
@@ -203,7 +201,7 @@ public class CourseSerivce {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    public Course createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
+    public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
         try{
             // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
@@ -243,14 +241,14 @@ public class CourseSerivce {
             newCurr = curriculumRepository.save(newCurr);
             curriculums.add(newCurr);
 
-            return courseRepository.save(course);
+            return CourseRes.of(courseRepository.save(course));
         } catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Failed to create curriculum", e);
         }
     }
 
-    public Course updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId){
+    public CourseRes updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId){
         try{
             // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
@@ -301,7 +299,7 @@ public class CourseSerivce {
             }
             curriculumRepository.save(curriculum);
 
-            return courseRepository.save(course);
+            return CourseRes.of(courseRepository.save(course));
         } catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Failed to update curriculum", e);

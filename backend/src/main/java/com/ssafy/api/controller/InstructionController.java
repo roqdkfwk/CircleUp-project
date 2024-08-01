@@ -4,6 +4,7 @@ import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.api.request.CurriculumUpdateReq;
+import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
@@ -52,7 +53,7 @@ public class InstructionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        Course course = courseService.createCourse(courseCreatePostReq, memberId);
+        CourseRes course = courseService.createCourse(courseCreatePostReq, memberId);
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
@@ -69,7 +70,7 @@ public class InstructionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        Course course = courseService.updateCourse(courseId, courseModifyUpdateReq, memberId);
+        CourseRes course = courseService.updateCourse(courseId, courseModifyUpdateReq, memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -93,7 +94,7 @@ public class InstructionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        Course course = courseService.createCurriculum(curriculumPostReq, courseId, memberId);
+        CourseRes course = courseService.createCurriculum(curriculumPostReq, courseId, memberId);
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
@@ -107,7 +108,7 @@ public class InstructionController {
             Authentication authentication
     ){
         Long memberId = Long.valueOf(authentication.getName());
-        Course course = courseService.updateCurriculum(curriculumUpdateReq, courseId, curriculumId, memberId);
+        CourseRes course = courseService.updateCurriculum(curriculumUpdateReq, courseId, curriculumId, memberId);
 
         return ResponseEntity.ok().body(course.getId());
     }
