@@ -25,9 +25,9 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
             {/* 강의 배너 */}
             <div className="w-full h-[350px] p-2 rounded-t-lg shadow bg-gradient-to-r from-black from-0% via-gray-400 via-30% to-black to-55% flex flex-row items-center justify-evenly">
                 <img src={data.imgUrl} alt="" className="rounded-lg h-60 w-[300px]" />
-                <div className="mb-10">
+                <div className="">
                     <p className="text-4xl GDtitle text-white mb-2">{data.courseName}</p>
-                    <div className="w-full flex mt-4"> 
+                    <div className="w-full flex mt-4 mb-7"> 
                         <p className="text-gray-500 text-xl font-bold mr-2">#</p>
                         {data.tags.map((tagName, idx) => (
                             <span className="bg-indigo-100 text-indigo-800 text-sm me-2 mt-[2px] mb-5 px-2.5 rounded dark:bg-indigo-900 dark:text-indigo-300" key={idx}>{tagName}</span>
