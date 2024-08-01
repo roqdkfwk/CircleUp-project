@@ -9,10 +9,7 @@ import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.api.request.CurriculumUpdateReq;
-import com.ssafy.api.response.CourseRes;
-import com.ssafy.api.response.CoursesRes;
-import com.ssafy.api.response.InstructorRes;
-import com.ssafy.api.response.TagRes;
+import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
@@ -333,7 +330,9 @@ public class CourseSerivce {
         }
 
         Curriculum curriculum = curriculumOptional.get();
-        if(curriculum.getTime()>)
+        if(curriculum.getTime()==null || curriculum.getTime()>0){
+            throw new BadRequestException("Curriculum already done");
+        }
         course.getCurriculumList().remove(curriculum);
         courseRepository.save(course);
 
@@ -343,6 +342,15 @@ public class CourseSerivce {
 
         curriculumRepository.delete(curriculum);
     }
+
+    public CurriculumRes getCurriculumById(Long id){
+        Curriculum curriculum = curriculumRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Not Found Curriculum")
+        );
+        return CurriculumRes.of(curriculum);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {
