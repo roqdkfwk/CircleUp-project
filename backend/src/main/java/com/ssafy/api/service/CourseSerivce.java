@@ -52,7 +52,7 @@ public class CourseSerivce {
                     () -> new NotFoundException("Instructor not found")
             );
 
-            // 빈 파일일때
+//             빈 파일일때
             if (courseCreatePostReq.getImg() == null) {
                 throw new BadRequestException("Not File");
             }
@@ -77,15 +77,13 @@ public class CourseSerivce {
 
             List<CourseTag> courseTags = newCourse.getCourseTagList();
 
-            if(tagIds != null){
-                List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-                for(Tag tag : tagsToAdd){
-                    CourseTag courseTag = new CourseTag();
-                    courseTag.setTag(tag);
-                    courseTag.setCourse(newCourse);
+            List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
+            for(Tag tag : tagsToAdd){
+                CourseTag courseTag = new CourseTag();
+                courseTag.setTag(tag);
+                courseTag.setCourse(newCourse);
 
-                    courseTags.add(courseTag);
-                }
+                courseTags.add(courseTag);
             }
 
             // 이미지 파일 네이밍
@@ -148,21 +146,20 @@ public class CourseSerivce {
             }
 
             List<CourseTag> courseTags = course.getCourseTagList();
-            course.getCourseTagList().clear();
+            courseTags.clear();
 
             String tags = courseModifyUpdateReq.getTags();
             ObjectMapper objectMapper = new ObjectMapper();
             List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
 
-            if(tagIds != null){
-                List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-                for(Tag tag : tagsToAdd){
-                    CourseTag courseTag = new CourseTag();
-                    courseTag.setTag(tag);
-                    courseTag.setCourse(course);
 
-                    courseTags.add(courseTag);
-                }
+            List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
+            for(Tag tag : tagsToAdd){
+                CourseTag courseTag = new CourseTag();
+                courseTag.setTag(tag);
+                courseTag.setCourse(course);
+
+                courseTags.add(courseTag);
             }
             // 3. 정보 업데이트
             return CourseRes.of(courseRepository.save(course));
@@ -228,8 +225,6 @@ public class CourseSerivce {
             }
 
             // Curriculum 생성 및 추가
-            List<Curriculum> curriculums = course.getCurriculumList();
-
             Curriculum newCurr = curriculumPostReq.toEntity(course);
             newCurr = curriculumRepository.save(newCurr);
 
@@ -237,11 +232,9 @@ public class CourseSerivce {
             BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
 
             newCurr.setImgUrl(blobInfo.getMediaLink());
+            curriculumRepository.save(newCurr);
 
-            newCurr = curriculumRepository.save(newCurr);
-            curriculums.add(newCurr);
-
-            return CourseRes.of(courseRepository.save(course));
+            return CourseRes.of(course);
         } catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Failed to create curriculum", e);
@@ -290,16 +283,14 @@ public class CourseSerivce {
                 String blobName = "curriculum_" + curriculum.getId() + "_banner";
 
                 Blob blob = bucket.get(blobName);
-                if(blob.delete()) {
-                    System.out.println("!!!deleted!!!");
-                }
+                blob.delete();
 
                 BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
                 curriculum.setImgUrl(blobInfo.getMediaLink());
             }
             curriculumRepository.save(curriculum);
 
-            return CourseRes.of(courseRepository.save(course));
+            return CourseRes.of(course);
         } catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Failed to update curriculum", e);
@@ -331,8 +322,6 @@ public class CourseSerivce {
         if(curriculum.getTime()==null || curriculum.getTime()>0){
             throw new BadRequestException("Curriculum already done");
         }
-        course.getCurriculumList().remove(curriculum);
-        courseRepository.save(course);
 
         String blobName = "curriculum_" + curriculumId + "_banner";
         Blob blob = bucket.get(blobName);
@@ -347,8 +336,6 @@ public class CourseSerivce {
                 .map(CurriculumRes::of)
                 .collect(Collectors.toList());
     }
-
-    //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     public List<TagRes> getTagList() {

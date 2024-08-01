@@ -15,5 +15,5 @@ public class MemberModifyUpdateReq {
     Role role;
     String contactEmail;
     String contactTel;
-    List<Long> tags = new ArrayList<>();
+    String tags;
 }

@@ -59,17 +59,6 @@ public class Course {
     protected Course() {
     }
 
-    // 커리큘럼 리스트 초기화
-    public void initCurriculumList() {
-        this.curriculumList = new ArrayList<>();
-    }
-
-    // 커리큘럼 추가
-    public void addCurriculum(Curriculum curriculum) {
-        this.curriculumList.add(curriculum);
-        curriculum.setCourse(this);
-    }
-
     public void upView() {
         this.view = this.view + 1;
     }
