@@ -1,24 +1,17 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from 'swiper/modules';
+import { CourseInfo } from './../../types/CourseInfo';
 
-import Hotcard from "../Card/HotCard";
+import HotCourse from "../Card/HotCourse";
 
 import 'swiper/css';
 import 'swiper/css/navigation'; 
 
-type dataType = {
-    imgUrl: string,
-    name: string,
-    summary: string,
-    isHot : boolean
+interface HotCourseListProps {
+    data: CourseInfo[];
 }
 
-interface CourseListProps {
-    cards: dataType[]
-}
-
-const CourseList = ({ cards } : CourseListProps) => {
-
+const HotCourseList = ( { data } : HotCourseListProps) => {
     return (
         <div className="border-b border-inherit">
             <Swiper
@@ -32,9 +25,9 @@ const CourseList = ({ cards } : CourseListProps) => {
                 navigation={true} modules={[Autoplay, Navigation]}
             >
                 
-                {cards.map((card, idx) => (
+                {data.map((card, idx) => (
                     <SwiperSlide key={idx}>
-                        <Hotcard imageSrc={card.imgUrl} name={card.name} summary={card.summary}/>
+                        <HotCourse data={card}/>
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -42,4 +35,4 @@ const CourseList = ({ cards } : CourseListProps) => {
     );
 }
 
-export default CourseList;
+export default HotCourseList;

@@ -1,26 +1,20 @@
 // import
 import { Link } from "react-router-dom";
-
+import { CourseInfo } from './../../types/CourseInfo';
 // props
 interface CourseProps {
-    imageSrc: (string | undefined),
-    name?: string,
-    summary?: string,
-    courseId?: number,
+    data : CourseInfo
 }
 
-const Course = ({imageSrc, name, courseId, summary} : CourseProps) => {
+const Course = ({ data } : CourseProps) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
-            <Link to="/detailCourse" state={{courseId : {courseId}, title : {name} }}>
-                <img className="w-[100%] h-[170px] rounded-lg shadow " src={imageSrc} alt="product image" />
-            </Link>
-            <div className="px-5 pt-5">
-                <Link to="/detailCourse" state={{courseId : {courseId}, title : {name} }}>
-                    <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{name}</h5>
-                    <h5 className="text-sm tracking-tight text-gray-900 dark:text-white">{summary}</h5>
-                </Link>
+            <Link to="/detailCourse:courseId">
+                <img className="w-[100%] h-[170px] rounded-lg shadow " src={data.imgUrl} alt="product image" />
+                <div className="px-5 pt-5">
+                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{data.name}</h5>
+                <h5 className="text-sm tracking-tight text-gray-900 dark:text-white">{data.summary}</h5>
                 <div className="flex items-center mt-2.5 mb-5">
                     <div className="flex items-center space-x-1 rtl:space-x-reverse">
                         <svg className="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
@@ -42,6 +36,7 @@ const Course = ({imageSrc, name, courseId, summary} : CourseProps) => {
                     <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">5.0</span>
                 </div>
             </div>
+            </Link>
         </div>
       
     );

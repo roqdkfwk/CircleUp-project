@@ -1,4 +1,3 @@
-
 export interface CourseDetail {
     id: number,
     courseName: string,

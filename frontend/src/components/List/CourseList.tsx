@@ -3,22 +3,15 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import Course from "../Card/Course";
 import 'swiper/css';
 import 'swiper/css/navigation'; // Navigation 모듈을 사용할 때 필요합니다.
-
-// 임시: 데이터 타입 정의
-type dataType = {
-    imgUrl: string,
-    name: string,
-    summary: string,
-    id: number,
-}
+import { CourseInfo } from './../../types/CourseInfo';
 
 interface CourseListProps {
-    cards: dataType[]
-    title: string
+    data: CourseInfo[],
+    title: string,
     subTitle: string
 }
 
-const CourseList = ({ cards, title, subTitle }: CourseListProps) => {
+const CourseList = ({ data, title, subTitle }: CourseListProps) => {
 
     return (
         <div>
@@ -32,9 +25,9 @@ const CourseList = ({ cards, title, subTitle }: CourseListProps) => {
                     // spaceBetween={100} // spaceBetween 속성을 추가합니다.
                     modules={[Autoplay, Navigation]}
                 >
-                    {cards.map((card, idx) => (
+                    {data.map((card, idx) => (
                         <SwiperSlide key={idx}>
-                            <Course imageSrc={card.imgUrl} name={card.name} summary={card.summary} courseId={card.id}/>
+                            <Course data={card}/>
                         </SwiperSlide>
                     ))}
                 </Swiper>
