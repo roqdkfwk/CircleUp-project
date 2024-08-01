@@ -22,7 +22,6 @@ public class CourseCreatePostReq {
     String description;
     String price;
     String tags;
-    List<CurriculumPostReq> curriculums = new ArrayList<>();
 
     public Course toEntity(Instructor instructor, Timestamp timestamp, String imgUrl) {
         Long parsedPrice = Long.parseLong(price);
