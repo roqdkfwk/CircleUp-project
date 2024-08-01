@@ -4,6 +4,7 @@ import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
 import org.kurento.client.internal.server.Param;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,8 +13,23 @@ import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long>, CourseRepositoryCustom {
 
-    @Query("SELECT c FROM Course c WHERE c.name LIKE %:keyword% OR c.summary LIKE %:keyword%")
+    @Query("SELECT r.course.id, COUNT(r) FROM Register r GROUP BY r.course.id")
+    List<Object[]> countRegistersByCourse();
+
+    @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
+    @Query("SELECT DISTINCT c FROM Course c " +
+            "WHERE c.name LIKE %:keyword% OR c.summary LIKE %:keyword%")
     List<Course> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
+    @Query("SELECT DISTINCT c FROM Course c " +
+            "WHERE c.id in (" +
+            "SELECT c2.id FROM Course c2 " +
+            "JOIN c2.courseTagList ct2 WHERE ct2.tag.id IN :tagIds " +
+            "GROUP BY c2.id HAVING COUNT(ct2.tag.id) = :size )")
+    List<Course> findByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
+
+    ///////////////////////////////////////////////////////////////////////////////
 
     List<Course> findByPrice(Long price, Pageable pageable);
 
@@ -24,9 +40,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
 
     @Query("SELECT c FROM Course c WHERE c.id IN (SELECT ct.course.id FROM course_tag ct WHERE ct.tag.id = :tagId)")
     List<Course> findByTagId(@Param("tagId") Long tagId, Pageable pageable);
-
-    @Query("SELECT c FROM Course c JOIN c.courseTagList ct WHERE ct.tag.id IN :tagIds GROUP BY c.id HAVING COUNT(ct.tag.id) = :size")
-    List<Course> findByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
 
     @Query("SELECT c FROM Course c JOIN FETCH c.instructor left Join c.courseTagList WHERE c.id = :id")
     Optional<Course> findById(@Param("id") Long id);
