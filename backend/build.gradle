@@ -1,6 +1,4 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
-buildscript{
+buildscript {
     ext {
         springBootVer = '2.4.5'
         querydslVer = '4.4.0'
@@ -22,6 +20,18 @@ plugins {
     id 'java'
     id 'idea'
     id 'org.springframework.boot' version "${springBootVer}"
+
+    id "org.sonarqube" version "3.0"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "circle"
+        property "sonar.projectName", "circle-up"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.login", "b95b51d5475a5522df32f85897089233dccd1368"
+        property "sonar.projectVersion", "1.0.0"
+    }
 }
 
 apply plugin: 'io.spring.dependency-management'
