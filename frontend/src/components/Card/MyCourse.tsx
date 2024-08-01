@@ -17,7 +17,7 @@ const MyCourse = ({ imgUrl, courseId, name } : MyCourseProps) => {
         if(role === 'Instructor')
             navigate("/courseManagementDetail", { state: { courseId: courseId } });
         else
-            navigate('/courseDetail', {state: { courseId: courseId, title : name }})
+            navigate('/detailCourse', {state: { courseId: courseId, title : name }})
     }
 
     return (

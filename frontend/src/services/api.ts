@@ -184,9 +184,10 @@ axiosClient.interceptors.response.use(
             const newRefreshToken = response.headers['refresh'];
             try {
                 originalRequest.headers.Authorization = `${newRefreshToken}`;
+                
                 localStorage.setItem("accessToken", newRefreshToken);
-
-                return originalRequest;
+                //localStorage.setItem("refreshToken", newRefreshToken);
+                return await originalRequest;
 
             } catch (error) {
                 localStorage.removeItem('userId');

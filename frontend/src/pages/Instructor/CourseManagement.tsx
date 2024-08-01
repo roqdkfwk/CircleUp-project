@@ -5,7 +5,8 @@ import { getMyCourse } from "../../services/api";
 interface MyCourseType {
     imgUrl: (string | undefined),
     name: string,
-    courseId: number
+    courseId: number,
+    summary: string,
 }
 
 const CourseManagement = () => {
@@ -32,7 +33,8 @@ const CourseManagement = () => {
                 const newCourse: MyCourseType = {
                     imgUrl: course.imgUrl,
                     name: course.name,
-                    courseId: course.id
+                    courseId: course.id,
+                    summary : course.summary,
                 }
 
                 return newCourse;
@@ -43,6 +45,9 @@ const CourseManagement = () => {
 
         fetchMyCourses();
     }, []);
+
+    if (myCourses.length === 0)
+        return (<div>Token 재갱신 중 || Loading...</div>);
 
     return (
         <div className="flex flex-row">
@@ -57,7 +62,7 @@ const CourseManagement = () => {
                 sm:p-8 
                 dark:bg-gray-800 dark:border-gray-700
             ">
-                <MyCourseList myCourses={myCourses} />
+                <MyCourseList onMyPage={false} myCourses={myCourses} />
             </div>
         </div>
     )

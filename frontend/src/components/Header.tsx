@@ -109,12 +109,12 @@ function Header() {
                     aria-labelledby="dropdownAvatarNameButton"
                   >
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/myPage"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         내 강의
-                      </a>
+                      </Link>
                     </li>
                     {role === "Instructor" ?
                       <li>

@@ -8,6 +8,7 @@ import CourseManagementModify from "../pages/Instructor/CourseManagementModify";
 import VideoRoomComponent from "../pages/VideoRoomComponent";
 import GateTemp from "../pages/GateTemp";
 import MainLayout from "../components/MainLayout";
+import MyPage from "../pages/Member/MyPage";
 
 const Router = () => {
   return (
@@ -15,6 +16,7 @@ const Router = () => {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Main />} />
         <Route path="/detailCourse" element={<DetailCourse />} />
+        <Route path="/myPage" element={<MyPage /> } />
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
