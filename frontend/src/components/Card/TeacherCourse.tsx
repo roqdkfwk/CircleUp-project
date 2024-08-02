@@ -2,11 +2,11 @@ import { CourseInfo } from "../../types/CourseInfo";
 import { Link } from "react-router-dom";
 
 // props
-interface MyCourseProps {
+interface TeacherCourseProps {
     data : CourseInfo
 }
 
-const MyCourse = ({ data } : MyCourseProps) => {
+const TeacherCourse = ({ data } : TeacherCourseProps) => {
 
     const { imgUrl, id : courseId, name, summary } = data;
 
@@ -25,4 +25,4 @@ const MyCourse = ({ data } : MyCourseProps) => {
     );
 }
 
-export default MyCourse;
+export default TeacherCourse;

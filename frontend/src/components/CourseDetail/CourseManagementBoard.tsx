@@ -17,6 +17,8 @@ const CourseStatusBoard = ({ flag, data, onNewMyCourse }: CourseStatusBoardProps
     // <ToDo> - 수강자가 수강 진행 중인 경우의 상태, { 수강 신청 버튼 X & 라이브 참가 허용 }
     const { nickName } = useUserStore();
     const [isReady, setIsReady] = useState(false);
+    //const [isLive, setIsLive] = useState(false);
+
     const [myCourse, setMyCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: '',

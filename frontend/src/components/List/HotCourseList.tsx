@@ -20,7 +20,7 @@ const HotCourseList = ( { data } : HotCourseListProps) => {
                 loop={true}
                 autoplay={{
                     disableOnInteraction : false,
-                    delay : 4000
+                    delay : 3000
                 }}
                 navigation={true} modules={[Autoplay, Navigation]}
             >

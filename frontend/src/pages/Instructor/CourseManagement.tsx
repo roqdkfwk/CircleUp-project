@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import MyCourseList from "../../components/List/MyCourseList";
+import MyCourseList from "../../components/List/TeacherCourseList";
 import { getMyCourse } from "../../services/api";
 import { CourseInfo } from "../../types/CourseInfo";
 
