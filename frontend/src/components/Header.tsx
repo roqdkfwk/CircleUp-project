@@ -18,7 +18,7 @@ function Header() {
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchValue) {
-      navigate(`/search/${searchValue}`);
+      navigate(`/search?keyword=${searchValue}`);
     }
   };
 

@@ -8,9 +8,10 @@ interface Course {
     size: number
 }
 
-interface SearchCourse {
+export interface SearchCourse {
     keyword: string,
-    size: number
+    size: number,
+    tag?: number
 }
 
 interface Login {
@@ -37,7 +38,18 @@ export const getSpecialCourse = (params: Course) => {
 
 // 강의 검색 조회
 export const getCourseBySearch = (params: SearchCourse) => {
-    return axiosClient.get(`/courses/search?size=${params.size}&keyword=${params.keyword}`);
+    let query = `/courses/search?size=${params.size}`;
+    if (params.tag !== undefined) {
+        query += `&tag=${params.tag}`;
+        console.log("tag check")
+        console.log(params.tag)
+    }
+    if (params.keyword !== "") {
+        query += `&keyword=${params.keyword}`;
+        console.log("keyword check")
+        console.log(params.keyword)
+    }
+    return axiosClient.get(query);
 };
 
 // 태그 조회

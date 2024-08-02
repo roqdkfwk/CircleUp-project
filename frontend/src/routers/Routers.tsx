@@ -17,13 +17,12 @@ const Router = () => {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Main />} />
         <Route path="/courseDetail/:courseId" element={<CourseDetail />} />
-        <Route path="/CourseDetail" element={<CourseDetail />} />
         {/* <Route path="/myPage" element={<MyPage /> } /> */}
         {/* <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
         <Route path="/courseManagementDetail" element={<CourseManagementDetail />} /> */}
-        <Route path="/search/:searchKeyword" element={<Search />} />
+        <Route path="/search" element={<Search />} />
       </Route>
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />

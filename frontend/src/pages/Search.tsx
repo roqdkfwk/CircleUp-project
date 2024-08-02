@@ -1,43 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTages, getCourseBySearch } from "../services/api";
-import { useParams } from "react-router";
-import { CourseDetailBySearch } from '../types/CourseDetailInfoBySearch';
+import { useLocation, useNavigate } from "react-router";
+import { CourseDetailInfoBySearch } from '../types/CourseDetailInfoBySearch';
 import SearchCourseList from "../components/List/SearchCourseList";
+import { SearchCourse } from './../services/api';
+import { Link } from "react-router-dom";
+
 interface CourseTag {
+  id: number;
   tagName: string;
 }
 
 function Search() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const searchKeyword = queryParams.get("keyword");
+  const searchTag = queryParams.get("tag");
+
   const [courseTags, setCourseTags] = useState<CourseTag[]>([]);
-  const [activeTab, setActiveTab] = useState<string>(''); // 활성화된 탭을 관리할 상태
-  const [searchCourse, setSearchCourse] = useState<CourseDetailBySearch[]>([]);
-  const { searchKeyword } = useParams<{ searchKeyword: string }>();
+  const [activeTab, setActiveTab] = useState<number | undefined>(); // 활성화된 탭을 관리할 상태
+  const [searchCourse, setSearchCourse] = useState<CourseDetailInfoBySearch[]>([]);
 
   const fetchTags = async () => {
     const response = await getAllTages();
     setCourseTags(response.data);
   };
 
-  const fetchCourseByKeyword = async (keyword: string, size: number) => {
-    const data = {
+  const fetchCourseByKeyword = async (keyword: string, size: number, tag?: number) => {
+    const data: SearchCourse = {
       keyword: keyword,
       size: size,
     };
+
+    if (tag !== undefined) {
+      data.tag = tag;
+    }
+
     const response = await getCourseBySearch(data);
     setSearchCourse(response.data);
   };
 
   useEffect(() => {
-
     fetchTags();
-    if (searchKeyword) {
-      fetchCourseByKeyword(searchKeyword, 10);
-    }
-  }, [searchKeyword]);
+  }, []);
 
-  const handleTabClick = (tagName: string) => {
-    setActiveTab(tagName);
-    fetchCourseByKeyword(tagName, 10);
+  useEffect(() => {
+    console.log(searchKeyword)
+    console.log(searchTag)
+    if (searchKeyword) {
+      fetchCourseByKeyword(searchKeyword, 100);
+    } else if (searchTag) {
+      fetchCourseByKeyword('', 100, Number(searchTag));
+      setActiveTab(Number(searchTag));
+    }
+  }, [searchKeyword, searchTag]);
+
+  const handleTabClick = (tagNumber: number) => {
+    setActiveTab(tagNumber);
+    navigate(`/search?tag=${tagNumber}`);
   };
 
   return (
@@ -47,17 +68,17 @@ function Search() {
         <ul className="flex flex-wrap -mb-px">
           {courseTags?.map((item, idx) => (
             <li className="me-2" key={idx}>
-              <a
-                href="#"
-                onClick={() => handleTabClick(item.tagName)}
-                className={`inline-block p-4 border-b-2 rounded-t-lg text-base ${
-                  activeTab === item.tagName
-                    ? 'text-blue-600 border-blue-600'
-                    : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
-                }`}
-              >
-                {item.tagName}
-              </a>
+              <Link to={`/search?tag=${item.id}`} onClick={() => handleTabClick(item.id)}>
+                <div
+                  className={`inline-block p-4 border-b-2 rounded-t-lg text-base ${
+                    activeTab === item.id
+                      ? 'text-blue-600 border-blue-600'
+                      : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+                  }`}
+                >
+                  {item.tagName}
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
@@ -65,7 +86,7 @@ function Search() {
 
       {/* 검색 강의 목록 */}
       <div className="w-[80%] mx-auto mt-8">
-        <SearchCourseList data={searchCourse}/>
+        <SearchCourseList data={searchCourse} />
       </div>
     </div>
   );
