@@ -49,8 +49,8 @@ public class Course {
     @Column(name = "completed_course")
     private Long completedCourse;
 
-    @Column
-    private Double rating;
+    @Column(nullable = false)
+    private Double rating = 0.0;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;

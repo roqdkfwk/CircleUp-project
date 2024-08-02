@@ -33,13 +33,14 @@ public class RegisterController {
     }
 
     @GetMapping("/courses/registers/{course_id}")
-    @ApiOperation(value = "수강 여부 조회")
-    public ResponseEntity<Boolean> isRegister(
+    @ApiOperation(value = "수강 여부 조회",
+            notes = "강사면 2, 수강중이면 1, 수강중이아니면 0을 반환합니다")
+    public ResponseEntity<Long> isRegister(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(courseService.existRegister(memberId, courseId));
+        return ResponseEntity.ok().body(courseService.roleRegister(memberId, courseId));
     }
 
 
