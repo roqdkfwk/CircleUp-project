@@ -38,16 +38,13 @@ export const getSpecialCourse = (params: Course) => {
 
 // 강의 검색 조회
 export const getCourseBySearch = (params: SearchCourse) => {
+    console.log(params.keyword)
+    console.log(params.tag)
     let query = `/courses/search?size=${params.size}`;
     if (params.tag !== undefined) {
         query += `&tag=${params.tag}`;
-        console.log("tag check")
-        console.log(params.tag)
-    }
-    if (params.keyword !== "") {
+    } else if (params.keyword !== "") {
         query += `&keyword=${params.keyword}`;
-        console.log("keyword check")
-        console.log(params.keyword)
     }
     return axiosClient.get(query);
 };

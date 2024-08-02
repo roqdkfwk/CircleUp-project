@@ -25,7 +25,7 @@ const MyCourse = () => {
 
     return (
         <div>
-            {/* 태그 선택 Navbar */}
+            {/* 메뉴 선택 Navbar */}
             <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-[80%] mx-auto mt-5">
                 <ul className="flex flex-wrap -mb-px">
                 {myCourseNavBar?.map((item, idx) => (

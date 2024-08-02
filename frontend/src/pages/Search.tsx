@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { getAllTages, getCourseBySearch } from "../services/api";
 import { useLocation, useNavigate } from "react-router";
 import { CourseDetailInfoBySearch } from '../types/CourseDetailInfoBySearch';
-import SearchCourseList from "../components/List/CourseGallery";
-import { SearchCourse } from './../services/api';
 import { Link } from "react-router-dom";
 import CourseGallery from "../components/List/CourseGallery";
 
@@ -47,13 +45,13 @@ function Search() {
   }, []);
 
   useEffect(() => {
-    console.log(searchKeyword)
-    console.log(searchTag)
-    if (searchKeyword) {
-      fetchCourseByKeyword(searchKeyword, 100);
-    } else if (searchTag) {
+    console.log(searchKeyword);
+    console.log(searchTag);
+    if (searchTag) {
       fetchCourseByKeyword('', 100, Number(searchTag));
       setActiveTab(Number(searchTag));
+    } else {
+      fetchCourseByKeyword(searchKeyword || ' ', 100);
     }
   }, [searchKeyword, searchTag]);
 
