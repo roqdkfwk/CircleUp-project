@@ -21,15 +21,13 @@ public class CourseCreatePostReq {
     String tags;
 
     public Course toEntity(Instructor instructor, Timestamp timestamp, String imgUrl) {
-        Long parsedPrice = Long.parseLong(price);
-
         return Course.builder()
                 .instructor(instructor)
                 .createdAt(timestamp)
                 .name(this.name)
                 .imgUrl(imgUrl)
                 .view(0L)
-                .price(parsedPrice)
+                .price(Long.parseLong(price))
                 .description(this.description)
                 .courseTagList(new ArrayList<>())
                 .curriculumList(new ArrayList<>())
