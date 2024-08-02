@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 
-
+@ApiIgnore
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/sessions")
@@ -29,18 +31,26 @@ public class SessionController {
     }
 
     @PostMapping
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        SessionProperties properties = SessionProperties.fromJson(params).build();
+    @RequestMapping("/{course_id}")
+    public ResponseEntity<String> initializeSession(
+            @PathVariable(name = "course_id") String courseId,
+            @RequestHeader(required = false, value = "Memberid") String memberId
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("customSessionId", courseId);
+        SessionProperties properties = SessionProperties.fromJson(map).build();
+
         Session session = openvidu.createSession(properties);
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
-    @PostMapping("/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        Session session = openvidu.getActiveSession(sessionId);
+    @PostMapping("/{course_id}/connections")
+    public ResponseEntity<String> createConnection(
+            @PathVariable("course_id") String courseId,
+            @RequestBody(required = false) Map<String, Object> params
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+        Session session = openvidu.getActiveSession(courseId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -48,6 +58,5 @@ public class SessionController {
         Connection connection = session.createConnection(properties);
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
-
 }
 

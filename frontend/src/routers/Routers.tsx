@@ -7,7 +7,7 @@ import VideoRoomComponent from "../pages/VideoRoomComponent";
 import GateTemp from "../pages/GateTemp";
 import MainLayout from "../components/MainLayout";
 import Search from "../pages/Search";
-import MyPage from "../pages/Member/MyPage";
+import MyCourse from "../pages/Member/MyCourse";
 import CourseManagement from "../pages/Instructor/CourseManagement";
 import CourseManagementMake from "../pages/Instructor/CourseManagementMake";
 import CurriculumDetail from "../pages/CurriculumDetail";
@@ -20,7 +20,7 @@ const Router = () => {
         <Route path="/courseDetail/:courseId" element={<CourseDetail />} />
         <Route path="/search" element={<Search />} />
         <Route path="/CourseDetail" element={<CourseDetail />} />
-        <Route path="/myPage" element={<MyPage /> } />
+        <Route path="/myCourse" element={<MyCourse /> } />
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />

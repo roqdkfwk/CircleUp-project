@@ -4,14 +4,17 @@ import com.ssafy.db.entity.enums.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class MemberSignupPostReq {
-
-    private String email;
-    private String pw;
-    private String name;
-    private Role role;
-    private String contact;
-    private String tel;
+    String email;
+    String pw;
+    String name;
+    Role role;
+    String contactEmail;
+    String contactTel;
+    List<Long> tags = new ArrayList<>();
 }

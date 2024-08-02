@@ -100,8 +100,7 @@ function Header() {
                 className="flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-blue-600 dark:hover:text-blue-500 md:me-0 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-white"
                 type="button"
               >
-                <span className="sr-only">Open user menu</span>
-                <img className="w-7 h-7 me-2 rounded-full" src="/src/assets/images/certified.png" alt="user photo" />
+                <img className="w-7 h-7 me-2 rounded-full" src="/assets/images/certified.png" alt="user photo" />
                 {nickName}
                 <svg
                   className="w-2.5 h-2.5 ms-3"
@@ -134,7 +133,7 @@ function Header() {
                   >
                     <li>
                       <Link
-                        to="/myPage"
+                        to="/myCourse"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         내 강의

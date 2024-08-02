@@ -26,7 +26,7 @@ const SearchCourse = ({ data } : SearchCourseProps ) => {
                         <span className="bg-indigo-100 text-indigo-800 text-sm me-2 mt-[2px] px-2.5 rounded dark:bg-indigo-900 dark:text-indigo-300" key={idx}>{tagName}</span>
                     ))}
                 </div>
-                <h5 className="text-base font-bold tracking-tight GD my-[10px] min-h-[50px] text-gray-800 dark:text-white">{data.name}</h5>
+                <h5 className="text-base title tracking-tight my-[10px] min-h-[50px] text-gray-800 dark:text-white">{data.name}</h5>
                 <div className="text-gray-500 text-sm flex items-center">
                     <FaUser style={{color: 'gray'}} /><p className="ml-2">{data.registeredCnt}</p>
                 </div>

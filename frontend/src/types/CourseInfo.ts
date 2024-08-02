@@ -5,4 +5,6 @@ export interface CourseInfo {
     summary: string,
     price: number,
     view: number,
+    ratingNum: number,
+    ratingStr: string
 }
