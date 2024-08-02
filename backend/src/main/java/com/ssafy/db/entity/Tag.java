@@ -12,16 +12,16 @@ import java.util.List;
 @Setter
 public class Tag {
     @Id
-    @Column(name="tag_id")
+    @Column(name = "tag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 45)
     private String name;
 
-    @Column(length = 2000)
-    private String img_url;
+    @Column(name = "img_url", length = 2000)
+    private String imgUrl;
 
     @OneToMany(mappedBy = "tag")
-    private List<CourseTag> course_tag_list = new ArrayList<>();
+    private List<CourseTag> courseTagList = new ArrayList<>();
 }

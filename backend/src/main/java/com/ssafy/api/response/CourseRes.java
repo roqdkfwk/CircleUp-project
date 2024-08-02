@@ -1,13 +1,10 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,29 +12,29 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 public class CourseRes {
-
     Long id;
     String courseName;
-    String img_url;
+    String imgUrl;
     Long price;
     Long view;
-
+    Double rating;
     String instructorName;
-    String curriculum;
     String description;
+    List<String> tags;
+    List<Long> curriculums;
 
-    List<String> tags = new ArrayList<>();
 
-    public static CourseRes of(Course course){
+    public static CourseRes of(Course course) {
         return CourseRes.builder()
                 .id(course.getId())
                 .courseName(course.getName())
-                .img_url(course.getImg_url())
+                .imgUrl(course.getImgUrl())
                 .price(course.getPrice())
                 .view(course.getView())
+                .rating(course.getRating())
                 .instructorName(course.getInstructor().getMember().getName())
-                .curriculum(course.getCurriculum())
                 .description(course.getDescription())
-                .tags(course.getCourse_tag_list().stream().map(ct->ct.getTag().getName()).collect(Collectors.toList())).build();
+                .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
+                .curriculums(course.getCurriculumList().stream().map(curr -> curr.getId()).collect(Collectors.toList())).build();
     }
 }

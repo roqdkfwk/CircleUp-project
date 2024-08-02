@@ -1,19 +1,30 @@
 package com.ssafy.api.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
+import com.ssafy.api.response.MemberModifyUpdateRes;
 import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.api.response.MemberSignupPostRes;
+import com.ssafy.common.custom.NotFoundException;
+import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.common.util.JwtUtil;
+import com.ssafy.db.entity.Favor;
+import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.Tag;
 import com.ssafy.db.entity.enums.Role;
+import com.ssafy.db.repository.FavorRepository;
+import com.ssafy.db.repository.InstructorRepository;
 import com.ssafy.db.repository.MemberRepository;
+import com.ssafy.db.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -21,129 +32,158 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
-    private final AuthService authService;
+    private final InstructorRepository instructorRepository;
+    private final TagRepository tagRepository;
+    private final FavorRepository favorRepository;
     private final JwtUtil jwtUtil;
 
     // 회원가입
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
+        Member member = MemberSignupPostRes.of(memberSignupPostReq);
+        List<Long> tags = memberSignupPostReq.getTags();
 
-        Member member = Member.builder()
-                .email(memberSignupPostReq.getEmail())
-                .pw(memberSignupPostReq.getPw())
-                .name(memberSignupPostReq.getName())
-                .role(memberSignupPostReq.getRole())
-                .tel(memberSignupPostReq.getTel())
-                .contact(memberSignupPostReq.getContact())
-                .build();
+        for (Long tagId : tags) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(
+                    () -> new NotFoundException("존재하지 않는 태그입니다")
+            );
+
+            saveFavor(member, tag);
+        }
+        if (member.getRole().equals(Role.Instructor)) {
+            Instructor instructor = new Instructor();
+            instructor.setId(member.getId());
+            instructor.setMember(member);
+            instructor.setDescription("");
+            instructorRepository.save(instructor);
+        }
 
         memberRepository.save(member);
     }
 
-    // 이메일 중복체크
-    @Override
-    @Transactional(readOnly = true)
-    public boolean checkEmail(String email) {
-
-        Optional<Member> member = memberRepository.findByEmail(email);
-        return member.isPresent();
-    }
-
     // 회원탈퇴
     @Override
-    public void withdraw(Long memberId) {
-        memberRepository.deleteById(memberId);
-    }
-
-    // 회원정보수정
-    @Override
-    public Member modifyMember(String token, MemberModifyUpdateReq memberModifyUpdateReq) {
-
-        Long memberId = jwtUtil.extractId(token);
-        Optional<Member> member = memberRepository.findById(memberId);
-
-        if (!member.isPresent()) {
-            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다.");
+    public void withdrawMemberByToken(String token) {
+        String accessToken = token.replace("Bearer ", "");
+        // 만료된 토큰이거나 블랙리스트에 등록된 토큰이라면
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new UnAuthorizedException("Unauthorized access");
         }
 
-        member.get().setPw(memberModifyUpdateReq.getPw());
-        member.get().setRole(memberModifyUpdateReq.getRole());
-        member.get().setTel(memberModifyUpdateReq.getTel());
-        member.get().setContact(memberModifyUpdateReq.getContact());
+        Long memberId = jwtUtil.extractId(accessToken);
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Member not found with id: " + memberId));
 
-        Member updatedMember = memberRepository.save(member.get());
+        // 회원의 Favor 모두 찾아서 석제
+        List<Favor> favors = favorRepository.findByMemberId(memberId);
+        for (Favor favor : favors) {
+            favorRepository.delete(favor);
+        }
 
-        String newAccessToken = jwtUtil.generateAccessToken(updatedMember);
-        String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
+        // refresh token 제거
+        member.setRefreshToken(null);
 
-//        updatedMember.setAccessToken(newAccessToken);
-        updatedMember.setRefreshToken(newRefreshToken);
-
-        return updatedMember;
-//        if (memberModifyUpdateReq.getContact() != null) member.get().setContact(memberModifyUpdateReq.getContact());
-//        if (memberModifyUpdateReq.getPw() != null) member.get().setPw(memberModifyUpdateReq.getPw());
-//        if (memberModifyUpdateReq.getName() != null) member.get().setName(memberModifyUpdateReq.getName());
-//        if (memberModifyUpdateReq.getRole() != null) member.get().setRole(memberModifyUpdateReq.getRole());
-//        if (memberModifyUpdateReq.getTel() != null) member.get().setTel(memberModifyUpdateReq.getTel());
-
-//        return Optional.of(memberRepository.save(member));
+        // 회원 정보 삭제
+        memberRepository.delete(member);
     }
 
     // 마이페이지
     @Override
-    @Transactional(readOnly = true)
-    public MemberReadGetRes readMemberByToken(String token) {
-
-        try {
-            String memberToken = token.replace("Bearer ", "");
-            if (jwtUtil.validateToken(memberToken)) {
-
-                return MemberReadGetRes.builder()
-                        .id(jwtUtil.extractId(memberToken))
-                        .email(jwtUtil.extractClaim(memberToken, claims -> claims.get("email", String.class)))
-                        .name(jwtUtil.extractClaim(memberToken, claims -> claims.get("name", String.class)))
-                        .role(jwtUtil.extractClaim(memberToken, claims -> Role.valueOf(claims.get("role", String.class))))
-                        .contact(jwtUtil.extractClaim(memberToken, claims -> claims.get("contact", String.class)))
-                        .tel(jwtUtil.extractClaim(memberToken, claims -> claims.get("tel", String.class)))
-                        .build();
-            } else {
-                throw new RuntimeException("Invalid token");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new EntityNotFoundException("Invalid token or user not found: " + e.getMessage());
+    public MemberReadGetRes getMyInfo(Long memberId, String accessToken) {
+        // 만료된 토큰이거나 블랙리스트에 등록된 토큰이라면
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new UnAuthorizedException("Unauthorized access");
         }
+
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Not Found Member : Member_id is " + memberId)
+        );
+
+        // 해당 member가 선호하는 태그를 DB에서 찾음
+        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+
+        // 선호하는 태그의 이름을 DB에서 찾음
+        List<String> tagNameList = new ArrayList<>();
+        for (Favor favor : favors) {
+            String tagName = favor.getTag().getName();
+            tagNameList.add(tagName);
+        }
+        return MemberReadGetRes.of(member, tagNameList);
     }
 
+    // 회원정보수정
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+        // DB에서 해당 회원 조회
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 회원입니다.")
+        );
+
+        // 회원의 Favor 모두 찾아서 석제
+        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+        for (Favor favor : favors) {
+            favorRepository.delete(favor);
+        }
+
+        // 수정된 Favor을 DB에 반영
+        String tagIds = memberModifyUpdateReq.getTags();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Long> tags;
+        try{
+            tags = objectMapper.readValue(tagIds, new TypeReference<List<Long>>() {});
+        } catch (Exception e){
+            throw new RuntimeException("tags parsing error");
+        }
+
+
+        // 선호하는 태그의 이름을 DB에서 찾음
+        List<String> tagNameList = new ArrayList<>();
+        for (Long tagId : tags) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(
+                    () -> new NotFoundException("Not Found Tag : Tag is " + tagId)
+            );
+
+            saveFavor(member, tag);
+            tagNameList.add(tag.getName());
+        }
+
+        // member의 정보를 수정
+        MemberModifyUpdateRes.of(memberModifyUpdateReq, member);
+
+        // 수정된 정보를 바탕으로 새로운 access / refresh 토큰 발급
+        String newAccessToken = jwtUtil.generateAccessToken(member);
+        String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
+
+        // 새로 발급 받은 refresh 토큰을 DB에 저장
+        member.setRefreshToken(newRefreshToken);
+
+        // 수정된 정보를 DB에 반영
+        memberRepository.save(member);
+
+        // 회원정보, 새로 발급받은 access 토큰, 선호하는 태그 이름을 반환하는 객체
+        return MemberModifyUpdateRes.toEntity(member, newAccessToken, tagNameList);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
-
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
-
-        if (memberOptional.isPresent()) {
-            return memberOptional.get();
-        } else {
-            throw new UsernameNotFoundException("User not found with email: " + email);
-        }
+        return memberRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 회원입니다."));
+    }
 
-        Optional<Member> memberOptional = memberRepository.findById(memberId);
-
-        if (memberOptional.isPresent()) {
-            return memberOptional.get();
-        } else {
-            throw new EntityNotFoundException("User not found with id: " + memberId);
-        }
+    @Override
+    @Transactional
+    public void saveFavor(Member member, Tag tag) {
+        Favor favor = new Favor();
+        favor.setMember(member);
+        favor.setTag(tag);
+        favorRepository.save(favor);
     }
 }

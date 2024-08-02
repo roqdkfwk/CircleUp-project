@@ -5,14 +5,13 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 public class Register {
     @Id
-    @Column(name="register_id")
+    @Column(name = "register_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -24,6 +23,6 @@ public class Register {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @Column
-    private Timestamp created_at;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
 }

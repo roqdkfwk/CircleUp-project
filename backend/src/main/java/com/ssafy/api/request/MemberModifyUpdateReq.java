@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MemberModifyUpdateReq {
-
-    private String pw;
-    private Role role;
-    private String contact;
-    private String tel;
+    String pw;
+    String name;
+    Role role;
+    String contactEmail;
+    String contactTel;
+    String tags;
 }
