@@ -426,6 +426,10 @@ public class CourseSerivce {
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
+    public Long roleRegister(Long memberId, Long courseId) {
+        return courseRepository.checkRegisterStatus(memberId, courseId);
+    }
+
     public boolean existRegister(Long memberId, Long courseId) {
         return courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null;
     }
