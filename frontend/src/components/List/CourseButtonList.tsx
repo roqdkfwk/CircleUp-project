@@ -1,5 +1,6 @@
 import CourseDetailButton from "../Card/CourseDetailButton";
 
+
 interface CourseBtnProps {
     buttonName: string,
     color: 'green' | 'blue' | 'red';

@@ -1,4 +1,4 @@
-import Tag from "../Card/Tag";
+import Tag from "../Card/Tag"
 
 interface TagListProps {
     names: string[]

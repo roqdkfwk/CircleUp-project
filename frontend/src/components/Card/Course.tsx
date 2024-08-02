@@ -9,6 +9,7 @@ interface CourseProps {
 const Course = ({ data } : CourseProps) => {
 
     return (
+
         <div className="bg-white dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
             <Link to={`/courseDetail/${data.id}`}>
                 <img className="w-[100%] h-[170px] rounded-lg shadow " src={data.imgUrl} alt="product image" />

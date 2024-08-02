@@ -2,6 +2,8 @@ export interface CourseDetailInfo {
     id: number,
     courseName: string,
     imgUrl: string,
+    imgData: FileList | null,
+    curriculum: string,
     price: number,
     view: number,
     instructorName: string,

@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './Modal/LoginModal';
+import MemberModfiyModal from "./Modal/MemeberModfiyModal";
 import { useUserStore } from '../store/store';
+
 
 function Header() {
   const [showModal, setShowModal] = useState(false);
+  const [showModfiyModal, setShowModfiyModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { nickName, email, role } = useUserStore();
@@ -24,6 +27,10 @@ function Header() {
 
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+
+  const toggleModfiyModal = () => {
+    setShowModfiyModal(!showModfiyModal);
   };
 
   const toggleDropdown = () => {
@@ -76,7 +83,8 @@ function Header() {
     <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md p-2 z-10 relative">
       {/* 로그인 모달 */}
       <LoginModal show={showModal} onClose={toggleModal} />
-
+      <MemberModfiyModal show={showModfiyModal} onClose={toggleModfiyModal} />
+      
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto relative">
         <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           {/* 로고 SVG */}
@@ -146,12 +154,16 @@ function Header() {
                   }
                   </ul>
                   <div className="py-2">
-                    <a
-                      href="#"
+                    <Link
+                      to="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleModfiyModal();
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                     >
                       개인정보 수정
-                    </a>
+                    </Link>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
