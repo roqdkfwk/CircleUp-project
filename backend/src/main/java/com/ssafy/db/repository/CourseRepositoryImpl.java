@@ -20,7 +20,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
 
     @Override
     @Transactional
-    public Boolean postRegister(Long memberId, Long courseId) {
+    public boolean postRegister(Long memberId, Long courseId) {
         Member member = em.find(Member.class, memberId);
         Course course = em.find(Course.class, courseId);
         if (member == null || course == null) {
@@ -38,7 +38,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
 
     @Override
     @Transactional
-    public Boolean deleteRegister(Long memberId, Long courseId) {
+    public boolean deleteRegister(Long memberId, Long courseId) {
         try {
             Register register = (Register) em.createQuery("select r from Register r where r.member.id=:memberId and r.course.id = :courseId")
                     .setParameter("memberId", memberId)

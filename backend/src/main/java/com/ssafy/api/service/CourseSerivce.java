@@ -38,7 +38,6 @@ public class CourseSerivce {
     private final CourseRepository courseRepository;
     private final InstructorRepository instructorRepository;
     private final RegisterRepository registerRepository;
-    private final CourseTagRepository courseTagRepository;
     private final TagRepository tagRepository;
     private final CurriculumRepository curriculumRepository;
     private final Bucket bucket;
@@ -52,13 +51,13 @@ public class CourseSerivce {
                     () -> new NotFoundException("Instructor not found")
             );
 
-//             빈 파일일때
+            // 빈 파일일때
             if (courseCreatePostReq.getImg() == null) {
                 throw new BadRequestException("Not File");
             }
             // 이미지 파일이 아닐때
             String contentType = courseCreatePostReq.getImg().getContentType();
-            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+            if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
                 throw new BadRequestException("Not Image File");
             }
 
@@ -79,7 +78,7 @@ public class CourseSerivce {
             List<CourseTag> courseTags = newCourse.getCourseTagList();
 
             List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-            for(Tag tag : tagsToAdd){
+            for (Tag tag : tagsToAdd) {
                 CourseTag courseTag = new CourseTag();
                 courseTag.setTag(tag);
                 courseTag.setCourse(newCourse);
@@ -111,14 +110,14 @@ public class CourseSerivce {
                     () -> new NotFoundException("Course not found")
             );
 
-            if(!course.getInstructor().equals(instructor)){
+            if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
             MultipartFile img = courseModifyUpdateReq.getImg();
             if (img != null) {
                 String contentType = img.getContentType();
-                if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
                     throw new BadRequestException("Not Image File");
                 }
             }
@@ -156,7 +155,7 @@ public class CourseSerivce {
 
 
             List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-            for(Tag tag : tagsToAdd){
+            for (Tag tag : tagsToAdd) {
                 CourseTag courseTag = new CourseTag();
                 courseTag.setTag(tag);
                 courseTag.setCourse(course);
@@ -187,8 +186,8 @@ public class CourseSerivce {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        Long students =  registerRepository.countByCourseId(courseId);
-        if(students > 0 ){
+        Long students = registerRepository.countByCourseId(courseId);
+        if (students > 0) {
             throw new BadRequestException("More than one registered");
         }
 
@@ -200,8 +199,8 @@ public class CourseSerivce {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId){
-        try{
+    public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId) {
+        try {
             // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
@@ -213,7 +212,7 @@ public class CourseSerivce {
             }
             // 강의의 강사가 아닐 때
             Course course = courseOptional.get();
-            if(!course.getInstructor().equals(instructor)){
+            if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
             // 빈 파일일때
@@ -222,7 +221,7 @@ public class CourseSerivce {
             }
             // 이미지 파일이 아닐때
             String contentType = curriculumPostReq.getImg().getContentType();
-            if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+            if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
                 throw new BadRequestException("Not Image File");
             }
 
@@ -237,14 +236,14 @@ public class CourseSerivce {
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create curriculum", e);
         }
     }
 
-    public CourseRes updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId){
-        try{
+    public CourseRes updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId) {
+        try {
             // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
@@ -256,19 +255,19 @@ public class CourseSerivce {
             }
             // 강의의 강사가 아닐 때
             Course course = courseOptional.get();
-            if(!course.getInstructor().equals(instructor)){
+            if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
             // 커리큘럼이 유효하지 않을 때
             Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
-            if(!curriculumOptional.isPresent()){
+            if (!curriculumOptional.isPresent()) {
                 throw new NotFoundException("Curriculum not found");
             }
             // 이미지가 유효하지 않을 때
             MultipartFile img = curriculumUpdateReq.getImg();
             if (img != null) {
                 String contentType = img.getContentType();
-                if (!contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+                if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
                     throw new BadRequestException("Not Image File");
                 }
             }
@@ -293,13 +292,13 @@ public class CourseSerivce {
             curriculumRepository.save(curriculum);
 
             return CourseRes.of(course);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to update curriculum", e);
         }
     }
 
-    public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId){
+    public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId) {
         // 1. 유효성 검증
         Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("Instructor not found")
@@ -311,17 +310,17 @@ public class CourseSerivce {
         }
 
         Course course = courseOptional.get();
-        if(!course.getInstructor().equals(instructor)){
+        if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
         Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
-        if(!curriculumOptional.isPresent()){
+        if (!curriculumOptional.isPresent()) {
             throw new NotFoundException("Curriculum not found");
         }
 
         Curriculum curriculum = curriculumOptional.get();
-        if(curriculum.getTime()!=null && curriculum.getTime()>0){
+        if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
 
@@ -332,7 +331,7 @@ public class CourseSerivce {
         curriculumRepository.delete(curriculum);
     }
 
-    public List<CurriculumRes> getCurriculumById(List<Long> ids){
+    public List<CurriculumRes> getCurriculumById(List<Long> ids) {
         return curriculumRepository.findAllById(ids)
                 .stream()
                 .map(CurriculumRes::of)
@@ -379,7 +378,6 @@ public class CourseSerivce {
                                 course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
                 )
                 .collect(Collectors.toList());
-
     }
 
     public List<CoursesRes> getOfferingCourses(int page, int size) {
@@ -402,7 +400,7 @@ public class CourseSerivce {
     }
 
     public List<CoursesRes> getFreeCourses(int page, int size) {
-            Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size);
 
         return courseRepository.findByPrice(0L, pageable)
                 .stream()
@@ -419,11 +417,11 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getRegisteredCourses(Long memberId, int page, int size) {
+    public List<CoursesRes> getRegisteredCourses(Long id, int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return courseRepository.findByRegisteredMemberId(memberId, pageable)
+        return courseRepository.findByRegisteredMemberId(id, pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
@@ -449,9 +447,9 @@ public class CourseSerivce {
 
     //////////////////////////////////////////////////////////////////////////
 
-    public List<CoursesRes> getCoursesImade(Long member_id) {
-        Instructor instructor = instructorRepository.findById(member_id).orElseThrow(
-                () -> new NotFoundException("Not Found Instructor : Instructor_id is " + member_id)
+    public List<CoursesRes> getCoursesImade(Long id) {
+        Instructor instructor = instructorRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Not Found Instructor : Instructor_id is " + id)
         );
 
         return courseRepository.findByInstructor(instructor).stream()
@@ -459,35 +457,30 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesIregistered(Long member_id) {
-        return courseRepository.findByRegisteredMemberId(member_id)
+    public List<CoursesRes> getCoursesIregistered(Long id) {
+        return courseRepository.findByRegisteredMemberId(id)
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
-    public Boolean existRegister(Long memberId, Long courseId) {
-        if (courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) == null) {
-            return false;
-        }
-        return true;
+    public boolean existRegister(Long memberId, Long courseId) {
+        return courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null;
     }
 
     public void doRegister(Long memberId, Long courseId) {
         // 이미 수강중이면
-        if (existRegister(memberId, courseId) == true) {
+        if (existRegister(memberId, courseId)) {
             throw new ConflictException("Already registered");
         }
-        // TODO point 사용?
 
         // 수강등록 성공여부
-        if (courseRepository.postRegister(memberId, courseId) == false) {
+        if (!courseRepository.postRegister(memberId, courseId)) {
             throw new NotFoundException("Not Found Course or Member");
         }
-        ;
     }
 
     public void cancelRegister(Long memberId, Long courseId) {
         // 수강취소
-        if (courseRepository.deleteRegister(memberId, courseId) == false) {
+        if (!courseRepository.deleteRegister(memberId, courseId)) {
             throw new BadRequestException("Not Found Course or Member or Register");
         }
     }

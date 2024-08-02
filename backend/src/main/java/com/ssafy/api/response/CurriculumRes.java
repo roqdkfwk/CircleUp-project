@@ -1,13 +1,9 @@
 package com.ssafy.api.response;
 
-import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Curriculum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder

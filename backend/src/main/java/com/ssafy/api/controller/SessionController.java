@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO Backend 개발
 @ApiIgnore
 @CrossOrigin(origins = "*")
 @RestController
@@ -34,17 +33,9 @@ public class SessionController {
     @PostMapping
     @RequestMapping("/{course_id}")
     public ResponseEntity<String> initializeSession(
-            // TODO Authentication authentication 로 수정
             @PathVariable(name = "course_id") String courseId,
-            @RequestHeader(required = false, value = "Memberid") String memberId)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-
-        // TODO memberId로 강사인지 멤버인지 판단
-        System.out.println("================================");
-        System.out.println(courseId);
-        System.out.println(memberId);
-        System.out.println("================================");
-
+            @RequestHeader(required = false, value = "Memberid") String memberId
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
 
         Map<String, Object> map = new HashMap<>();
         map.put("customSessionId", courseId);
@@ -55,9 +46,10 @@ public class SessionController {
     }
 
     @PostMapping("/{course_id}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("course_id") String courseId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    public ResponseEntity<String> createConnection(
+            @PathVariable("course_id") String courseId,
+            @RequestBody(required = false) Map<String, Object> params
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
         Session session = openvidu.getActiveSession(courseId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -66,6 +58,5 @@ public class SessionController {
         Connection connection = session.createConnection(properties);
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
-
 }
 

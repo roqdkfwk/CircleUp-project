@@ -26,9 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private SsafyMemberDetailsService ssafyMemberDetailsService;
-
-    @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -47,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(this.ssafyMemberDetailsService);
+        daoAuthenticationProvider.setUserDetailsService(new SsafyMemberDetailsService());
 
         return daoAuthenticationProvider;
     }
