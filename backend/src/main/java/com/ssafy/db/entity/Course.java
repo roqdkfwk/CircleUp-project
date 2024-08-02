@@ -5,6 +5,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseModifyUpdateReq;
 import com.ssafy.common.custom.BadRequestException;
+import com.ssafy.common.util.GCSUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -93,7 +94,7 @@ public class Course {
             blob.delete();
             try{
                 BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                this.setImgUrl(blobInfo.getMediaLink());
+                this.setImgUrl(GCSUtil.preUrl+blobName);
             } catch (Exception e){
                 throw new BadRequestException("Image error");
             }

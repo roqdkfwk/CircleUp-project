@@ -13,6 +13,7 @@ import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
+import com.ssafy.common.util.GCSUtil;
 import com.ssafy.db.entity.*;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,7 @@ public class CourseSerivce {
             String blobName = "course_" + newCourse.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
             // img_url 넣어주기
-            newCourse.setImgUrl(blobInfo.getMediaLink());
+            newCourse.setImgUrl(GCSUtil.preUrl+blobName);
             // 3. 업데이트된 정보로 다시 저장
             return CourseRes.of(courseRepository.save(newCourse));
         } catch (Exception e) {
@@ -195,7 +196,7 @@ public class CourseSerivce {
             String blobName = "curriculum_" + newCurr.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
 
-            newCurr.setImgUrl(blobInfo.getMediaLink());
+            newCurr.setImgUrl(GCSUtil.preUrl+blobName);
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
@@ -250,7 +251,7 @@ public class CourseSerivce {
                 blob.delete();
 
                 BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                curriculum.setImgUrl(blobInfo.getMediaLink());
+                curriculum.setImgUrl(GCSUtil.preUrl+blobName);
             }
             curriculumRepository.save(curriculum);
 
