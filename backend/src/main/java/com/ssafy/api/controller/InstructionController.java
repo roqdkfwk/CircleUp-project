@@ -8,7 +8,6 @@ import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
-import com.ssafy.db.entity.Course;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -70,7 +68,7 @@ public class InstructionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        CourseRes course = courseService.updateCourse(courseId, courseModifyUpdateReq, memberId);
+        courseService.updateCourse(courseId, courseModifyUpdateReq, memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -106,7 +104,7 @@ public class InstructionController {
             @ModelAttribute CurriculumUpdateReq curriculumUpdateReq,
             @RequestPart(name = "img", required = false) MultipartFile img,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         CourseRes course = courseService.updateCurriculum(curriculumUpdateReq, courseId, curriculumId, memberId);
 

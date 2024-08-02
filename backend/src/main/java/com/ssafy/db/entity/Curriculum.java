@@ -37,8 +37,6 @@ public class Curriculum {
     @Column(name = "img_url", length = 1000)
     private String imgUrl;
 
-    //    @OneToMany(mappedBy = "curriculum")
-//    private List<CurrData> curr_data_list = new ArrayList<>();
     protected Curriculum() {
     }
 }

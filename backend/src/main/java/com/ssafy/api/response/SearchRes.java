@@ -23,10 +23,6 @@ public class SearchRes {
     List<String> tags = new ArrayList<>();
 
     public static SearchRes of(Course course, Long registeredCnt, List<String> tags) {
-        System.out.println("\n=================" + course.getName());
-        for (String t : tags) {
-            System.out.print(t + " ");
-        }
         return new SearchRes(course.getId(),
                 course.getImgUrl(),
                 course.getName(),

@@ -2,7 +2,6 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.db.entity.Curriculum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -58,7 +57,6 @@ public class CourseController {
             return ResponseEntity.ok().body(courseService.getCoursesByTitle(keyword, page, size));
         } else if (tags != null) {
             // 태그 목록으로 검색
-//            return ResponseEntity.ok().body(null);
             return ResponseEntity.ok().body(courseService.getCoursesByTags(tags, page, size));
         }
         return ResponseEntity.badRequest().build();
