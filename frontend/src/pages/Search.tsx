@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { getAllTages, getCourseBySearch } from "../services/api";
 import { useLocation, useNavigate } from "react-router";
 import { CourseDetailInfoBySearch } from '../types/CourseDetailInfoBySearch';
-import SearchCourseList from "../components/List/SearchCourseList";
+import SearchCourseList from "../components/List/CourseGallery";
 import { SearchCourse } from './../services/api';
 import { Link } from "react-router-dom";
+import CourseGallery from "../components/List/CourseGallery";
 
 interface CourseTag {
   id: number;
@@ -86,7 +87,7 @@ function Search() {
 
       {/* 검색 강의 목록 */}
       <div className="w-[80%] mx-auto mt-8">
-        <SearchCourseList data={searchCourse} />
+        <CourseGallery data={searchCourse} ver={2}/>
       </div>
     </div>
   );

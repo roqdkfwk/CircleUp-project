@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getUserCourse } from "../../services/api";
 import { CourseInfo } from "../../types/CourseInfo";
-import MyCourseList from "../../components/List/MyCourseList";
+import CourseGallery from "../../components/List/CourseGallery";
 
 const MyCourse = () => {
     const [myCourse, setMyCourse] = useState<CourseInfo[]>([]);
@@ -44,7 +44,7 @@ const MyCourse = () => {
                 </ul>
             </div>
             <div className="w-[80%] mx-auto mt-8">
-                <MyCourseList onMyPage={true} myCourses={myCourse} />
+                <CourseGallery data={myCourse} ver={1}/>
             </div>
         </div>
 

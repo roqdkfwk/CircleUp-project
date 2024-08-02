@@ -50,7 +50,7 @@ const CourseList = ({ data, title, subTitle }: CourseListProps) => {
                     >
                         {data.map((card, idx) => (
                             <SwiperSlide key={idx}>
-                                <Course data={card} />
+                                <Course data={card} bar={false} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
