@@ -13,6 +13,8 @@ public class CoursesRes {
     String summary;
     Long price;
     Long view;
+    int ratingNum;
+    String ratingStr;
 
     public static CoursesRes of(Course course) {
         return new CoursesRes(course.getId(),
@@ -20,6 +22,8 @@ public class CoursesRes {
                 course.getName(),
                 course.getSummary(),
                 course.getPrice(),
-                course.getView());
+                course.getView(),
+                (int) Math.round(course.getRating()),
+                String.format("%.1f", course.getRating()));
     }
 }

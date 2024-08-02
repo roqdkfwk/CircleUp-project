@@ -1,7 +1,6 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.Curriculum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +17,12 @@ public class CourseRes {
     String imgUrl;
     Long price;
     Long view;
+    Double rating;
     String instructorName;
     String description;
     List<String> tags;
     List<Long> curriculums;
+
 
     public static CourseRes of(Course course) {
         return CourseRes.builder()
@@ -30,6 +31,7 @@ public class CourseRes {
                 .imgUrl(course.getImgUrl())
                 .price(course.getPrice())
                 .view(course.getView())
+                .rating(course.getRating())
                 .instructorName(course.getInstructor().getMember().getName())
                 .description(course.getDescription())
                 .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))

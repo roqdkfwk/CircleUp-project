@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,6 +48,9 @@ public class Course {
 
     @Column(name = "completed_course")
     private Long completedCourse;
+
+    @Column
+    private Double rating;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;
