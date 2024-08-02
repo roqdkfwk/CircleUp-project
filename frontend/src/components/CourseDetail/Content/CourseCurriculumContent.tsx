@@ -1,15 +1,23 @@
+import { getCurriculums } from "../../../services/api";
 import CurriculumList from "../../List/CurriculumList";
 
-interface CourseCurriculum {
+interface CourseCurriculumContent {
     
     isLive: boolean,
-    isModify: boolean,
+    isModify: string,
     
+    currIds: number[],
+    updateFunc: (flag: boolean) => void,
 }
 
-const CourseCurriculum = () => {
+const CourseCurriculumContent = ({isLive, isModify, currIds, updateFunc} : CourseCurriculumContent) => {
+
+    const [curriculums, setCurriculums]
 
     // <Todo> : fetch curriculum : GET
+    const handleGetCurriculums = async () => {
+        const response = await getCurriculums(currIds);
+    }
     // 해당 데이터를 CurriculumList 로 보내기..
     // 라이브 여부 표시 -> 라이브 변수는 CourseStatusBoard -> DetailCourse -> <Course/> 후, 표시!
 
@@ -24,4 +32,4 @@ const CourseCurriculum = () => {
     )
 }
 
-export default CourseCurriculum;
+export default CourseCurriculumContent;

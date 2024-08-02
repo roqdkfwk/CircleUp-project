@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import CourseBanner from "./CourseBanner";
 import CourseInputArea from "../CourseManagementContent/CourseInputArea";
-import CourseCurriculum from "./Content/CourseCurriculum";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useUserStore } from "../../store/store";
+import CourseCurriculumContent from "./Content/CourseCurriculumContent";
 
-interface CourseStatusBoardProps {
+interface CourseManagementBoardProps {
     flag: string,
     data: CourseDetailInfo,
 
     onNewMyCourse?: (course: CourseDetailInfo) => void,
 }
 
-const CourseStatusBoard = ({ flag, data, onNewMyCourse }: CourseStatusBoardProps) => {
+const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBoardProps) => {
 
     // <ToDo> - 수강자가 수강 진행 중인 경우의 상태, { 수강 신청 버튼 X & 라이브 참가 허용 }
     const { nickName } = useUserStore();
     const [isReady, setIsReady] = useState(false);
-    //const [isLive, setIsLive] = useState(false);
+    const [isLive, setIsLive] = useState(false);
 
     const [myCourse, setMyCourse] = useState<CourseDetailInfo>({
         id: 0,
@@ -27,7 +27,7 @@ const CourseStatusBoard = ({ flag, data, onNewMyCourse }: CourseStatusBoardProps
         instructorName: nickName,
         description: '',
         tags: [],
-        curriculum: '',
+        curriculum: [],
         view: 0,
         price: 0,
     });
@@ -177,7 +177,9 @@ const CourseStatusBoard = ({ flag, data, onNewMyCourse }: CourseStatusBoardProps
                             }
                         }
                     )() : <></>}
-                    {activeTab === '커리큘럼' ? <CourseCurriculum /> : <></>}
+                    {activeTab === '커리큘럼' ?
+                        <CourseCurriculumContent isLive={isLive} isModify={flag} updateFunc={setIsLive} currIds={myCourse.curriculum} />
+                        : <></>}
                     {activeTab === '공지사항' ? <div>공지사항 게시판 구현</div> : <></>}
                     {activeTab === '코멘트' ? <div>코멘트 게시판 구현</div> : <></>}
                 </div>
@@ -185,4 +187,4 @@ const CourseStatusBoard = ({ flag, data, onNewMyCourse }: CourseStatusBoardProps
     }
 };
 
-export default CourseStatusBoard;
+export default CourseManagementBoard;

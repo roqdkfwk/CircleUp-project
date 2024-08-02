@@ -128,11 +128,19 @@ export const checkUserCourse = (course_id: number) => {
     })
 }
 
-// 1. 커리큘럼 조회
-export const getCurriculum = () => {
-    
+// 커리큘럼 조회
+export const getCurriculums = (data: number[]) => {
+    let query = `/curriculum?`;
+
+    data.forEach((id: number, index: number) => {
+        index !== data.length - 1 ?
+            query += `id=${id}&` :
+            query += `id=${id}`
+    })
+
+    return axiosClient.get(query);
 }
-// 2. 커리큘럼 추가
+// 커리큘럼 추가
 export const postCurriculum = (data: FormData, course_id : number) => {
     return axiosClient.post(`/courses/${course_id}/curriculum`, data,  {
         headers: {
@@ -141,7 +149,7 @@ export const postCurriculum = (data: FormData, course_id : number) => {
         }
     })
 }
-// 3. 커리큘럼 수정
+// 커리큘럼 수정
 export const updateCurriculum = (course_id : number, curriculum_id : number, data: FormData) => {
     return axiosClient.patch(`/courses/${course_id}/curriculum/${curriculum_id}`, data, {
         headers: {
@@ -150,7 +158,7 @@ export const updateCurriculum = (course_id : number, curriculum_id : number, dat
         }
     })
 }
-// 4. 커리큘럼 삭제
+// 커리큘럼 삭제
 export const deleteCurriculum = (course_id : number, curriculum_id : number) => {
     return axiosClient.delete(`/courses/${course_id}/curriculum/${curriculum_id}`, {
         headers: {

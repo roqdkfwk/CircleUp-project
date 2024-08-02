@@ -18,7 +18,7 @@ const CourseManagementDetail = () => {
     instructorName: "",
     description: "",
     tags: [],
-    curriculum: "",
+    curriculum: [],
     view: 0,
     price: 0,
   });

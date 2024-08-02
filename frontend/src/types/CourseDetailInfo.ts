@@ -3,7 +3,7 @@ export interface CourseDetailInfo {
     courseName: string,
     imgUrl: string,
     imgData: FileList | null,
-    curriculum: string,
+    curriculum: number[],
     price: number,
     view: number,
     instructorName: string,
