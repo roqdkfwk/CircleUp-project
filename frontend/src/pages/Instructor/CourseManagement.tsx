@@ -53,7 +53,7 @@ const CourseManagement = () => {
                 </ul>
             </div>
             <div className="w-[80%] mx-auto mt-8">
-                <CourseGallery data={myCourses} ver={1}/>
+                <CourseGallery data={myCourses} ver={3}/>
             </div>
         </div>
     )
