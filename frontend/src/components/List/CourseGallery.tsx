@@ -16,7 +16,7 @@ function isCourseDetailInfoBySearch(item: CourseDetailInfoBySearch | CourseInfo)
 
 function CourseGallery({ data, ver } : SearchCourseListProps) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-[50px]">
             {data.map((card, idx) => (
                 <div key={idx}>
                     {ver === 1 && !isCourseDetailInfoBySearch(card) && <Course data={card} bar={true} />}
