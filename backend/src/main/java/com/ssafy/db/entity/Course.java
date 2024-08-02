@@ -1,9 +1,16 @@
 package com.ssafy.db.entity;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Bucket;
+import com.ssafy.api.request.CourseModifyUpdateReq;
+import com.ssafy.common.custom.BadRequestException;
+import com.ssafy.common.util.GCSUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -63,5 +70,45 @@ public class Course {
 
     public void upView() {
         this.view = this.view + 1;
+    }
+
+    public void update(CourseModifyUpdateReq courseModifyUpdateReq, List<Tag> tagsReq, Bucket bucket){
+        // 변경사항 확인 후 적용
+        if (courseModifyUpdateReq.getName() != null) {
+            this.setName(courseModifyUpdateReq.getName());
+        }
+        if (courseModifyUpdateReq.getSummary() != null) {
+            this.setSummary(courseModifyUpdateReq.getSummary());
+        }
+        if (courseModifyUpdateReq.getPrice() != null) {
+            this.setPrice(Long.parseLong(courseModifyUpdateReq.getPrice()));
+        }
+        if (courseModifyUpdateReq.getDescription() != null) {
+            this.setDescription(courseModifyUpdateReq.getDescription());
+        }
+        MultipartFile img = courseModifyUpdateReq.getImg();
+        if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
+            String blobName = "course_" + this.getId() + "_banner";
+
+            Blob blob = bucket.get(blobName);
+            blob.delete();
+            try{
+                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
+                this.setImgUrl(GCSUtil.preUrl+blobName);
+            } catch (Exception e){
+                throw new BadRequestException("Image error");
+            }
+        }
+
+        this.courseTagList.removeIf(courseTag -> !tagsReq.contains(courseTag.getTag()));
+
+        tagsReq.stream()
+                .filter(tag -> courseTagList.stream().noneMatch(courseTag -> courseTag.getTag().equals(tag)))
+                .forEach(tag -> {
+                    CourseTag newCourseTag = new CourseTag();
+                    newCourseTag.setCourse(this);
+                    newCourseTag.setTag(tag);
+                    this.courseTagList.add(newCourseTag);
+                });
     }
 }

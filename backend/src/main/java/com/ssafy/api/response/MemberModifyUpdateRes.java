@@ -15,7 +15,7 @@ import java.util.List;
 public class MemberModifyUpdateRes {
     Member member;
     String accessToken;
-    List<String> tags = new ArrayList<>();
+    List<String> tags;
 
     public static void of(
             MemberModifyUpdateReq memberModifyUpdateReq,

@@ -16,5 +16,5 @@ public class MemberSignupPostReq {
     Role role;
     String contactEmail;
     String contactTel;
-    List<Long> tags = new ArrayList<>();
+    List<Long> tags;
 }

@@ -13,6 +13,7 @@ import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
+import com.ssafy.common.util.GCSUtil;
 import com.ssafy.db.entity.*;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,7 @@ public class CourseSerivce {
             String blobName = "course_" + newCourse.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
             // img_url 넣어주기
-            newCourse.setImgUrl(blobInfo.getMediaLink());
+            newCourse.setImgUrl(GCSUtil.preUrl+blobName);
             // 3. 업데이트된 정보로 다시 저장
             return CourseRes.of(courseRepository.save(newCourse));
         } catch (Exception e) {
@@ -121,48 +122,11 @@ public class CourseSerivce {
                     throw new BadRequestException("Not Image File");
                 }
             }
-            // 2. 서비스 로직
-            // 변경사항 확인 후 적용
-            if (courseModifyUpdateReq.getName() != null) {
-                course.setName(courseModifyUpdateReq.getName());
-            }
-            if (courseModifyUpdateReq.getSummary() != null) {
-                course.setSummary(courseModifyUpdateReq.getSummary());
-            }
-            if (courseModifyUpdateReq.getPrice() != null) {
-                course.setPrice(Long.parseLong(courseModifyUpdateReq.getPrice()));
-            }
-            if (courseModifyUpdateReq.getDescription() != null) {
-                course.setDescription(courseModifyUpdateReq.getDescription());
-            }
-            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
-                String blobName = "course_" + courseId + "_banner";
+            // 서비스 로직
+            List<Long> tagIds = courseModifyUpdateReq.parseTags();
+            List<Tag> tagsReq = tagRepository.findAllById(tagIds);
+            course.update(courseModifyUpdateReq, tagsReq, bucket);
 
-                Blob blob = bucket.get(blobName);
-                blob.delete();
-
-                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                course.setImgUrl(blobInfo.getMediaLink());
-            }
-
-            List<CourseTag> courseTags = course.getCourseTagList();
-            courseTags.clear();
-
-            String tags = courseModifyUpdateReq.getTags();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {
-            });
-
-
-            List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-            for (Tag tag : tagsToAdd) {
-                CourseTag courseTag = new CourseTag();
-                courseTag.setTag(tag);
-                courseTag.setCourse(course);
-
-                courseTags.add(courseTag);
-            }
-            // 3. 정보 업데이트
             return CourseRes.of(courseRepository.save(course));
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,7 +196,7 @@ public class CourseSerivce {
             String blobName = "curriculum_" + newCurr.getId() + "_banner";
             BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
 
-            newCurr.setImgUrl(blobInfo.getMediaLink());
+            newCurr.setImgUrl(GCSUtil.preUrl+blobName);
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
@@ -287,7 +251,7 @@ public class CourseSerivce {
                 blob.delete();
 
                 BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                curriculum.setImgUrl(blobInfo.getMediaLink());
+                curriculum.setImgUrl(GCSUtil.preUrl+blobName);
             }
             curriculumRepository.save(curriculum);
 
