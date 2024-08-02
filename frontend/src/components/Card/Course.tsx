@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { CourseInfo } from './../../types/CourseInfo';
 // props
 interface CourseProps {
-    data : CourseInfo
+    data : CourseInfo,
+    bar : boolean
 }
 
-const Course = ({ data } : CourseProps) => {
+const Course = ({ data, bar } : CourseProps) => {
 
     const fullStars = Array(data.ratingNum).fill(
         <svg className="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
@@ -26,13 +27,19 @@ const Course = ({ data } : CourseProps) => {
                 <div className="px-5 pt-5">
                     <h5 className="text-lg min-h-[50px] title tracking-tight text-gray-900 dark:text-white">{data.name}</h5>
                     <h5 className="text-sm min-h-[60px] tracking-tight text-gray-900 dark:text-white">{data.summary}</h5>
-                    <div className="flex items-center mt-2.5 mb-5">
-                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                            {fullStars}
-                            {emptyStars}
+                    {bar ? (
+                        <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+                            <div className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full mt-2" style={{ width: `${data.ratingNum * 20}%` }}> {data.ratingNum * 20}%</div>
                         </div>
-                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">{data.ratingStr}</span>
-                    </div>
+                    ) : (
+                        <div className="flex items-center mt-2.5 mb-5">
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                                {fullStars}
+                                {emptyStars}
+                            </div>
+                            <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">{data.ratingStr}</span>
+                        </div>
+                    )}
                 </div>
             </Link>
         </div>

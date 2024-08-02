@@ -7,11 +7,10 @@ import { useNavigate } from "react-router-dom";
 
 interface MyCourseListProps {
     myCourses: CourseInfo[],
-    title?: string,
     onMyPage : boolean
 }
 
-const MyCourseList = ({ myCourses, title, onMyPage }: MyCourseListProps) => {
+const MyCourseList = ({ myCourses, onMyPage }: MyCourseListProps) => {
 
     const navigate = useNavigate();
     const { role } = useUserStore();
@@ -22,15 +21,11 @@ const MyCourseList = ({ myCourses, title, onMyPage }: MyCourseListProps) => {
 
     return (
         <div>
-            <h1 className="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-2xl dark:text-white">{title}</h1>
-            <div className="
-            w-full
-            flex flex-row flex-wrap">
-                
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {
                     myCourses.map((c, idx) => (
                         onMyPage ?
-                        <Course key={idx} data={c} /> :
+                        <Course key={idx} data={c} bar={true}/> :
                         <MyCourse key={idx} data={c} />
                     ))
                 }
