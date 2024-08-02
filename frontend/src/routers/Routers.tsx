@@ -10,6 +10,7 @@ import Search from "../pages/Search";
 import MyPage from "../pages/Member/MyPage";
 import CourseManagement from "../pages/Instructor/CourseManagement";
 import CourseManagementMake from "../pages/Instructor/CourseManagementMake";
+import CurriculumDetail from "../pages/CurriculumDetail";
 
 const Router = () => {
   return (
@@ -23,8 +24,10 @@ const Router = () => {
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
-        <Route path="/courseManagementDetail" element={<CourseManagementDetail />} />
+        <Route path="/courseManagementDetail/:courseId" element={<CourseManagementDetail />} />
         <Route path="/search/:searchKeyword" element={<Search />} />
+
+        <Route path="/curriculumDetail/:curriculumId" element={<CurriculumDetail />} />
       </Route>
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />

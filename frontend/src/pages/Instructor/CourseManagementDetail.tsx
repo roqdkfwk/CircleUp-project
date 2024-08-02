@@ -1,16 +1,17 @@
 import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
+import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementDetail = () => {
   
-  const location = useLocation();
+  const { courseId } = useParams<{ courseId: string }>();
+  const numericCourseId = Number(courseId);
   const navigate = useNavigate();
   
   const [courseDetails, setCourseDetails] = useState({
-    id: location.state.courseId,
+    id: numericCourseId,
     courseName: "",
     imgUrl: "",
     imgData: null,
@@ -46,8 +47,7 @@ const CourseManagementDetail = () => {
   function handleDelete() {
     
     const fetchDeleteMyCourse = async () => {
-      const response = await fetchDeleteCourse();
-      console.log(response.data)
+      await fetchDeleteCourse();
       window.location.href = '/courseManagement';
     }
 
