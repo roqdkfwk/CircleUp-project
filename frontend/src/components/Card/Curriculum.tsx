@@ -3,8 +3,11 @@ import { CurriculumInfo } from "../../types/CurriculumInfo";
 
 // <ToDo> - 커리큘럼은 다음과 같은 속성을 가진다.
 // { id, 커리큘럼 네임, 설명, 이미지경로 }
+interface CurriculumProps {
+    data: CurriculumInfo
+}
 
-const Curriculum = ({ data }: CurriculumInfo) => {
+const Curriculum = ({ data }: CurriculumProps) => {
 
     return (
         <Link

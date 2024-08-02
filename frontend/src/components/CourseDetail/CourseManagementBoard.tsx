@@ -30,6 +30,7 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
         curriculum: [],
         view: 0,
         price: 0,
+        rating: 3,
     });
 
     const courseNavbar = ['소개', '커리큘럼', '공지사항', '코멘트']

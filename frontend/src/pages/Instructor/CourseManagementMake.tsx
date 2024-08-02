@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
+import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementMake = () => {
 
@@ -18,10 +18,12 @@ const CourseManagementMake = () => {
         tags: [],
         curriculum: [],
         view: 0,
+        rating: 3,
     })
 
     const updateNewCourse = (getCourse: CourseDetailInfo) => {
         setNewCourse({ ...getCourse });
+        console.log(newCourse)
     }
 
     const fetchPostNewCourse = async(data : FormData) => {
@@ -52,17 +54,18 @@ const CourseManagementMake = () => {
         
         formData.append("summary", "dummyData")
         formData.append("price", newCourse.price.toString())
+        formData.append("rating", newCourse.rating.toString())
 
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}:`, value instanceof File ? value.name : value);
-          }
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(`${key}:`, value instanceof File ? value.name : value);
+        //   }
         fetchPostNewCourse(formData);
     }
 
     return (
         <div>
             <div className="flex flex-row">
-                <CourseStatusBoard flag={"instructorMake"} data={newCourse} onNewMyCourse={updateNewCourse} />
+                <CourseManagementBoard flag={"instructorMake"} data={newCourse} onNewMyCourse={updateNewCourse} />
                 <RightSideBar />
             </div>
             <div className="flex flex-row">

@@ -25,6 +25,7 @@ const CourseManagementModify = () => {
         tags: [],
         curriculum: [],
         view: 0,
+        rating: 3,
       });
     
     useEffect(() => {
@@ -79,6 +80,7 @@ const CourseManagementModify = () => {
         
         formData.append("summary", "dummyData")
         formData.append("price", modifiedCourses.price.toString())
+        formData.append("rating", modifiedCourses.rating.toString())
 
         fetchModifiedCourse(formData);
     }

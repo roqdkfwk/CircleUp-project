@@ -21,6 +21,7 @@ const CourseManagementDetail = () => {
     curriculum: [],
     view: 0,
     price: 0,
+    rating: 3,
   });
 
   const fetchDetailCourseData = async () => {
@@ -31,6 +32,7 @@ const CourseManagementDetail = () => {
     const fetchDetailCourse = async () => {
       const response = await fetchDetailCourseData();
       setCourseDetails(response.data);
+      console.log(response.data)
     };
 
     fetchDetailCourse();
