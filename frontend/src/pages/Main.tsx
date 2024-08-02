@@ -1,25 +1,19 @@
 import { useEffect, useState } from "react";
 import { getSpecialCourse } from '../services/api';
-import HotCardList from "../components/List/HotCardList";
+import HotCourseList from "../components/List/HotCourseList";
 import CourseList from "../components/List/CourseList";
-// 2. props
-// type dataType = {
-//     imageSrc : (string | undefined),
-//     title? : string,
-//     summary?: string,
-//     //courseId?: number,
-// }
+import { CourseInfo } from './../types/CourseInfo';
 
 const Main = () => {
 
-    const [hotCourses, setHotCourses] = useState([])
-    const [freeCourses, setFreeCourses] = useState([])
-    const [RecCourses, setRecCourses] = useState([])
-    const [NewCourses, setNewCourses] = useState([])
+    const [hotCourses, setHotCourses] = useState<CourseInfo[]>([])
+    const [freeCourses, setFreeCourses] = useState<CourseInfo[]>([])
+    const [RecCourses, setRecCourses] = useState<CourseInfo[]>([])
+    const [NewCourses, setNewCourses] = useState<CourseInfo[]>([])
 
-    const fetchData = async(keyword: string, size: number) => {
+    const fetchData = async(type: string, size: number) => {
         const data = {
-            keyword: keyword,
+            type: type,
             size: size
         }
 
@@ -52,12 +46,12 @@ const Main = () => {
     return (
         <div className="z-0 relative">
             {/* <Search /> */}
-            <HotCardList cards={hotCourses} />
+            <HotCourseList data={hotCourses} />
             
             <br />
-            <CourseList cards={freeCourses} title={"무료 강의 😃"} subTitle={"무료 강의로 원하는 강의를 신청해보세요."} />
-            <CourseList cards={RecCourses} title={"추천 강의 👍 "} subTitle={"추천 강의로 취향을 찾아보세요."} />
-            <CourseList cards={NewCourses} title={"신규 강의 👏 "} subTitle={"새로운 강의가 업데이트됐어요."} />
+            <CourseList data={freeCourses} title={"무료 강의 😃"} subTitle={"무료 강의로 원하는 강의를 신청해보세요."} />
+            <CourseList data={RecCourses} title={"추천 강의 👍 "} subTitle={"추천 강의로 취향을 찾아보세요."} />
+            <CourseList data={NewCourses} title={"신규 강의 👏 "} subTitle={"새로운 강의가 업데이트됐어요."} />
         </div>
     );
 }

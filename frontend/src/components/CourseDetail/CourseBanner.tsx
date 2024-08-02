@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import MakeTagModal from "../Modal/MakeTagModal";
 import { FaUser, FaWonSign } from "react-icons/fa";
 import { postCourseByUser } from "../../services/api";
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
 
 interface BannerProps {
     isDetail: boolean,

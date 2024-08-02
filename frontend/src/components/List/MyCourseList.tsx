@@ -1,17 +1,12 @@
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
+import { CourseInfo } from "../../types/CourseInfo";
 import Course from "../Card/Course";
 import MyCourse from "../Card/MyCourse";
 import { useNavigate } from "react-router-dom";
 
-type CourseType = {
-    imgUrl: (string | undefined),
-    name: string,
-    courseId: number,
-    summary: string,
-}
 
 interface MyCourseListProps {
-    myCourses: CourseType[],
+    myCourses: CourseInfo[],
     title?: string,
     onMyPage : boolean
 }
@@ -32,11 +27,11 @@ const MyCourseList = ({ myCourses, title, onMyPage }: MyCourseListProps) => {
             w-full
             flex flex-row flex-wrap">
                 
-                {// eslint-disable-next-line @typescript-eslint/no-unused-vars
+                {
                     myCourses.map((c, idx) => (
                         onMyPage ?
-                        <Course key={idx} imageSrc={c.imgUrl} name={c.name} courseId={c.courseId} />    :
-                        <MyCourse key={idx} imgUrl={c.imgUrl} name={c.name} courseId={c.courseId} />
+                        <Course key={idx} data={c} /> :
+                        <MyCourse key={idx} data={c} />
                     ))
                 }
                 {role === 'Instructor' && !onMyPage ?

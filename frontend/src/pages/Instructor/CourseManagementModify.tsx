@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
-import RightSideBar from "../../components/RightSideBar";
-import { CourseDetail } from "../../types/CourseDetail";
+
+import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
+import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useLocation } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
 import { getOriginalImage, updateMyCourse } from "../../services/api";
+import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 
 const CourseManagementModify = () => {
 
     // useState & location으로 데이터 받기
     const location = useLocation();
-    const originalCourse: CourseDetail = location.state;
+    const originalCourse: CourseDetailInfo = location.state;
     const [isReady, setIsReady] = useState(false);
 
-    const [modifiedCourses, setModifiedCourses] = useState<CourseDetail>({
+    const [modifiedCourses, setModifiedCourses] = useState<CourseDetailInfo>({
         id: 0,
         courseName: "",
         imgUrl: "",
@@ -33,7 +34,7 @@ const CourseManagementModify = () => {
         }
     }, [originalCourse])
     
-    const updateModifiedCourse = (getCourse: CourseDetail) => {
+    const updateModifiedCourse = (getCourse: CourseDetailInfo) => {
         setModifiedCourses({ ...getCourse });
     }
     

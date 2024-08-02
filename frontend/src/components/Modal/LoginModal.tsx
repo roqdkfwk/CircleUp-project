@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { postLogin } from "../../services/api";
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
 import { useNavigate } from "react-router-dom";
 interface ModalProps {
     show: boolean;

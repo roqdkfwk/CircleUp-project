@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
 import TagList from "../List/TagList";
 import { Member } from "../../types/Member";
 import MakeTagModal from "./MakeTagModal";

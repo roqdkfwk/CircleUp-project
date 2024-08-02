@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 import MyCourseList from "../../components/List/MyCourseList";
 import { getMyCourse } from "../../services/api";
+import { CourseInfo } from "../../types/CourseInfo";
 
-interface MyCourseType {
-    imgUrl: (string | undefined),
-    name: string,
-    courseId: number,
-    summary: string,
-}
 
 const CourseManagement = () => {
 
-    const [myCourses, setMyCourse] = useState<MyCourseType[]>([]);
+    const [myCourses, setMyCourse] = useState<CourseInfo[]>([]);
 
     const fetchMyCourseData = async() => {
         return await getMyCourse();
@@ -20,27 +15,7 @@ const CourseManagement = () => {
     useEffect(() => {
         const fetchMyCourses = async () => {
             const response = await fetchMyCourseData();
-            
-            const stateArr: MyCourseType[] = response.data.map((course: {
-                id: number,
-                imgUrl: (string | undefined),
-                name: string,
-                price: number,
-                summary: string,
-                view: number
-            }) => {
-                
-                const newCourse: MyCourseType = {
-                    imgUrl: course.imgUrl,
-                    name: course.name,
-                    courseId: course.id,
-                    summary : course.summary,
-                }
-
-                return newCourse;
-            });
-
-            setMyCourse(stateArr);
+            setMyCourse(response.data);
         }
 
         fetchMyCourses();

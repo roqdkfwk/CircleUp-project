@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import useUserStore from "../../store/store";
+import { useUserStore } from "../../store/store";
+import { CourseInfo } from "../../types/CourseInfo";
 
 // props
 interface MyCourseProps {
-    imgUrl: (string | undefined),
-    name: string,
-    courseId: number
+    data : CourseInfo
 }
 
-const MyCourse = ({ imgUrl, courseId, name } : MyCourseProps) => {
+const MyCourse = ({ data } : MyCourseProps) => {
 
     const navigate = useNavigate();
     const { role } = useUserStore();
+    const { imgUrl, id : courseId, name } = data;
 
     function navigateToMyCourseDetail() {
         if(role === 'Instructor')

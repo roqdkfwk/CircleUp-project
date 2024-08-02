@@ -1,32 +1,25 @@
+
 import { useEffect, useState } from "react";
 import { getUserCourse } from "../../services/api";
 import MyCourseList from "../../components/List/MyCourseList";
 import MemberModfiyModal from "../../components/Modal/MemeberModfiyModal";
-
-interface MyCourseType {
-    imgUrl: string | undefined;
-    name: string;
-    courseId: number;
-    summary: string;
-}
+import { CourseInfo } from "../../types/CourseInfo";
 
 const MyPage = () => {
 
-    const [myCourses, setMyCourse] = useState<MyCourseType[]>([]);
+    const [myCourses, setMyCourse] = useState<CourseInfo[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [isTokenRefreshing, setIsTokenRefreshing] = useState<boolean>(false);
 
     const toggleModal = () => {
         setShowModal(!showModal);
     };
-    // <Todo>
-    // 1. 강의 리스트 반환 : MyCourse < User > List 렌더링
+
     const fetchUserCourses = async () => {
         return await getUserCourse();
     };
-    // 2. 회원 정보 수정 버튼 : MemeberModify< User, Instructor > 이동
+
     const handleModfiyUser = () => {
-        console.log("회원수정");
         toggleModal();
     };
 
@@ -35,34 +28,12 @@ const MyPage = () => {
     };
     // { 추가 구현 } : 기타 정보, 연속 수강 or 랭킹 정보..
 
-    // useEffect
     const fetchMyCourses = async () => {
 
         setIsTokenRefreshing(true);
         try {
             const response = await fetchUserCourses();
-
-            const stateArr: MyCourseType[] = response.data.map(
-                (course: {
-                    id: number;
-                    imgUrl: string | undefined;
-                    name: string;
-                    price: number;
-                    summary: string;
-                    view: number;
-                }) => {
-                    const newCourse: MyCourseType = {
-                        imgUrl: course.imgUrl,
-                        name: course.name,
-                        courseId: course.id,
-                        summary: course.summary,
-                    };
-
-                    return newCourse;
-                }
-            );
-
-            setMyCourse(stateArr);
+            setMyCourse(response.data);
         } catch (error) {
             console.error("Error fetching courses:", error);
         } finally {

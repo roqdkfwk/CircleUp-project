@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './Modal/LoginModal';
-import useUserStore from '../store/store';
 import MemberModfiyModal from "./Modal/MemeberModfiyModal";
+import { useUserStore } from '../store/store';
+
 
 function Header() {
   const [showModal, setShowModal] = useState(false);
@@ -10,7 +11,19 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { nickName, email, role } = useUserStore();
-  const navgiate = useNavigate()
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchValue) {
+      navigate(`/search/${searchValue}`);
+    }
+  };
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -30,14 +43,14 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      localStorage.clear()
-      alert("로그아웃")
+      localStorage.clear();
+      alert("로그아웃");
       setIsLoggedIn(false);
-      navgiate("/")
+      navigate("/");
     } catch (error) {
-    alert("로그아웃 처리 문제 발생")
+      alert("로그아웃 처리 문제 발생");
     }
-  }
+  };
 
   useEffect(() => {
     // localStorage에서 토큰 확인
@@ -50,7 +63,12 @@ function Header() {
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
-      if (dropdownOpen && event.target !==null && !(event.target as HTMLElement).closest('#dropdownAvatarNameButton') && !(event.target as HTMLElement).closest('#dropdownAvatarName')) {
+      if (
+        dropdownOpen &&
+        event.target !== null &&
+        !(event.target as HTMLElement).closest('#dropdownAvatarNameButton') &&
+        !(event.target as HTMLElement).closest('#dropdownAvatarName')
+      ) {
         closeDropdown();
       }
     };
@@ -63,11 +81,10 @@ function Header() {
 
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md p-2 z-10 relative">
-      
       {/* 로그인 모달 */}
       <LoginModal show={showModal} onClose={toggleModal} />
       <MemberModfiyModal show={showModfiyModal} onClose={toggleModfiyModal} />
-
+      
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto relative">
         <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           {/* 로고 SVG */}
@@ -197,14 +214,14 @@ function Header() {
               </a>
             </li>
           </ul>
-          <form className="flex items-center mx-auto">   
-              <label for="simple-search" className="sr-only">Search</label>
+          <form className="flex items-center mx-auto" onSubmit={handleSearchSubmit}>   
+              <label htmlFor="simple-search" className="sr-only">Search</label>
               <div className="relative w-[400px] ml-10">
-                  <input type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="강의 정보로 검색해보세요." required />
+                  <input onChange={handleSearchChange} type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="강의 정보로 검색해보세요." required />
               </div>
               <button type="submit" className="p-2.5 ms-2 text-sm font-medium text-white bg-[#6366f1] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                   </svg>
                   <span className="sr-only">Search</span>
               </button>

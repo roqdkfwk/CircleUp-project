@@ -1,13 +1,13 @@
-import RightSideBar from "../../components/RightSideBar";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
+import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState } from "react";
-import { CourseDetail } from "../../types/CourseDetail";
+import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
+import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
 
 const CourseManagementMake = () => {
 
-    const [newCourse, setNewCourse] = useState<CourseDetail>({
+    const [newCourse, setNewCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: "",
         imgUrl: "",
@@ -20,7 +20,7 @@ const CourseManagementMake = () => {
         view: 0,
     })
 
-    const updateNewCourse = (getCourse: CourseDetail) => {
+    const updateNewCourse = (getCourse: CourseDetailInfo) => {
         setNewCourse({ ...getCourse });
     }
 
