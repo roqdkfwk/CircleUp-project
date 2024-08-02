@@ -47,7 +47,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
     List<Course> findByInstructor(Instructor instructor);
 
     @Query("SELECT c FROM Course c WHERE c.id IN " +
-            "(SELECT r.id FROM Register r WHERE r.member.id = :memberId)")
+            "(SELECT r.course.id FROM Register r WHERE r.member.id = :memberId)")
     List<Course> findByRegisteredMemberId(@Param("memberId") Long memberId);
 
     @Query("SELECT 1 FROM Register r WHERE r.member.id = :memberId AND r.course.id = :courseId")
