@@ -1,7 +1,7 @@
 import { useUserStore } from "../../store/store";
 import { CourseInfo } from "../../types/CourseInfo";
 import Course from "../Card/Course";
-import MyCourse from "../Card/MyCourse";
+import TeacherCourse from "../Card/TeacherCourse";
 import { useNavigate } from "react-router-dom";
 
 
@@ -26,7 +26,7 @@ const MyCourseList = ({ myCourses, onMyPage }: MyCourseListProps) => {
                     myCourses.map((c, idx) => (
                         onMyPage ?
                         <Course key={idx} data={c} bar={true}/> :
-                        <MyCourse key={idx} data={c} />
+                        <TeacherCourse key={idx} data={c} />
                     ))
                 }
                 {role === 'Instructor' && !onMyPage ?

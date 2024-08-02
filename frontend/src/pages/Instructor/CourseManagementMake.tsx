@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
+import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementMake = () => {
 

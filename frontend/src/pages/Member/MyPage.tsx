@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { getUserCourse } from "../../services/api";
-import MyCourseList from "../../components/List/MyCourseList";
+import MyCourseList from "../../components/List/TeacherCourseList";
 import MemberModfiyModal from "../../components/Modal/MemeberModfiyModal";
 import { CourseInfo } from "../../types/CourseInfo";
 

@@ -129,7 +129,9 @@ export const checkUserCourse = (course_id: number) => {
 }
 
 // 1. 커리큘럼 조회
-export const getCurriculum = () => {}
+export const getCurriculum = () => {
+    
+}
 // 2. 커리큘럼 추가
 export const postCurriculum = (data: FormData, course_id : number) => {
     return axiosClient.post(`/courses/${course_id}/curriculum`, data,  {

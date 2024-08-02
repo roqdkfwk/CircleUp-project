@@ -5,7 +5,7 @@ import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useLocation } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
 import { getOriginalImage, updateMyCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseStatusBoard";
+import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementModify = () => {
 
