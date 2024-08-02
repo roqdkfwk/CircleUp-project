@@ -18,9 +18,9 @@ const Router = () => {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Main />} />
         <Route path="/courseDetail/:courseId" element={<CourseDetail />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/CourseDetail" element={<CourseDetail />} />
         <Route path="/myPage" element={<MyPage /> } />
-
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify" element={<CourseManagementModify />} />
