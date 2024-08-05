@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.RegisterService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import java.util.List;
 public class RegisterController {
 
     private final CourseSerivce courseService;
+    private final RegisterService registerService;
 
     @GetMapping("/courses/registers")
     @ApiOperation(value = "내가 수강한 강의 목록 조회")
@@ -40,7 +42,7 @@ public class RegisterController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(courseService.roleRegister(memberId, courseId));
+        return ResponseEntity.ok().body(registerService.roleRegister(memberId, courseId));
     }
 
 
@@ -55,7 +57,7 @@ public class RegisterController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        courseService.doRegister(memberId, courseId);
+        registerService.doRegister(memberId, courseId);
         return ResponseEntity.ok().build();
     }
 
@@ -70,7 +72,7 @@ public class RegisterController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        courseService.cancelRegister(memberId, courseId);
+        registerService.cancelRegister(memberId, courseId);
         return ResponseEntity.ok().build();
     }
 
