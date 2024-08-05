@@ -2,6 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.SearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,11 +21,12 @@ import java.util.List;
 public class CourseController {
 
     private final CourseSerivce courseService;
+    private final SearchService searchService;
 
     @GetMapping("/tag")
     @ApiOperation(value = "태그 목록 조회")
     public ResponseEntity<List<TagRes>> taglist() {
-        return ResponseEntity.ok().body(courseService.getTagList());
+        return ResponseEntity.ok().body(searchService.getTagList());
     }
 
     @GetMapping("/courses")
@@ -81,7 +83,7 @@ public class CourseController {
     public ResponseEntity<InstructorRes> owner(
             @PathVariable(name = "course_id") Long id
     ) {
-        return ResponseEntity.ok().body(courseService.getInstructorByCourseId(id));
+        return ResponseEntity.ok().body(searchService.getInstructorByCourseId(id));
     }
 
 
@@ -93,6 +95,6 @@ public class CourseController {
     public ResponseEntity<List<CurriculumRes>> curriculumList(
             @RequestParam(required = false, value = "id") List<Long> ids
     ) {
-        return ResponseEntity.ok().body(courseService.getCurriculumById(ids));
+        return ResponseEntity.ok().body(searchService.getCurriculumById(ids));
     }
 }
