@@ -15,9 +15,6 @@ import java.time.LocalDateTime;
 @ApiModel("ReviewCreatePostRequest")
 public class ReviewCreatePostReq {
 
-    @ApiModelProperty(name = "강의 ID", example = "1")
-    private Long courseId;
-
     @ApiModelProperty(name = "별점", example = "5")
     private Integer rating;
 

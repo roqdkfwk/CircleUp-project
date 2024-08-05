@@ -17,7 +17,7 @@ import java.util.List;
 
 @Api(value = "리뷰 API", tags = {"리뷰"})
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/courses/{courseId}/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -33,10 +33,11 @@ public class ReviewController {
     })
     public ResponseEntity<Long> addReview(
             @RequestBody ReviewCreatePostReq reviewCreatePostReq,
+            @PathVariable Long courseId,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        Long reviewId = reviewService.createReview(reviewCreatePostReq, memberId);
+        Long reviewId = reviewService.createReview(reviewCreatePostReq, courseId, memberId);
         return ResponseEntity.status(201).body(reviewId);
     }
 
@@ -46,13 +47,14 @@ public class ReviewController {
             @ApiResponse(code = 404, message = "해당 리뷰 없음")
     )
     public ResponseEntity<ReviewGetRes> getReview(
-            @PathVariable Long reviewId
+//            @PathVariable(value = "courseId") Long courseId,
+            @PathVariable(value = "reviewId") Long reviewId
     ) {
         ReviewGetRes reviewGetRes = reviewService.getReview(reviewId);
         return ResponseEntity.ok().body(reviewGetRes);
     }
 
-    @GetMapping("/course/{courseId}")
+    @GetMapping
     @ApiOperation(value = "강의별 리뷰 조회", notes = "특정 강의의 모든 리뷰를 조회합니다.")
     public ResponseEntity<List<ReviewGetRes>> getReviewByCourse(
             @PathVariable Long courseId
