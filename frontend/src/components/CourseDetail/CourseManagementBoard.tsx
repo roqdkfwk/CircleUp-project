@@ -17,7 +17,6 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
     // <ToDo> - 수강자가 수강 진행 중인 경우의 상태, { 수강 신청 버튼 X & 라이브 참가 허용 }
     const { nickName } = useUserStore();
     const [isReady, setIsReady] = useState(false);
-    const [isLive, setIsLive] = useState(false);
 
     const [myCourse, setMyCourse] = useState<CourseDetailInfo>({
         id: 0,
@@ -179,7 +178,7 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                         }
                     )() : <></>}
                     {activeTab === '커리큘럼' ?
-                        <CourseCurriculumContent isLive={isLive} isModify={flag} updateFunc={setIsLive} currIds={myCourse.curriculum} />
+                        <CourseCurriculumContent isModify={flag} currIds={myCourse.curriculum} courseId={myCourse.id} />
                         : <></>}
                     {activeTab === '공지사항' ? <div>공지사항 게시판 구현</div> : <></>}
                     {activeTab === '코멘트' ? <div>코멘트 게시판 구현</div> : <></>}

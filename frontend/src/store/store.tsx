@@ -9,22 +9,32 @@ import { persist } from "zustand/middleware";
         3 : user
 */
 interface Store {
-    nickName: string;
-    email: string;
-    role: string;
-    setNickName: (newNickName: string) => void;
-    setEmail: (newEmail: string) => void;
-    setRole: (newRole: string) => void;
+  nickName: string;
+  email: string;
+  role: string;
+  liveCourses: number[];
+  liveCurriculums: number[];
+
+  setNickName: (newNickName: string) => void;
+  setEmail: (newEmail: string) => void;
+  setRole: (newRole: string) => void;
+  setLiveCourses: (newLiveCourses: number[]) => void;
+  setLiveCurriculums: (newLiveCurriculums: number[]) => void;
 }
 
 export const useUserStore = create(persist<Store>((set) => ({
     // authorizedLevel: 2,
-    nickName: "hybrid",
-    email: "hyunho656@gmail.com",
-    role: "",
-    setNickName: (newNickName) => set({ nickName: newNickName }),
-    setEmail: (newEmail) => set({ email : newEmail }),
-    setRole: (newRole) => set({ role : newRole }),
+  nickName: "hybrid",  
+  email: "hyunho656@gmail.com",
+  role: "",
+  liveCourses: [],
+  liveCurriculums: [],
+
+  setNickName: (newNickName) => set({ nickName: newNickName }),
+  setEmail: (newEmail) => set({ email : newEmail }),
+  setRole: (newRole) => set({ role: newRole }),
+  setLiveCourses: (newLiveCourses) => set({ liveCourses: [...newLiveCourses] }),
+  setLiveCurriculums: (newLiveCurriculums) => set({ liveCurriculums: [...newLiveCurriculums]})
     }),
     {
         name: 'userIdStorage',
