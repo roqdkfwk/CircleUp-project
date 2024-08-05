@@ -3,6 +3,7 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.ReviewCreatePostReq;
 import com.ssafy.api.request.ReviewUpdatePatchReq;
 import com.ssafy.api.response.ReviewGetRes;
+import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.db.entity.Course;
@@ -27,17 +28,27 @@ public class ReviewServiceImpl implements ReviewService {
     private final CourseRepository courseRepository;
 
     @Override
-    public Long createReview(ReviewCreatePostReq reviewCreatePostReq, Long memberId) {
+    public Long createReview(ReviewCreatePostReq reviewCreatePostReq, Long courseId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 회원입니다.")
         );
-        Course course = courseRepository.findById(reviewCreatePostReq.getCourseId()).orElseThrow(
+        Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 강의입니다.")
         );
 
+        if (courseRepository.checkRegisterStatus(memberId, courseId) != 1) {
+            throw new UnAuthorizedException("수강하지 않은 강의에 대해서는 리뷰를 작성할 수 없습니다.");
+        }
+
+        if (reviewRepository.findByMemberIdAndCourseId(memberId, courseId).isPresent()) {
+            throw new ConflictException("이미 작성한 리뷰가 존재합니다.");
+        }
 
         Review review = ReviewCreatePostReq.toEntity(reviewCreatePostReq, member, course);
-        return reviewRepository.save(review).getId();
+        reviewRepository.save(review);
+        calculateRating(course);
+
+        return review.getId();
     }
 
     @Override
@@ -63,7 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
         );
 
         if (!review.getMember().getId().equals(memberId)) {
-            throw new UnAuthorizedException("리뷰를 수정할 권한이 없습니다.");
+            throw new UnAuthorizedException("내가 작성하지 않은 리뷰는 수정할 수 없습니다.");
         }
 
         boolean isUpdated = false;
@@ -79,6 +90,8 @@ public class ReviewServiceImpl implements ReviewService {
             review.setUpdatedAt(LocalDateTime.now());
             reviewRepository.save(review);
         }
+
+        calculateRating(review.getCourse());
     }
 
     @Override
@@ -87,9 +100,20 @@ public class ReviewServiceImpl implements ReviewService {
                 () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
         );
         if (!review.getMember().getId().equals(memberId)) {
-            throw new UnAuthorizedException("리뷰를 삭제할 권한이 없습니다.");
+            throw new UnAuthorizedException("내가 작성하지 않은 리뷰는 삭제할 수 없습니다.");
         }
 
         reviewRepository.delete(review);
+        calculateRating(review.getCourse());
+    }
+
+    public void calculateRating(Course course) {
+        List<ReviewGetRes> reviews = getReviewsByCourse(course.getId());
+        Double rating = reviews.stream()
+                .mapToDouble(ReviewGetRes::getRating)
+                .average()
+                .orElse(0.0);
+        course.setRating(rating);
+        courseRepository.save(course);
     }
 }
