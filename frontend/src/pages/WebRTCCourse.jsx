@@ -1,6 +1,6 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "../WebRtc/VideoRoomComponent.css";
 import StreamComponent from "../WebRtc/stream/StreamComponent";
 import ChatComponent from "../WebRtc/chat/ChatComponent";
@@ -57,6 +57,9 @@ class VideoRoomComponent extends Component {
     this.toggleChat = this.toggleChat.bind(this);
     this.checkNotification = this.checkNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
+
+    this.canvasRef = createRef();
+    this.videoRef = createRef();
   }
 
   componentDidMount() {
@@ -153,10 +156,10 @@ class VideoRoomComponent extends Component {
     await this.OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
-  
+
     let publisher = this.OV.initPublisher(undefined, {
       audioSource: undefined,
-      videoSource: videoDevices[0].deviceId,
+      videoSource: undefined,
       publishAudio: localUser.isAudioActive(),
       publishVideo: localUser.isVideoActive(),
       resolution: "640x480",
@@ -164,7 +167,7 @@ class VideoRoomComponent extends Component {
       insertMode: "APPEND",
       mirror: false,
     });
-  
+
     if (this.state.session.capabilities.publish) {
       publisher.on("accessAllowed", () => {
         this.state.session.publish(publisher).then(() => {
@@ -176,23 +179,105 @@ class VideoRoomComponent extends Component {
         });
       });
     }
-  
+
     localUser.setNickname(this.state.myUserName);
     localUser.setConnectionId(this.state.session.connection.connectionId);
     localUser.setScreenShareActive(false);
     localUser.setStreamManager(publisher);
-  
+
     this.subscribeToUserChanged();
     this.subscribeToStreamDestroyed();
     this.sendSignalUserChanged({ isScreenShareActive: localUser.isScreenShareActive() });
-  
-    this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, () => {
-      this.state.localUser.getStreamManager().on("streamPlaying", (e) => {
-        this.updateLayout();
-        publisher.videos[0].video.parentElement.classList.remove("custom-class");
+
+    this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, async () => {
+      await this.initializeMediaPipe();
+
+      // Canvas 스트림으로 새 Publisher 생성
+      const canvasStream = this.canvasRef.current.captureStream(30);
+      const newPublisher = this.OV.initPublisher(undefined, {
+        audioSource: publisher.stream.getAudioTracks()[0],
+        videoSource: canvasStream.getVideoTracks()[0],
+        publishAudio: localUser.isAudioActive(),
+        publishVideo: localUser.isVideoActive(),
+        resolution: "640x480",
+        frameRate: 30,
+        insertMode: "APPEND",
+        mirror: false,
       });
+
+      // 기존 스트림 언발행 (이미 발행된 경우)
+      if (this.state.session.capabilities.publish) {
+        await this.state.session.unpublish(publisher);
+      }
+
+      // 새 스트림 발행
+      await this.state.session.publish(newPublisher);
+      localUser.setStreamManager(newPublisher);
+
+      this.setState({ localUser: localUser });
+      this.updateSubscribers();
+      this.localUserAccessAllowed = true;
+      if (this.props.joinSession) {
+        this.props.joinSession();
+      }
     });
   }
+  ///////////////////////////////////////////////////////////////////
+  async initializeMediaPipe() {
+    const videoElement = this.videoRef.current;
+    const canvasElement = this.canvasRef.current;
+    const canvasCtx = canvasElement.getContext("2d");
+
+    const hands = new window.Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+    });
+
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    });
+
+    hands.onResults((results) => {
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+      if (results.multiHandLandmarks) {
+        for (const landmarks of results.multiHandLandmarks) {
+          window.drawConnectors(canvasCtx, landmarks, window.HAND_CONNECTIONS, {
+            color: "#00FF00",
+            lineWidth: 5,
+          });
+          window.drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+        }
+      }
+      //
+      canvasCtx.fillStyle = "rgba(0, 255, 0, 0.5)";
+      canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+      //
+      canvasCtx.restore();
+    });
+
+    const camera = new window.Camera(videoElement, {
+      onFrame: async () => {
+        await hands.send({ image: videoElement });
+      },
+      width: 640,
+      height: 480,
+    });
+
+    await camera.start();
+
+    // Canvas 스트림 생성 및 교체
+    const canvasStream = canvasElement.captureStream(30);
+    const videoTrack = canvasStream.getVideoTracks()[0];
+
+    // await this.state.localUser.getStreamManager().replaceTrack(videoTrack);
+  }
+
+  ///////////////////////////////////////////////////////////////////
 
   updateSubscribers() {
     var subscribers = this.remotes;
@@ -288,7 +373,7 @@ class VideoRoomComponent extends Component {
       }
     });
   }
-  
+
   subscribeToStreamDestroyed() {
     this.state.session.on("streamDestroyed", (event) => {
       this.deleteSubscriber(event.stream);
@@ -383,11 +468,12 @@ class VideoRoomComponent extends Component {
         var newVideoDevice = videoDevices.filter(
           (device) => device.deviceId !== this.state.currentVideoDevice.deviceId
         );
+        const canvasStream = this.canvasRef.current.captureStream(30);
 
         if (newVideoDevice.length > 0) {
           var newPublisher = this.OV.initPublisher(undefined, {
             audioSource: undefined,
-            videoSource: newVideoDevice[0].deviceId,
+            videoSource: canvasStream.getVideoTracks()[0],
             publishAudio: localUser.isAudioActive(),
             publishVideo: localUser.isVideoActive(),
             mirror: false,
@@ -531,6 +617,8 @@ class VideoRoomComponent extends Component {
           {localUser !== undefined && localUser.getStreamManager() !== undefined && (
             <div className="OT_root OT_publisher custom-class" id="localUser">
               <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
+              {/* <video ref={this.videoRef} autoPlay={true} style={{ display: "none" }} /> */}
+              {/* <canvas ref={this.canvasRef} style={{ display: "none" }} /> */}
             </div>
           )}
           {this.state.subscribers.map((sub, i) => (
@@ -559,7 +647,7 @@ class VideoRoomComponent extends Component {
   }
 
   async createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/${sessionId}`, null, {
+    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/dev/${sessionId}`, null, {
       headers: { "Content-Type": "application/json", memberId: this.props.member_id },
     });
     return response.data;
@@ -567,7 +655,7 @@ class VideoRoomComponent extends Component {
 
   async createToken(sessionId) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "/sessions/" + sessionId + "/connections",
+      APPLICATION_SERVER_URL + "/sessions/dev/" + sessionId + "/connections",
       {},
       {
         headers: { "Content-Type": "application/json" },

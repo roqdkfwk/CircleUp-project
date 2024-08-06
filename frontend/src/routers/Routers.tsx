@@ -3,8 +3,9 @@ import Main from "../pages/Main";
 import CourseDetail from "../pages/CourseDetail";
 import CourseManagementDetail from "../pages/Instructor/CourseManagementDetail";
 import CourseManagementModify from "../pages/Instructor/CourseManagementModify";
-import VideoRoomComponent from "../pages/VideoRoomComponent";
-import GateTemp from "../pages/GateTemp";
+import WebRTCCourse from "../pages/WebRTCCourse";
+import VideoRoomComponent from "../WebRtc/VideoRoomComponent";
+import GateTemp from "../WebRtc/GateTemp";
 import MainLayout from "../components/MainLayout";
 import Search from "../pages/Search";
 import MyCourse from "../pages/Member/MyCourse";
@@ -22,7 +23,7 @@ const Router = () => {
         <Route path="/courseDetail/:courseId" element={<CourseDetail />} />
         <Route path="/search" element={<Search />} />
         <Route path="/CourseDetail" element={<CourseDetail />} />
-        <Route path="/myCourse" element={<MyCourse /> } />
+        <Route path="/myCourse" element={<MyCourse />} />
         <Route path="/courseManagement" element={<CourseManagement />} />
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify/:courseId" element={<CourseManagementModify />} />
@@ -30,9 +31,18 @@ const Router = () => {
         <Route path="/search/:searchKeyword" element={<Search />} />
 
         <Route path="/curriculumDetail/:courseId" element={<CurriculumDetail />} />
-        <Route path="/curriculumManagementDetail/:courseId" element={<CurriculumManagementDetail />} />
-        <Route path="/curriculumManagementModify/:courseId" element={<CurriculumManagementModify />} />
+
+        <Route
+          path="/curriculumManagementDetail/:courseId"
+          element={<CurriculumManagementDetail />}
+        />
+        <Route
+          path="/curriculumManagementModify/:courseId"
+          element={<CurriculumManagementModify />}
+        />
+
       </Route>
+      <Route path="/course/live" element={<WebRTCCourse />} />
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />
     </Routes>
