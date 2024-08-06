@@ -45,7 +45,7 @@ export default class StreamComponent extends Component {
   handlePressKey(event) {
     if (event.key === "Enter") {
       console.log(this.state.nickname);
-      if (this.state.nickname.length >= 3 && this.state.nickname.length <= 20) {
+      if (this.state.nickname.length >= 2 && this.state.nickname.length < 10) {
         this.props.handleNickname(this.state.nickname);
         this.toggleNicknameForm();
         this.setState({ isFormValid: true });
@@ -73,11 +73,11 @@ export default class StreamComponent extends Component {
                 required
               />
               {!this.state.isFormValid && this.state.nickname.length <= 1 && (
-                <FormHelperText id="name-error-text">Nickname is too short!</FormHelperText>
+                <FormHelperText id="name-error-text">too short!</FormHelperText>
               )}
-              {/* {!this.state.isFormValid && this.state.nickname.length >= 20 && (
-                <FormHelperText id="name-error-text">Nickname is too long!</FormHelperText>
-              )} */}
+              {!this.state.isFormValid && this.state.nickname.length >= 10 && (
+                <FormHelperText id="name-error-text">too long!</FormHelperText>
+              )}
             </FormControl>
           ) : (
             <div onClick={this.toggleNicknameForm}>
