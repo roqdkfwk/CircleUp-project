@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 //import { ReactSVG } from 'react-svg';
 import video_camera from '../../assets/svgs/videoCamera.svg';
 import { useUserStore } from "../../store/store";
@@ -14,6 +14,7 @@ const CurriculumManagementDetail = () => {
     // 해당 페이지는 라이브변수가 있어야 함
     // 만약 라이브변수가 true -> 라이브 접속 가능..
     const location = useLocation();
+    const navigate = useNavigate();
     const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useUserStore();
 
     const [live, setLive] = useState<boolean>(false);
@@ -38,11 +39,13 @@ const CurriculumManagementDetail = () => {
         if (!live) {
             setLive(!live)
 
-            if (!liveCourses.includes(toNum(course_id)))
-                setLiveCourses([...liveCourses, toNum(course_id)])
-            if (!liveCurriculums.includes(toNum(curriculum_id)))
-                setLiveCurriculums([...liveCurriculums, toNum(curriculum_id)])
+            if (!liveCourses.includes(toNum(courseId)))
+                setLiveCourses([...liveCourses, toNum(courseId)])
+            if (!liveCurriculums.includes(curriculum_id))
+                setLiveCurriculums([...liveCurriculums, curriculum_id])
 
+            console.log(liveCourses)
+            console.log(liveCurriculums)
         }
     }
 
@@ -55,7 +58,7 @@ const CurriculumManagementDetail = () => {
             const response = fetchDelete();
             console.log(response);
             alert("삭제 완료!")
-            window.location.href = '/courseManagement'
+            navigate(`/courseManagementDetail/${courseId}`)
         } catch {
             alert("Error 발생..")
         }

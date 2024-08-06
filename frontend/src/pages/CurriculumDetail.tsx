@@ -10,22 +10,14 @@ const CurriculumDetail = () => {
     // 해당 페이지는 라이브변수가 있어야 함
     // 만약 라이브변수가 true -> 라이브 접속 가능..
     const location = useLocation();
-    const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useUserStore();
 
     const [live, setLive] = useState<boolean>(false);
     const { courseId } = useParams<{ courseId : string}>();
-    const [curriData, setCurriData] = useState<CurriculumInfo>(location.state.data)
+    const [curriData] = useState<CurriculumInfo>(location.state.data)
 
     const searchParams = new URLSearchParams(location.search);
-    const curriculum_id = searchParams.get('curriculum_id');
+    const curriculum_id = Number(searchParams.get('curriculum_id'));
 
-    // type 필터링 함수
-    const toNum = (value: string | undefined | null): number => {
-        const num = Number(value);
-        if (isNaN(num))
-            throw new Error(`Invalid number : ${value}`)
-        return num;
-    }
     // CurriculumManagementDetail
     // 라이브 강의 -> Zustand로 라이브 된 강의들의 id 배열에 넣고 뺌으로서 관리하자!
     const handleLive = () => {
@@ -36,10 +28,6 @@ const CurriculumDetail = () => {
             console.log("nothing..")
     }
 
-    useEffect(() => {
-        console.log(location.state)
-        setCurriData(location.state.data)
-    }, [])
     // < Rendering >
     // {..} 커리큘럼 라이브강의 저장소 (?)
     return (

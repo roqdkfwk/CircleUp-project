@@ -54,8 +54,11 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                     {courseNavbar?.map((NavbarName, idx) => (
                         <li className="me-2" key={idx}>
                             <a
-                                href="#"
-                                onClick={() => handleTabClick(NavbarName)}
+                                href="/"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleTabClick(NavbarName)
+                                }}
                                 className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${activeTab === NavbarName
                                         ? 'text-blue-600 border-blue-600'
                                         : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
@@ -78,7 +81,7 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                 </blockquote>}
             
             {activeTab === '커리큘럼' &&
-                <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} />
+                <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} onCurriculums={() => {}} />
             }
         </div>
     )
