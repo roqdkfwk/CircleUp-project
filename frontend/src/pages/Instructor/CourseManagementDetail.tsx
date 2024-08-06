@@ -2,7 +2,7 @@ import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
+import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementDetail = () => {
   
@@ -18,7 +18,7 @@ const CourseManagementDetail = () => {
     instructorName: "",
     description: "",
     tags: [],
-    curriculum: [],
+    curriculums: [],
     view: 0,
     price: 0,
     rating: 3,
@@ -39,7 +39,7 @@ const CourseManagementDetail = () => {
   }, []);
 
   function handleModify() {
-    navigate(`/courseManagementModify`, { state : courseDetails});
+    navigate(`/courseManagementModify/${courseId}`, { state : courseDetails});
   }
   
   const fetchDeleteCourse = async () => {
@@ -59,7 +59,7 @@ const CourseManagementDetail = () => {
   return (
     <div>
       <div className="flex flex-row">
-        <CourseStatusBoard flag={"instructorDetail"} data={courseDetails} />
+        <CourseManagementBoard flag={"instructorDetail"} data={courseDetails} />
         <RightSideBar />
       </div>
       <div className="flex flex-row">

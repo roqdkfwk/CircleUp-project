@@ -23,7 +23,7 @@ const CourseManagementModify = () => {
         instructorName: "",
         description: "",
         tags: [],
-        curriculum: [],
+        curriculums: [],
         view: 0,
         rating: 3,
       });

@@ -9,31 +9,41 @@ interface CourseCurriculumContent {
     
     currIds: number[],
     courseId: number,
+    onCurriculums: (newCurrIds : number[]) => void,
 }
 
-const CourseCurriculumContent = ({isModify, currIds, courseId} : CourseCurriculumContent) => {
+const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : CourseCurriculumContent) => {
 
     const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
-    const [live, setLive] = useState<boolean>(false);
-
+    //const [myCurriIds, setMyCurriIds] = useState<number[]>([]);
+    
     // <Todo> : fetch curriculum : GET
     const handleGetCurriculums = async () => {
+        console.log("GET")
+        console.log(currIds)
         const response = await getCurriculums(currIds);
         setCurriculums(response.data);
     }
     
-    // 라이브 강의 -> Zustand로 라이브 된 강의들의 id 배열에 넣고 뺌으로서 관리하자!
-    useEffect(() => {
-        handleGetCurriculums();
-    }, []);
+    const handleCurrIds = (newCurrIds: number[]) => {
+        console.log(newCurrIds)
+        onCurriculums(newCurrIds)
+    }
 
+    useEffect(() => {
+        console.log("lets go")
+        console.log(currIds)
+        handleGetCurriculums();
+    }, [currIds])
+
+    
     return (
         <div className="flex flex-row items-center">
             <div>
-                <CurriculumList data={curriculums} courseId={courseId} />
+                <CurriculumList data={curriculums} isModfy={isModify}
+                    courseId={courseId} originalCurrIds={currIds} updateFunc={handleCurrIds} />
             </div>
-            {/* 강사면 courseManagementModfiy 눌렀을 때, 추가 버튼 사용할 수 있도록 설정 */}
-            This is Curriculum Page.
+           {/* 기타 데이터 나타내기 */}
         </div>
     )
 }

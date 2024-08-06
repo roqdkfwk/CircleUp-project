@@ -16,7 +16,7 @@ const CourseManagementMake = () => {
         description: "",
         price : 0,
         tags: [],
-        curriculum: [],
+        curriculums: [],
         view: 0,
         rating: 3,
     })

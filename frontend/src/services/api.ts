@@ -130,8 +130,8 @@ export const checkUserCourse = (course_id: number) => {
 
 // 커리큘럼 조회
 export const getCurriculums = (data: number[]) => {
-    let query = `/curriculum?`;
-
+    let query = `/curriculums?`;
+    console.log(data)
     data.forEach((id: number, index: number) => {
         index !== data.length - 1 ?
             query += `id=${id}&` :
