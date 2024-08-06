@@ -18,5 +18,7 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
             "WHERE i.id = (SELECT c.instructor.id FROM Course c WHERE c.id = :id) ")
     Optional<InstructorRes> findInstructorByCourseId(@Param("id") Long courseId);
 
+    @Query("SELECT c.instructor.id FROM Course c WHERE c.id = :id")
+    Optional<Long> findInstructorIdByCourseId(@Param("id") Long courseId);
 
 }
