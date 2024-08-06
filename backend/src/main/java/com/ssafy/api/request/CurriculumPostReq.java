@@ -21,4 +21,6 @@ public class CurriculumPostReq {
                 .indexNo(course.getCurriculumList().size()+1L)
                 .build();
     }
+
+
 }

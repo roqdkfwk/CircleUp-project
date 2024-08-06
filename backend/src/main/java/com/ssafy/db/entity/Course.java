@@ -111,4 +111,14 @@ public class Course {
                     this.courseTagList.add(newCourseTag);
                 });
     }
+
+    public void addTag(List<Tag> tagsToAdd){
+        for (Tag tag : tagsToAdd) {
+            CourseTag courseTag = new CourseTag();
+            courseTag.setTag(tag);
+            courseTag.setCourse(this);
+
+            this.courseTagList.add(courseTag);
+        }
+    }
 }
