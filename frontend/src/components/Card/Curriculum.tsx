@@ -15,15 +15,14 @@ const Curriculum = ({ data, courseId, isModfy, isLive }: CurriculumProps) => {
 
     const [live, setLive] = useState<boolean>(false);
 
-    // 전역 변수로 live 지정하기 (currculumList에서 내려보낸다.)
     useEffect(() => {
-        setLive(live)
+        setLive(isLive)
     }, [isLive])
 
     return (
         <Link
             to={
-                isModfy === "instructorDetail" || isModfy === "instructorModify" ?
+                isModfy === "instructorModify" ?
                     {
                         pathname: `/curriculumManagementDetail/${courseId}`,
                         search: `?curriculum_id=${data.id}`,

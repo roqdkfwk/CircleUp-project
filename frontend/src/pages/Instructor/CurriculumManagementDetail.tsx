@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-//import { ReactSVG } from 'react-svg';
 import video_camera from '../../assets/svgs/videoCamera.svg';
 import { useUserStore } from "../../store/store";
 import { CurriculumInfo } from "../../types/CurriculumInfo";
-import { deleteCurriculum } from "../../services/api";
-
-
-// // 커리큘럼 버튼 : 라이브 이동 , 강사의 경우 -> CourseManagementDetail -> 커리큘럼 편집버튼 & 삭제버튼
 
 const CurriculumManagementDetail = () => {
     // <ToDo> - curriculum 상세 페이지
@@ -49,24 +44,12 @@ const CurriculumManagementDetail = () => {
         }
     }
 
-    const fetchDelete = async () => {
-        return await deleteCurriculum(Number(courseId), curriculum_id);
+    const handleModfiy = () => {
+            navigate(`/curriculumManagementModify/${courseId}?curriculum_id=${curriculum_id}`,
+                {state : {originalCurriculum : curriData}}
+            )
     }
 
-    const handleDelete = () => {
-        try {
-            const response = fetchDelete();
-            console.log(response);
-            alert("삭제 완료!")
-            navigate(`/courseManagementDetail/${courseId}`)
-        } catch {
-            alert("Error 발생..")
-        }
-    }
-    // < Rendering >
-    // 커리큘럼 사진
-    // 커리큘럼 세부내용
-    // 커리큘럼 이름
     // {..} 커리큘럼 라이브강의 저장소 (?)
     return (
         <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -87,9 +70,9 @@ const CurriculumManagementDetail = () => {
                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Make Live!
                 </button>
-                <button type="button" onClick={handleDelete}
+                <button type="button" onClick={handleModfiy}
                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Delete This!
+                    Modfiy!
                 </button>
             </div>
         </div>

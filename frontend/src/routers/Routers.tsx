@@ -12,6 +12,7 @@ import CourseManagement from "../pages/Instructor/CourseManagement";
 import CourseManagementMake from "../pages/Instructor/CourseManagementMake";
 import CurriculumDetail from "../pages/CurriculumDetail";
 import CurriculumManagementDetail from "../pages/Instructor/CurriculumManagementDetail";
+import CurriculumManagementModify from "../pages/Instructor/CurriculumManagementModify";
 
 const Router = () => {
   return (
@@ -30,6 +31,7 @@ const Router = () => {
 
         <Route path="/curriculumDetail/:courseId" element={<CurriculumDetail />} />
         <Route path="/curriculumManagementDetail/:courseId" element={<CurriculumManagementDetail />} />
+        <Route path="/curriculumManagementModify/:courseId" element={<CurriculumManagementModify />} />
       </Route>
       <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
       <Route path="/course/live/gate" element={<GateTemp />} />

@@ -60,7 +60,7 @@ const CurriculumMakeModal = ({ show, curri, updateFunc, courseId, onClose }: Cur
             console.log(response.data);
             const newId : number = response.data;
 
-            alert('커리큘럼 수정 성공!')
+            alert('커리큘럼 생성 성공!')
             updateFunc([...curri, { ...newCurriculum, id: newId, }])
 
             onClose();
