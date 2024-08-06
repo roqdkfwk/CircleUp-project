@@ -28,16 +28,17 @@ export default class ChatComponent extends Component {
         nickname: data.nickname,
         message: data.message,
       });
-      const document = window.document;
-      setTimeout(() => {
-        const userImg = document.getElementById("userImg-" + (this.state.messageList.length - 1));
-        const video = document.getElementById("video-" + data.streamId);
-        const avatar = userImg.getContext("2d");
-        avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-        this.props.messageReceived();
-      }, 50);
+      // const document = window.document;
+      // setTimeout(() => {
+      //   const userImg = document.getElementById("userImg-" + (this.state.messageList.length - 1));
+      //   const video = document.getElementById("video-" + data.streamId);
+      //   const avatar = userImg.getContext("2d");
+      //   avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
+      //   this.props.messageReceived();
+      // }, 50);
       this.setState({ messageList: messageList });
       this.scrollToBottom();
+      this.props.messageReceived();
     });
   }
 
@@ -88,9 +89,9 @@ export default class ChatComponent extends Component {
       <div id="chatContainer">
         <div id="chatComponent" style={styleChat}>
           <div id="chatToolbar">
-            <span>{this.props.user.getStreamManager().stream.session.sessionId} - CHAT</span>
+            <span>{this.props.user.getStreamManager().stream.session.sessionId}번방 채팅</span>
             <IconButton id="closeButton" onClick={this.close}>
-              <HighlightOff color="secondary" />
+              <HighlightOff sx={{ color: "white" }} />
             </IconButton>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
@@ -103,7 +104,7 @@ export default class ChatComponent extends Component {
                   (data.connectionId !== this.props.user.getConnectionId() ? " left" : " right")
                 }
               >
-                <canvas id={"userImg-" + i} width="60" height="60" className="user-img" />
+                {/* <canvas id={"userImg-" + i} width="60" height="60" className="user-img" /> */}
                 <div className="msg-detail">
                   <div className="msg-info">
                     <p> {data.nickname}</p>
