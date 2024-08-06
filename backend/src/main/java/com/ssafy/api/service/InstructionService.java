@@ -288,6 +288,16 @@ public class InstructionService {
         Blob blob = bucket.get(blobName);
         blob.delete();
 
+        int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
+
         curriculumRepository.delete(curriculum);
+        curriculumRepository.flush();
+
+        List<Curriculum> curriculumList = course.getCurriculumList();
+        for(int idx = idxDeleted-1; idx<curriculumList.size(); idx++){
+            Curriculum curr = curriculumList.get(idx);
+            curr.setIndexNo(idx+1L);
+            curriculumRepository.save(curr);
+        }
     }
 }

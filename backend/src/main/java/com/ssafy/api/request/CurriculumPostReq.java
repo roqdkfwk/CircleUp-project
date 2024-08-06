@@ -18,6 +18,7 @@ public class CurriculumPostReq {
                 .course(course)
                 .name(this.name)
                 .description(this.description)
+                .indexNo(course.getCurriculumList().size()+1L)
                 .build();
     }
 }
