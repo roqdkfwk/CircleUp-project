@@ -1,9 +1,15 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.response.*;
+import com.ssafy.api.response.CourseRes;
+import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.SearchRes;
 import com.ssafy.common.custom.NotFoundException;
-import com.ssafy.db.entity.*;
-import com.ssafy.db.repository.*;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Instructor;
+import com.ssafy.db.repository.CourseRepository;
+import com.ssafy.db.repository.InstructorRepository;
+import com.ssafy.db.repository.RegisterRepository;
+import com.ssafy.db.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +28,7 @@ public class CourseSerivce {
     private final CourseRepository courseRepository;
     private final TagRepository tagRepository;
     private final InstructorRepository instructorRepository;
+    private final RegisterRepository registerRepository;
 
     public List<SearchRes> getCoursesByTitle(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -127,5 +134,22 @@ public class CourseSerivce {
         );
         course.upView();
         return CourseRes.of(course);
+    }
+
+
+    /////////////////////////////////////////////////
+    public Boolean existsCourse(Long courseId) {
+        return (courseRepository.existsById(courseId)) ? true : false;
+    }
+
+    public Boolean instructorInCourse(Long courseId, Long memberId) {
+        Long instructorId = instructorRepository.findInstructorIdByCourseId(courseId).orElseThrow(
+                () -> new NotFoundException("Not Found Course : Course_id is " + courseId));
+        ;
+        return instructorId.equals(memberId);
+    }
+
+    public boolean existRegister(Long memberId, Long courseId) {
+        return courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null;
     }
 }
