@@ -7,6 +7,10 @@ build/
 
 ssafy-web.log
 
+### GCS ###
+src/main/resources/aerobic-copilot-429204-n1-b4b16042bce9.json
+
+
 ### STS ###
 .apt_generated
 .classpath
