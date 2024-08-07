@@ -1,7 +1,5 @@
 package com.ssafy.api.service;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
@@ -21,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -221,33 +218,28 @@ public class InstructionService {
                 () -> new NotFoundException("Instructor not found")
         );
 
-        Optional<Course> courseOptional = courseRepository.findById(courseId);
-        if (!courseOptional.isPresent()) {
-            throw new NotFoundException("Course not found");
-        }
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                ()-> new NotFoundException("Course is not found")
+        );
 
-        Course course = courseOptional.get();
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
-        if (!curriculumOptional.isPresent()) {
-            throw new NotFoundException("Curriculum not found");
-        }
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Curriculum not found")
+        );
 
-        Curriculum curriculum = curriculumOptional.get();
         if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
 
         GCSUtil.deleteCurrImg(curriculumId, bucket);
 
-        int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
-
         curriculumRepository.delete(curriculum);
         curriculumRepository.flush();
 
+        int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
         List<Curriculum> curriculumList = course.getCurriculumList();
         for(int idx = idxDeleted-1; idx<curriculumList.size(); idx++){
             Curriculum curr = curriculumList.get(idx);
