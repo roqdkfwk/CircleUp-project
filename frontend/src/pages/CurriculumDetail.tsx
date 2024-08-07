@@ -28,13 +28,6 @@ const CurriculumDetail = () => {
             throw new Error(`Invalid number : ${value}`)
         return num;
     }
-
-    const handleEnterLive = () => {
-        if (live)
-            console.log("go to live!")
-        else
-            console.log("nothing..")
-    }
     // <todo> : 1. toggleMakeLive
     // - 강사가 버튼을 눌러 컨퍼런스 생성한다.
     // - Live를 true로 설정한다.
@@ -53,7 +46,7 @@ const CurriculumDetail = () => {
             console.log(liveCourses)
             console.log(liveCurriculums)
             
-            navigate(`/course/live/${courseId}`, { state: { memberId: nickName } });
+            navigate(`/course/live/${courseId}`, { state: { memberId: nickName, flag : true } });
         }
     }
 
@@ -61,7 +54,9 @@ const CurriculumDetail = () => {
     // ( 해당 버튼은 라이브 상태여야 접속이 가능하다. )
     // - 수강생이 버튼을 눌러 컨퍼런스에 참가한다.
     // - 컨퍼런스 아이디 & 유저 아이디를 컨퍼런스에 전달한다.
-
+    const handleEnterLive = () => {
+        navigate(`/course/live/${courseId}`, { state: { memberId: nickName, flag : false } })
+    }
     // < Rendering >
     // {..} 커리큘럼 라이브강의 저장소 (?)
     return (

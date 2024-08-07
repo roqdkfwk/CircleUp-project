@@ -21,6 +21,7 @@ function useTest() {
     <VideoRoomComponent
       course_id={params.course_id}
       member_id={location.state.memberId}
+      isHost = {location.state.flag}
     ></VideoRoomComponent>
   );
 }
@@ -33,7 +34,7 @@ class VideoRoomComponent extends Component {
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
     let sessionName = this.props.course_id;
-    let userName = this.props.member_id ;
+    let userName = this.props.member_id;
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
@@ -116,7 +117,9 @@ class VideoRoomComponent extends Component {
       this.connect(this.props.token);
     } else {
       try {
-        var token = await this.getToken();
+        console.log(this.props.isHost + " : " + this.state.mySessionId)
+        var token = await this.getToken(this.props.isHost, this.state.mySessionId);
+        console.log("Make a Token!!")
         console.log(token);
         this.connect(token);
       } catch (error) {
@@ -135,6 +138,11 @@ class VideoRoomComponent extends Component {
   }
 
   connect(token) {
+    console.log("token generated : ")
+    console.log(token)
+    console.log("myUserName!")
+    console.log(this.state.myUserName)
+
     this.state.session
       .connect(token, { clientData: this.state.myUserName })
       .then(() => {
@@ -232,6 +240,8 @@ class VideoRoomComponent extends Component {
   }
 
   leaveSession() {
+    // Session 나가면, 모든 사용자가 나가도록 하기
+    // 그리고 해당 CourseId, CurriculuId Live에서 빼 주도록 하기..
     const mySession = this.state.session;
 
     if (mySession) {
@@ -571,9 +581,14 @@ class VideoRoomComponent extends Component {
     );
   }
 
-  async getToken() {
-    const sessionId = await this.fetchCreateSession(this.state.mySessionId);
-    return await this.fetchCreateToken(sessionId);
+  async getToken(flag, sessionId) {
+  
+    if (!flag)
+      return await this.fetchCreateToken(sessionId);
+    else {
+      let getSessionId = await this.fetchCreateSession(sessionId);
+      return await this.fetchCreateToken(getSessionId);
+    }
   }
 
   async fetchCreateSession(sessionId) {
