@@ -46,6 +46,36 @@ public class InstructionController {
         return ResponseEntity.ok().body(courseService.getCoursesImade(memberId));
     }
 
+    @GetMapping(value = "/courses/instructions/{status}")
+    @ApiOperation(value = "상태 별 강사의 강의 목록")
+    public ResponseEntity<List<CoursesRes>> getCoursesByStatus(
+            @PathVariable(name = "status") String status,
+            Authentication authentication
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok().body(courseService.getMyCoursesByStatus(memberId, status));
+    }
+
+    @PatchMapping("/courses/instructions/request/{course_id}")
+    @ApiOperation(value = "개설한 강의 승인 요청 보내기")
+    public ResponseEntity<CourseRes> sendRequest(
+            @PathVariable(name = "course_id") Long courseId,
+            Authentication authentication
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok().body(instructionService.enqueueCourse(memberId, courseId));
+    }
+
+    @PatchMapping("/courses/instructions/cancelRequest/{course_id}")
+    @ApiOperation(value = "개설한 강의 승인 요청 취소하기")
+    public ResponseEntity<CourseRes> cancelRequest(
+            @PathVariable(name = "course_id") Long courseId,
+            Authentication authentication
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok().body(instructionService.enqueueCourse(memberId, courseId));
+    }
+
     @PostMapping(value = "/courses/instructions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "새로운 강의 만들기")
     public ResponseEntity<Long> createCourse(
