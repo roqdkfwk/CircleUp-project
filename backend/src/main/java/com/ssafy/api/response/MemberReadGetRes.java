@@ -34,7 +34,7 @@ public class MemberReadGetRes {
     private String contactTel;
 
     @ApiModelProperty(name = "선호하는 태그")
-    private List<String> tags = new ArrayList<>();
+    private List<String> tags;
 
     // List<String> tagNameList 추가
     public static MemberReadGetRes of(Member member, List<String> tagNameList) {
