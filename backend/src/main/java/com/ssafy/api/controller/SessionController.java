@@ -93,7 +93,8 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.existRegister(memberId, Long.valueOf(courseId))) {
+        if (courseSerivce.existRegister(memberId, Long.valueOf(courseId))
+                || courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
             ConnectionProperties properties = new ConnectionProperties.Builder().build();
             Connection connection = session.createConnection(properties);
             return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
