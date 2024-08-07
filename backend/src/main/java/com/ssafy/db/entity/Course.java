@@ -59,6 +59,9 @@ public class Course {
     @Column(nullable = false)
     private double rating;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;
 
