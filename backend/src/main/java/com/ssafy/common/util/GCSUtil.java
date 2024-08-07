@@ -12,23 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class GCSUtil {
     public static final String preUrl = "https://storage.googleapis.com/circleup-bucket/";
 
-    public static void saveCourseImg(Course newCourse, Bucket bucket, CourseCreatePostReq courseCreatePostReq){
+    public static void saveCourseImg(Course course, Bucket bucket, MultipartFile img){
         try{
-            String blobName = "course_" + newCourse.getId() + "_banner";
-            BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
-            // img_url 넣어주기
-            newCourse.setImgUrl(preUrl+blobName);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+            String blobName = "course_" + course.getId() + "_banner";
+            bucket.create(blobName, img.getBytes(), img.getContentType());
 
-    public static void saveCurrImg(Curriculum newCurr, Bucket bucket, CurriculumPostReq curriculumPostReq){
-        try{
-            String blobName = "curriculum_" + newCurr.getId() + "_banner";
-            BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
-
-            newCurr.setImgUrl(preUrl+blobName);
+            course.setImgUrl(preUrl+blobName);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -40,18 +29,25 @@ public class GCSUtil {
         blob.delete();
     }
 
-    public static void updateCurrImg(Curriculum curriculum, Bucket bucket, MultipartFile img){
-        try {
-            String blobName = "curriculum_" + curriculum.getId() + "_banner";
+    public static void updateCourseImg(Course course, Bucket bucket, MultipartFile img){
+        deleteCourseImg(course.getId(), bucket);
+        saveCourseImg(course, bucket, img);
+    }
 
-            Blob blob = bucket.get(blobName);
-            blob.delete();
+    public static void saveCurrImg(Curriculum newCurr, Bucket bucket, MultipartFile img){
+        try{
+            String blobName = "curriculum_" + newCurr.getId() + "_banner";
+            bucket.create(blobName, img.getBytes(), img.getContentType());
 
-            BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-            curriculum.setImgUrl(preUrl + blobName);
+            newCurr.setImgUrl(preUrl+blobName);
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static void updateCurrImg(Curriculum curriculum, Bucket bucket, MultipartFile img){
+        deleteCurrImg(curriculum.getId(), bucket);
+        saveCurrImg(curriculum, bucket, img);
     }
 
     public static void deleteCurrImg(Long curriculumId, Bucket bucket){

@@ -44,7 +44,6 @@ public class InstructionService {
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
-
             // 빈 파일일때
             if (courseCreatePostReq.getImg() == null) {
                 throw new BadRequestException("Not File");
@@ -61,18 +60,18 @@ public class InstructionService {
 
             Course newCourse = courseCreatePostReq.toEntity(instructor, timestamp, null);
             newCourse = courseRepository.save(newCourse);
-            List<Long>tagIds = courseCreatePostReq.parseTags();
 
-            List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
+            List<Tag> tagsToAdd = tagRepository.findAllById(courseCreatePostReq.parseTags());
             newCourse.addTag(tagsToAdd);
 
             // 이미지 저장
-            GCSUtil.saveCourseImg(newCourse, bucket, courseCreatePostReq);
+            GCSUtil.saveCourseImg(newCourse, bucket, courseCreatePostReq.getImg());
             // 3. 업데이트된 정보로 다시 저장
             return CourseRes.of(courseRepository.save(newCourse));
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to create course", e);
         }
     }
 
@@ -128,6 +127,11 @@ public class InstructionService {
             throw new BadRequestException("More than one registered");
         }
 
+        List<Curriculum> curriculumIdList = course.getCurriculumList();
+        for(Curriculum curriculum : curriculumIdList){
+            GCSUtil.deleteCurrImg(curriculum.getId(), bucket);
+        }
+
         GCSUtil.deleteCourseImg(courseId, bucket);
 
         courseRepository.delete(course);
@@ -163,7 +167,7 @@ public class InstructionService {
             Curriculum newCurr = curriculumPostReq.toEntity(course);
             newCurr = curriculumRepository.save(newCurr);
 
-            GCSUtil.saveCurrImg(newCurr, bucket, curriculumPostReq);
+            GCSUtil.saveCurrImg(newCurr, bucket, curriculumPostReq.getImg());
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);

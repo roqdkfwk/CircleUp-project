@@ -88,20 +88,10 @@ public class Course {
         }
         MultipartFile img = courseModifyUpdateReq.getImg();
         if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
-            String blobName = "course_" + this.getId() + "_banner";
-
-            Blob blob = bucket.get(blobName);
-            blob.delete();
-            try{
-                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                this.setImgUrl(GCSUtil.preUrl+blobName);
-            } catch (Exception e){
-                throw new BadRequestException("Image error");
-            }
+            GCSUtil.updateCourseImg(this, bucket, img);
         }
 
         this.courseTagList.removeIf(courseTag -> !tagsReq.contains(courseTag.getTag()));
-
         tagsReq.stream()
                 .filter(tag -> courseTagList.stream().noneMatch(courseTag -> courseTag.getTag().equals(tag)))
                 .forEach(tag -> {

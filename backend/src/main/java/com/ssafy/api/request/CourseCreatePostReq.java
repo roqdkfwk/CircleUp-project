@@ -36,6 +36,7 @@ public class CourseCreatePostReq {
                 .curriculumList(new ArrayList<>())
                 .totalCourse(0L)
                 .completedCourse(0L)
+                .rating(0.0)
                 .build();
     }
 
