@@ -1,6 +1,7 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class CourseRes {
     Long price;
     Long view;
     Double rating;
+    Status status;
     String instructorName;
     String description;
     List<String> tags;
@@ -34,6 +36,7 @@ public class CourseRes {
                 .rating(course.getRating())
                 .instructorName(course.getInstructor().getMember().getName())
                 .description(course.getDescription())
+                .status(course.getStatus())
                 .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
                 .curriculums(course.getCurriculumList().stream().map(curr -> curr.getId()).collect(Collectors.toList())).build();
     }

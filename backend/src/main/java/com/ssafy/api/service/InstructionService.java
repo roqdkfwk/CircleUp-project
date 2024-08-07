@@ -10,6 +10,7 @@ import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.util.GCSUtil;
 import com.ssafy.db.entity.*;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.entity.Status;
+import com.ssafy.db.entity.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;

@@ -6,7 +6,7 @@ import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Member;
-import com.ssafy.db.entity.Status;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.CourseRepository;
 import com.ssafy.db.repository.MemberRepository;
@@ -29,7 +29,7 @@ public class AdminService {
 
         if(!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
 
-        return courseRepository.findByStatus(Status.Pending)
+        return courseRepository.findAllByStatus(Status.Pending)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());

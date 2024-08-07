@@ -2,7 +2,7 @@ package com.ssafy.db.repository;
 
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.entity.Status;
+import com.ssafy.db.entity.enums.Status;
 import org.kurento.client.internal.server.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -56,8 +56,12 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
     @Query("SELECT 1 FROM Register r WHERE r.member.id = :memberId AND r.course.id = :courseId")
     Long existsRegisterByMemberIdAndCourseId(@Param("memberId") Long memberId, @Param("courseId") Long courseId);
 
-    List<Course> findByStatus(Status status);
+    List<Course> findAllByStatus(Status status);
 
+    ////
+    Course findByIdAndStatus(Long courseId, Status status);
+    Course findByIdAndInstructorId(Long courseId, Long instructorId);
+    ///
     List<Course> findByStatusAndInstructorId(Status status, Long instructorId);
 
 

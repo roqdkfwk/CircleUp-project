@@ -8,7 +8,7 @@ import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.entity.Member;
-import com.ssafy.db.entity.Status;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -146,10 +146,30 @@ public class CourseSerivce {
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
-    public CourseRes getCourseById(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Not Found Course : Course_id is " + id)
+    public CourseRes getCourseById(Long courseId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                ()-> new NotFoundException("Member not found : Member_id is " + memberId)
         );
+
+        Course course;
+        // 일반사용자용 : Course.status == Status.Approved
+        if(member.getRole()==Role.User){
+            course = courseRepository.findByIdAndStatus(courseId, Status.Approved);
+        }
+        // 강사용 : 강의의 강사id == memberId
+        else if(member.getRole()==Role.Instructor){
+            course = courseRepository.findByIdAndInstructorId(courseId, memberId);
+        }
+        // admin용 : 조건 x
+        else{
+            course = courseRepository.findById(courseId).orElseThrow(
+                    () -> new NotFoundException("Course not found : Course_id is " + courseId)
+            );
+        }
+
+        if(course == null){
+            throw new BadRequestException("Access denied");
+        }
         course.upView();
         return CourseRes.of(course);
     }

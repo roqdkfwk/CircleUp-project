@@ -1,4 +1,4 @@
-package com.ssafy.db.entity;
+package com.ssafy.db.entity.enums;
 
 public enum Status {
     Draft, // 승인 신청 전
