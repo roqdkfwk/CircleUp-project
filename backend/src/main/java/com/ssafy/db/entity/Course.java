@@ -57,7 +57,7 @@ public class Course {
     private Long completedCourse;
 
     @Column(nullable = false)
-    private Double rating = 0.0;
+    private double rating;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;
@@ -88,20 +88,10 @@ public class Course {
         }
         MultipartFile img = courseModifyUpdateReq.getImg();
         if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
-            String blobName = "course_" + this.getId() + "_banner";
-
-            Blob blob = bucket.get(blobName);
-            blob.delete();
-            try{
-                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                this.setImgUrl(GCSUtil.preUrl+blobName);
-            } catch (Exception e){
-                throw new BadRequestException("Image error");
-            }
+            GCSUtil.updateCourseImg(this, bucket, img);
         }
 
         this.courseTagList.removeIf(courseTag -> !tagsReq.contains(courseTag.getTag()));
-
         tagsReq.stream()
                 .filter(tag -> courseTagList.stream().noneMatch(courseTag -> courseTag.getTag().equals(tag)))
                 .forEach(tag -> {
@@ -110,5 +100,15 @@ public class Course {
                     newCourseTag.setTag(tag);
                     this.courseTagList.add(newCourseTag);
                 });
+    }
+
+    public void addTag(List<Tag> tagsToAdd){
+        for (Tag tag : tagsToAdd) {
+            CourseTag courseTag = new CourseTag();
+            courseTag.setTag(tag);
+            courseTag.setCourse(this);
+
+            this.courseTagList.add(courseTag);
+        }
     }
 }

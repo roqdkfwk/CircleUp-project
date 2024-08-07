@@ -1,9 +1,5 @@
 package com.ssafy.api.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseCreatePostReq;
 import com.ssafy.api.request.CourseModifyUpdateReq;
@@ -23,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,55 +35,37 @@ public class InstructionService {
     // Course 관리
 
     public CourseRes createCourse(CourseCreatePostReq courseCreatePostReq, Long memberId) {
-        try {
+        try{
             // 1. 유효성 검증
             // 요청자가 강사가 아닐때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
-
             // 빈 파일일때
             if (courseCreatePostReq.getImg() == null) {
                 throw new BadRequestException("Not File");
             }
             // 이미지 파일이 아닐때
             String contentType = courseCreatePostReq.getImg().getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
+            if (contentType == null || !contentType.startsWith("image/")) {
                 throw new BadRequestException("Not Image File");
             }
 
             // 2. 서비스 로직 실행
             // 현재 시간
-            LocalDateTime now = LocalDateTime.now();
-            // 타입 변경
-            Timestamp timestamp = Timestamp.valueOf(now);
-            // 일단 url null로 course 생성 + 등록 >> course id 생성!
+            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+
             Course newCourse = courseCreatePostReq.toEntity(instructor, timestamp, null);
             newCourse = courseRepository.save(newCourse);
 
-            String tags = courseCreatePostReq.getTags();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Long> tagIds = objectMapper.readValue(tags, new TypeReference<List<Long>>() {
-            });
+            List<Tag> tagsToAdd = tagRepository.findAllById(courseCreatePostReq.parseTags());
+            newCourse.addTag(tagsToAdd);
 
-            List<CourseTag> courseTags = newCourse.getCourseTagList();
-
-            List<Tag> tagsToAdd = tagRepository.findAllById(tagIds);
-            for (Tag tag : tagsToAdd) {
-                CourseTag courseTag = new CourseTag();
-                courseTag.setTag(tag);
-                courseTag.setCourse(newCourse);
-
-                courseTags.add(courseTag);
-            }
-
-            // 이미지 파일 네이밍
-            String blobName = "course_" + newCourse.getId() + "_banner";
-            BlobInfo blobInfo = bucket.create(blobName, courseCreatePostReq.getImg().getBytes(), courseCreatePostReq.getImg().getContentType());
-            // img_url 넣어주기
-            newCourse.setImgUrl(GCSUtil.preUrl+blobName);
+            // 이미지 저장
+            GCSUtil.saveCourseImg(newCourse, bucket, courseCreatePostReq.getImg());
             // 3. 업데이트된 정보로 다시 저장
             return CourseRes.of(courseRepository.save(newCourse));
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create course", e);
@@ -135,24 +112,24 @@ public class InstructionService {
                 () -> new NotFoundException("Instructor not found")
         );
 
-        Optional<Course> courseOptional = courseRepository.findById(courseId);
-        if (!courseOptional.isPresent()) {
-            throw new NotFoundException("Course not found");
-        }
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                ()-> new NotFoundException("Course is not found")
+        );
 
-        Course course = courseOptional.get();
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        Long students = registerRepository.countByCourseId(courseId);
-        if (students > 0) {
+        if (registerRepository.countByCourseId(courseId) > 0) {
             throw new BadRequestException("More than one registered");
         }
 
-        String blobName = "course_" + courseId + "_banner";
-        Blob blob = bucket.get(blobName);
-        blob.delete();
+        List<Curriculum> curriculumIdList = course.getCurriculumList();
+        for(Curriculum curriculum : curriculumIdList){
+            GCSUtil.deleteCurrImg(curriculum.getId(), bucket);
+        }
+
+        GCSUtil.deleteCourseImg(courseId, bucket);
 
         courseRepository.delete(course);
     }
@@ -166,12 +143,10 @@ public class InstructionService {
                     () -> new NotFoundException("Instructor not found")
             );
             // 강의가 유효하지 않을 때
-            Optional<Course> courseOptional = courseRepository.findById(courseId);
-            if (!courseOptional.isPresent()) {
-                throw new NotFoundException("Course not found");
-            }
+            Course course = courseRepository.findById(courseId).orElseThrow(
+                    ()-> new NotFoundException("Course is not found")
+            );
             // 강의의 강사가 아닐 때
-            Course course = courseOptional.get();
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
@@ -189,10 +164,7 @@ public class InstructionService {
             Curriculum newCurr = curriculumPostReq.toEntity(course);
             newCurr = curriculumRepository.save(newCurr);
 
-            String blobName = "curriculum_" + newCurr.getId() + "_banner";
-            BlobInfo blobInfo = bucket.create(blobName, curriculumPostReq.getImg().getBytes(), curriculumPostReq.getImg().getContentType());
-
-            newCurr.setImgUrl(GCSUtil.preUrl+blobName);
+            GCSUtil.saveCurrImg(newCurr, bucket, curriculumPostReq.getImg());
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
@@ -209,20 +181,17 @@ public class InstructionService {
                     () -> new NotFoundException("Instructor not found")
             );
             // 강의가 유효하지 않을 때
-            Optional<Course> courseOptional = courseRepository.findById(courseId);
-            if (!courseOptional.isPresent()) {
-                throw new NotFoundException("Course not found");
-            }
+            Course course = courseRepository.findById(courseId).orElseThrow(
+                    ()-> new NotFoundException("Course is not found")
+            );
             // 강의의 강사가 아닐 때
-            Course course = courseOptional.get();
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
             // 커리큘럼이 유효하지 않을 때
-            Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
-            if (!curriculumOptional.isPresent()) {
-                throw new NotFoundException("Curriculum not found");
-            }
+            Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                    () -> new NotFoundException("Curriculum not found")
+            );
             // 이미지가 유효하지 않을 때
             MultipartFile img = curriculumUpdateReq.getImg();
             if (img != null) {
@@ -232,23 +201,8 @@ public class InstructionService {
                 }
             }
 
-            Curriculum curriculum = curriculumOptional.get();
             // 변경사항 확인 후 적용
-            if (curriculumUpdateReq.getName() != null) {
-                curriculum.setName(curriculumUpdateReq.getName());
-            }
-            if (curriculumUpdateReq.getDescription() != null) {
-                curriculum.setDescription(curriculumUpdateReq.getDescription());
-            }
-            if (img != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
-                String blobName = "curriculum_" + curriculum.getId() + "_banner";
-
-                Blob blob = bucket.get(blobName);
-                blob.delete();
-
-                BlobInfo blobInfo = bucket.create(blobName, img.getBytes(), img.getContentType());
-                curriculum.setImgUrl(GCSUtil.preUrl+blobName);
-            }
+            curriculum.update(curriculumUpdateReq, bucket);
             curriculumRepository.save(curriculum);
 
             return CourseRes.of(course);
@@ -264,35 +218,28 @@ public class InstructionService {
                 () -> new NotFoundException("Instructor not found")
         );
 
-        Optional<Course> courseOptional = courseRepository.findById(courseId);
-        if (!courseOptional.isPresent()) {
-            throw new NotFoundException("Course not found");
-        }
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                ()-> new NotFoundException("Course is not found")
+        );
 
-        Course course = courseOptional.get();
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        Optional<Curriculum> curriculumOptional = curriculumRepository.findById(curriculumId);
-        if (!curriculumOptional.isPresent()) {
-            throw new NotFoundException("Curriculum not found");
-        }
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Curriculum not found")
+        );
 
-        Curriculum curriculum = curriculumOptional.get();
         if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
 
-        String blobName = "curriculum_" + curriculumId + "_banner";
-        Blob blob = bucket.get(blobName);
-        blob.delete();
-
-        int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
+        GCSUtil.deleteCurrImg(curriculumId, bucket);
 
         curriculumRepository.delete(curriculum);
         curriculumRepository.flush();
 
+        int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
         List<Curriculum> curriculumList = course.getCurriculumList();
         for(int idx = idxDeleted-1; idx<curriculumList.size(); idx++){
             Curriculum curr = curriculumList.get(idx);
