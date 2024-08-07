@@ -9,6 +9,7 @@ import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
 import UserModel from "../WebRtc/models/user-model";
 import { useLocation, useParams } from "react-router";
 import { createSession, createToken } from "../services/api"
+import { useLiveStore } from "../store/store";
 
 function useTest() {
   const params = useParams();
@@ -20,6 +21,7 @@ function useTest() {
   return (
     <VideoRoomComponent
       course_id={params.course_id}
+      curriculum_id={location.state.curriId}
       member_id={location.state.memberId}
       isHost = {location.state.flag}
     ></VideoRoomComponent>
@@ -46,6 +48,8 @@ class VideoRoomComponent extends Component {
       chatDisplay: "none",
       currentVideoDevice: undefined,
     };
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useLiveStore();
 
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
@@ -238,10 +242,9 @@ class VideoRoomComponent extends Component {
       }
     );
   }
-
+/////////////////////////////////////<ToDo>/////////////////////////////////////////////////////  
+////////////////////////////////////////////////////////////////////////////////////////////////
   leaveSession() {
-    // Session 나가면, 모든 사용자가 나가도록 하기
-    // 그리고 해당 CourseId, CurriculuId Live에서 빼 주도록 하기..
     const mySession = this.state.session;
 
     if (mySession) {
@@ -259,7 +262,12 @@ class VideoRoomComponent extends Component {
     if (this.props.leaveSession) {
       this.props.leaveSession();
     }
+
+    // Session 나가면, 모든 사용자가 나가도록 하기
+    // 그리고 해당 CourseId, CurriculuId Live에서 빼 주도록 하기..
+    // redirect 사용하여, 메인 페이지로 이동하기
   }
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   camStatusChanged() {
     localUser.setVideoActive(!localUser.isVideoActive());

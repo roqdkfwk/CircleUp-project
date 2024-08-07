@@ -3,6 +3,7 @@ import { getSpecialCourse } from '../services/api';
 import HotCourseList from "../components/List/HotCourseList";
 import CourseList from "../components/List/CourseList";
 import { CourseInfo } from './../types/CourseInfo';
+import { useUserStore } from "../store/store";
 
 const Main = () => {
 
@@ -10,7 +11,8 @@ const Main = () => {
     const [freeCourses, setFreeCourses] = useState<CourseInfo[]>([])
     const [RecCourses, setRecCourses] = useState<CourseInfo[]>([])
     const [NewCourses, setNewCourses] = useState<CourseInfo[]>([])
-
+    const { myCourse } = useUserStore();
+    
     const fetchData = async(type: string, size: number) => {
         const data = {
             type: type,
@@ -41,6 +43,7 @@ const Main = () => {
         fetchFreeCourses()
         fetchRecCourses()
         fetchNewCourses()
+        console.log(myCourse);
     },[])
 
     return (
