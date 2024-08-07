@@ -134,6 +134,33 @@ public class InstructionService {
         courseRepository.delete(course);
     }
 
+    public CourseRes enqueueCourse(Long memberId, Long courseId){
+        Instructor instructor = instructorRepository.findById(memberId)
+                .orElseThrow(()-> new NotFoundException("Instructor not found"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        if(course.getStatus()!=Status.Draft) throw new BadRequestException("Status is not Draft");
+
+        course.setStatus(Status.Pending);
+        courseRepository.save(course);
+
+        return CourseRes.of(course);
+    } // 강의 개설 신청 for 강사
+
+    public CourseRes dequeueCourse(Long courseId){
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        if(course.getStatus()!=Status.Pending) throw new BadRequestException("Status is not Pending");
+
+        course.setStatus(Status.Draft);
+        courseRepository.save(course);
+
+        return CourseRes.of(course);
+    } // 강의 개설 신청 취소 for 강사
+
     // Curriculum 관리
 
     public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId) {
