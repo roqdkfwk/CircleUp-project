@@ -3,13 +3,14 @@ package com.ssafy.api.service;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.SearchRes;
+import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Instructor;
-import com.ssafy.db.repository.CourseRepository;
-import com.ssafy.db.repository.InstructorRepository;
-import com.ssafy.db.repository.RegisterRepository;
-import com.ssafy.db.repository.TagRepository;
+import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.Status;
+import com.ssafy.db.entity.enums.Role;
+import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,22 @@ public class CourseSerivce {
     private final CourseRepository courseRepository;
     private final TagRepository tagRepository;
     private final InstructorRepository instructorRepository;
-    private final RegisterRepository registerRepository;
+    private final MemberRepository memberRepository;
+
+    ////////////////////////////////////////
+
+    // 상태 별 강의 조회 for 강사
+    public List<CoursesRes> getMyCoursesByStatus(Long memberId, String status) {
+        Member instructor = memberRepository.findById(memberId)
+                .orElseThrow(()-> new NotFoundException("ID not found"));
+
+        if(!instructor.getRole().equals(Role.Instructor)) throw new BadRequestException("Not Instructor");
+
+        return courseRepository.findByStatusAndInstructorId(Status.get(status), memberId)
+                .stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    }
 
     public List<SearchRes> getCoursesByTitle(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -38,7 +54,7 @@ public class CourseSerivce {
                         arr -> (Long) arr[1]
                 ));
 
-        return courseRepository.findByKeyword(name, pageable)
+        return courseRepository.findApprovedByKeyword(name, pageable)
                 .stream()
                 .map(course ->
                         SearchRes.of(course,
@@ -56,7 +72,7 @@ public class CourseSerivce {
                         arr -> (Long) arr[1]
                 ));
 
-        return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
+        return courseRepository.findApprovedByTagIds(tags, Long.valueOf(tags.size()), pageable)
                 .stream()
                 .map(course ->
                         SearchRes.of(course,
@@ -73,7 +89,7 @@ public class CourseSerivce {
         LocalDate today = LocalDate.now();
         Long randomTagId = today.getDayOfYear() % tagSize + 1;
 
-        return courseRepository.findByTagId(randomTagId, pageable)
+        return courseRepository.findByTagId(randomTagId, Status.Approved, pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
@@ -82,13 +98,13 @@ public class CourseSerivce {
     public List<CoursesRes> getCoursesByView(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return courseRepository.findAllByOrderByViewDesc(pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
+        return courseRepository.findAllByStatusOrderByViewDesc(Status.Approved, pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
     public List<CoursesRes> getFreeCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return courseRepository.findByPrice(0L, pageable)
+        return courseRepository.findByPriceAndStatus(0L, Status.Approved, pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
@@ -97,11 +113,13 @@ public class CourseSerivce {
     public List<CoursesRes> getLatestCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
-        return courseRepository.findAll(pageable)
+        return courseRepository.findAllByStatus(Status.Approved, pageable)
                 .stream()
                 .map(CoursesRes::of)
                 .collect(Collectors.toList());
     }
+
+    ////////////////////////////
 
     public List<CoursesRes> getRegisteredCourses(Long id, int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
@@ -136,8 +154,6 @@ public class CourseSerivce {
         return CourseRes.of(course);
     }
 
-
-    /////////////////////////////////////////////////
     public Boolean existsCourse(Long courseId) {
         return (courseRepository.existsById(courseId)) ? true : false;
     }
