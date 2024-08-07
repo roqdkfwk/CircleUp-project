@@ -197,6 +197,27 @@ export const postCourseByUser = (courseId: number) => {
     return axiosClient.post(`courses/registers/${courseId}`)
 }
 
+// WebRTC 관련 axios
+// Session 생성
+export const createSession = (courseId: number, memberId : string) => {
+    return axiosClient.post(`/sessions/${courseId}`, null, {
+        headers: {
+            'Requires-Auth': true,
+            "Content-Type": "application/json",
+            memberId: memberId
+        },
+    })
+}
+// Session Token 발급
+export const createToken = (sessionId: number) => {
+    return axiosClient.post(`/sessions/${sessionId}/connections`, {}, {
+        headers: {
+            'Requires-Auth': true,
+            "Content-Type": "application/json"
+        },
+    })
+}
+
 ////////////////////////////////////////////////////////////
 // Interceptor - JWT 로직 ( AccessToken & RefreshToken )
 axiosClient.interceptors.request.use(

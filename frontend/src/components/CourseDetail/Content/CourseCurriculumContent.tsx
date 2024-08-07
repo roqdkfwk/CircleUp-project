@@ -26,8 +26,6 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
 
     // <Todo> : fetch curriculum : GET
     const handleGetCurriculums = async () => {
-        console.log("GET")
-        console.log(currIds)
         const response = await getCurriculums(currIds);
         setCurriculums(response.data);
     }
@@ -38,8 +36,7 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
         newCurris.forEach((curri) => {
            newCurrIds.push(curri.id)
         })
-        console.log("send to content!!")
-        console.log(newCurrIds)
+
         setNewCurrIds(newCurrIds)
         onCurriculums(newCurrIds)
     }
@@ -47,6 +44,8 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
     useEffect(() => {
         console.log("lets go")
         console.log(currIds)
+        console.log("강사가 어떻게 열었지? -> " + isModify)
+
         if (currIds.length != 0) {
             setNewCurrIds(currIds);
             handleGetCurriculums();

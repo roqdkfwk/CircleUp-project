@@ -33,7 +33,7 @@ const Curriculum = ({ data, courseId, isModfy, isLive }: CurriculumProps) => {
                         search: `?curriculum_id=${data.id}`,
                     } as unknown as string
             }
-            state={{data : data}}
+            state={{data : data, flag : isModfy}}
         >
             <div className="flex flex-row max-w-sm p-3 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <img className="rounded-t-lg w-[48px] h-[48px]" src={data.imgUrl} alt="" />

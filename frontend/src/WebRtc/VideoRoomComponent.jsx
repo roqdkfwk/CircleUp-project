@@ -552,7 +552,7 @@ class VideoRoomComponent extends Component {
   }
 
   async createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/dev/${sessionId}`, null, {
+    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/${sessionId}`, null, {
       headers: { "Content-Type": "application/json", memberId: this.props.member_id },
     });
     return response.data;

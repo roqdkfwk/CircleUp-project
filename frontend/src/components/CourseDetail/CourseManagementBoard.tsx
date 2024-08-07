@@ -137,6 +137,7 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                                         href="#"
                                         onClick={(e) => {
                                             e.preventDefault();
+                                            console.log(NavbarName)
                                             handleTabClick(NavbarName);
                                         }}
                                         className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${activeTab === NavbarName

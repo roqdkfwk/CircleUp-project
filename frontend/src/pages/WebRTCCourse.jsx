@@ -1,6 +1,6 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
-import React, { Component, createRef } from "react";
+import React, { Component } from "react";
 import "../WebRtc/VideoRoomComponent.css";
 import StreamComponent from "../WebRtc/stream/StreamComponent";
 import ChatComponent from "../WebRtc/chat/ChatComponent";
@@ -8,10 +8,15 @@ import ToolbarComponent from "../WebRtc/toolbar/ToolbarComponent";
 import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
 import UserModel from "../WebRtc/models/user-model";
 import { useLocation, useParams } from "react-router";
+import { createSession, createToken } from "../services/api"
 
 function useTest() {
   const params = useParams();
   const location = useLocation();
+  console.log("=================입장===================")
+  console.log("course_id >> ", params.course_id)
+  console.log("member_id >> ", location.state.memberId)
+  console.log("========================================")
   return (
     <VideoRoomComponent
       course_id={params.course_id}
@@ -21,7 +26,6 @@ function useTest() {
 }
 
 var localUser = new UserModel();
-const APPLICATION_SERVER_URL = import.meta.env.VITE_BACKEND_ADDRESS;
 
 class VideoRoomComponent extends Component {
   constructor(props) {
@@ -29,7 +33,7 @@ class VideoRoomComponent extends Component {
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
     let sessionName = this.props.course_id;
-    let userName = this.props.member_id + "번 유저";
+    let userName = this.props.member_id ;
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
@@ -58,8 +62,6 @@ class VideoRoomComponent extends Component {
     this.checkNotification = this.checkNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
 
-    this.canvasRef = createRef();
-    this.videoRef = createRef();
   }
 
   componentDidMount() {
@@ -190,13 +192,10 @@ class VideoRoomComponent extends Component {
     this.sendSignalUserChanged({ isScreenShareActive: localUser.isScreenShareActive() });
 
     this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, async () => {
-      await this.initializeMediaPipe();
-
-      // Canvas 스트림으로 새 Publisher 생성
-      const canvasStream = this.canvasRef.current.captureStream(30);
+      
       const newPublisher = this.OV.initPublisher(undefined, {
         audioSource: publisher.stream.getAudioTracks()[0],
-        videoSource: canvasStream.getVideoTracks()[0],
+        videoSource: videoDevices[0].deviceId,
         publishAudio: localUser.isAudioActive(),
         publishVideo: localUser.isVideoActive(),
         resolution: "640x480",
@@ -205,77 +204,10 @@ class VideoRoomComponent extends Component {
         mirror: false,
       });
 
-      // 기존 스트림 언발행 (이미 발행된 경우)
-      if (this.state.session.capabilities.publish) {
-        await this.state.session.unpublish(publisher);
-      }
-
-      // 새 스트림 발행
-      await this.state.session.publish(newPublisher);
-      localUser.setStreamManager(newPublisher);
-
-      this.setState({ localUser: localUser });
-      this.updateSubscribers();
-      this.localUserAccessAllowed = true;
-      if (this.props.joinSession) {
-        this.props.joinSession();
-      }
     });
   }
-  ///////////////////////////////////////////////////////////////////
-  async initializeMediaPipe() {
-    const videoElement = this.videoRef.current;
-    const canvasElement = this.canvasRef.current;
-    const canvasCtx = canvasElement.getContext("2d");
+  
 
-    const hands = new window.Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
-    });
-
-    hands.setOptions({
-      maxNumHands: 1,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    hands.onResults((results) => {
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-      if (results.multiHandLandmarks) {
-        for (const landmarks of results.multiHandLandmarks) {
-          window.drawConnectors(canvasCtx, landmarks, window.HAND_CONNECTIONS, {
-            color: "#00FF00",
-            lineWidth: 5,
-          });
-          window.drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
-        }
-      }
-      //
-      canvasCtx.fillStyle = "rgba(0, 255, 0, 0.5)";
-      canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-      //
-      canvasCtx.restore();
-    });
-
-    const camera = new window.Camera(videoElement, {
-      onFrame: async () => {
-        await hands.send({ image: videoElement });
-      },
-      width: 640,
-      height: 480,
-    });
-
-    await camera.start();
-
-    // Canvas 스트림 생성 및 교체
-    const canvasStream = canvasElement.captureStream(30);
-    const videoTrack = canvasStream.getVideoTracks()[0];
-
-    // await this.state.localUser.getStreamManager().replaceTrack(videoTrack);
-  }
 
   ///////////////////////////////////////////////////////////////////
 
@@ -617,8 +549,6 @@ class VideoRoomComponent extends Component {
           {localUser !== undefined && localUser.getStreamManager() !== undefined && (
             <div className="OT_root OT_publisher custom-class" id="localUser">
               <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
-              {/* <video ref={this.videoRef} autoPlay={true} style={{ display: "none" }} /> */}
-              {/* <canvas ref={this.canvasRef} style={{ display: "none" }} /> */}
             </div>
           )}
           {this.state.subscribers.map((sub, i) => (
@@ -642,25 +572,17 @@ class VideoRoomComponent extends Component {
   }
 
   async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
-    return await this.createToken(sessionId);
+    const sessionId = await this.fetchCreateSession(this.state.mySessionId);
+    return await this.fetchCreateToken(sessionId);
   }
 
-  async createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/dev/${sessionId}`, null, {
-      headers: { "Content-Type": "application/json", memberId: this.props.member_id },
-    });
+  async fetchCreateSession(sessionId) {
+    const response = await createSession(sessionId, this.props.memberId);
     return response.data;
   }
 
-  async createToken(sessionId) {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + "/sessions/dev/" + sessionId + "/connections",
-      {},
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+  async fetchCreateToken(sessionId) {
+    const response = await createToken(sessionId);
     return response.data;
   }
 }

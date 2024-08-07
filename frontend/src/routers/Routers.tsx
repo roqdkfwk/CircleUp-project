@@ -42,8 +42,8 @@ const Router = () => {
         />
 
       </Route>
-      <Route path="/course/live" element={<WebRTCCourse />} />
-      <Route path="/course/live/:course_id" element={<VideoRoomComponent />} />
+      <Route path="/course/live" element={<VideoRoomComponent />} />
+      <Route path="/course/live/:course_id" element={<WebRTCCourse />} />
       <Route path="/course/live/gate" element={<GateTemp />} />
     </Routes>
   );
