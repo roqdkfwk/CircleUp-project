@@ -1,7 +1,9 @@
 package com.ssafy.api.controller;
 
+import com.google.cloud.storage.Bucket;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
+import com.ssafy.db.repository.CurriculumRepository;
 import io.openvidu.java.client.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +31,20 @@ import java.util.Map;
 @RequestMapping("/api/sessions")
 public class SessionController {
 
-    @Autowired
-    CourseSerivce courseSerivce;
+    private final CourseSerivce courseSerivce;
+    private final Bucket bucket;
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
     private String OPENVIDU_SECRET;
     private OpenVidu openvidu;
+    @Autowired
+    private CurriculumRepository curriculumRepository;
+
+    public SessionController(CourseSerivce courseSerivce, Bucket bucket) {
+        this.courseSerivce = courseSerivce;
+        this.bucket = bucket;
+    }
 
     @PostConstruct
     public void init() {
@@ -52,7 +64,6 @@ public class SessionController {
 
     /**
      * Live 방 개설
-     * 강사만 Live 방을 개설할 수 있습니다
      */
     @PostMapping("/{course_id}")
     @ApiResponses({
@@ -71,6 +82,33 @@ public class SessionController {
             return new ResponseEntity<>(courseId, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Live 종료
+     */
+    @DeleteMapping("/{course_id}")
+    @RequiredAuth
+    @ApiResponses({
+            @ApiResponse(code = 401, message = "권한 없음"),
+    })
+    @ApiOperation(value = "Live 종료", notes = "강사는 라이브를 종료하고 화면녹화파일을 저장한다")
+    public ResponseEntity<ArrayList<String>> sessionClose(
+            @PathVariable(name = "course_id") String courseId,
+            Authentication authentication
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+        Long memberId = Long.valueOf(authentication.getName());
+        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+            openvidu.stopRecording(courseId);
+            // TODO 녹화파일 업로드 추가
+            String curriculumId = "1";
+            saveVideo(courseId, curriculumId);
+            Session session = openvidu.getActiveSession(courseId);
+            session.close();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
     /**
@@ -102,12 +140,11 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
-
     /////////////////////////////////////////////////////
 
     /**
-     * Live 방 개설
      * 개발용
+     * Live 방 개설
      */
     @PostMapping("/dev/{course_id}")
     @ApiOperation(value = "(개발용) Live 방 개설", notes = "누구나 존재하지 않는 강의번호로 Live를 개설할 수 있습니다")
@@ -125,8 +162,28 @@ public class SessionController {
     }
 
     /**
-     * Live 방 접속
      * 개발용
+     * Live 종료
+     */
+    @DeleteMapping("/dev/{course_id}")
+    @ApiOperation(value = "(개발용) Live 종료", notes = "라이브를 종료하고 화면녹화파일을 저장한다")
+    public ResponseEntity<ArrayList<String>> recordingList(
+            @PathVariable("course_id") String courseId
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+
+        try {
+            openvidu.stopRecording(courseId);
+        } catch (Exception e) {
+        } finally {
+            openvidu.getActiveSession(courseId).close();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+    }
+
+    /**
+     * 개발용
+     * Live 방 접속
      */
     @PostMapping("/dev/{course_id}/connections")
     @ApiOperation(value = "(개발용) Live 방 접속", notes = "누구나 라이브 중인 강의로 접속할 수 있습니다")
@@ -147,8 +204,8 @@ public class SessionController {
     }
 
     /**
-     * Live 방 목록 반환
      * 개발용
+     * Live 방 목록 반환
      */
     @GetMapping("/dev/courses")
     @ApiOperation(value = "(개발용) Live 방 목록", notes = "현재 라이브 중인 강의 목록을 반환합니다")
@@ -166,14 +223,39 @@ public class SessionController {
         try {
             Map<String, Object> map = new HashMap<>();
             map.put("customSessionId", courseId);
-            SessionProperties properties = SessionProperties.fromJson(map).build();
+            RecordingProperties recordingProperties = new RecordingProperties.Builder()
+                    .outputMode(Recording.OutputMode.COMPOSED)
+                    .resolution("1280x960")
+                    .frameRate(48)
+                    .build();
+            SessionProperties properties = new SessionProperties.Builder()
+                    .customSessionId(courseId).recordingMode(RecordingMode.ALWAYS).defaultRecordingProperties(recordingProperties).build();
             Session session = openvidu.createSession(properties);
+            openvidu.listRecordings();
             return session.getSessionId();
         } catch (OpenViduJavaClientException e) {
             throw new RuntimeException(e);
         } catch (OpenViduHttpException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    ///////////////////////////////////////////////////// 임시용
+    @GetMapping("/dev/test")
+    public ResponseEntity<?> save(
+    ) {
+        String sourcePath = "/opt/openvidu/recordings/321/321.mp4";
+        try (InputStream inputStream = new FileInputStream(sourcePath)) {
+            bucket.create("107c5dfa-2c8b-4f15-9885-34446c82b021.mp4", inputStream, "mp4");
+        } catch (IOException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private Boolean saveVideo(String courseId, String curriculumId) {
+
+        return true;
     }
 }
 
