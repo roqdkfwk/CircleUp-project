@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllTages, getCourseBySearch } from "../services/api";
+import { SearchCourse, getAllTages, getCourseBySearch } from "../services/api";
 import { useLocation, useNavigate } from "react-router";
 import { CourseDetailInfoBySearch } from '../types/CourseDetailInfoBySearch';
 import { Link } from "react-router-dom";

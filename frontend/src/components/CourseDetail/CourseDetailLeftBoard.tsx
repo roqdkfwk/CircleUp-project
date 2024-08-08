@@ -11,6 +11,7 @@ import { BuyInfo } from './../../types/BuyInfo';
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo
 }
+
 const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
     const navigate = useNavigate();
     const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
@@ -18,33 +19,24 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
     const courseNavbar = ['소개', '커리큘럼', '공지사항', '코멘트']
     const [activeTab, setActiveTab] = useState<string>('소개');
     const [showModal, setShowModal] = useState<boolean>(false);
-    // const [mine, setMine] = useState<boolean>(false);
-    const { myCourseId, setMyCourseId } = useUserStore();
+    const { myCourseId, setMyCourseId, isLoggedIn } = useUserStore();
+
+    useEffect(() => {
+        fetchCheckRegister();
+    }, []);
 
     const handleTabClick = (NavbarName: string) => {
         setActiveTab(NavbarName);
     };
 
     const fetchCheckRegister = async () => {
-        const response = await checkUserCourse(data.id)
-        setRegisterValue(response.data)
-    }
-
-    useEffect(() => {
-        fetchCheckRegister()
-        console.log(registerValue)
-    }, []);
+        const response = await checkUserCourse(data.id);
+        setRegisterValue(response.data);
+    };
 
     const toggleModal = () => {
         setShowModal(!showModal);
     };
-
-    // const isCourseMine = () => {
-    //     for (let i = 0; i < myCourseId.length; i++)
-    //         if (myCourseId[i] == data.id)
-    //             return true;
-    //     return false;
-    // }
 
     const handleDeleteMyCourse = async () => {
         await deleteCourseByUser(data.id);
@@ -52,38 +44,36 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
         const newMyCourseId: number[] = [];
         myCourseId.map(courseId => {
             if (courseId !== data.id)
-                newMyCourseId.push(courseId)
+                newMyCourseId.push(courseId);
         });
-        alert("수강취소가 완료됐습니다.")
+        alert("수강취소가 완료됐습니다.");
         setMyCourseId(newMyCourseId);
-        navigate(0)
-    }
+        navigate(0);
+    };
 
     const onClickDeleteBtn = () => {
         handleDeleteMyCourse();
-    }
+    };
 
-    useEffect(() => {
-        checkUserCourse
-    })
+    const handleCourseEnroll = () => {
+        if (!isLoggedIn) {
+            alert("로그인 후 가능한 기능입니다.")
+            navigate('/');
+        } else {
+            toggleModal();
+        }
+    }
 
     const buyInfo: BuyInfo = {
         id: data.id,
         courseName: data.courseName,
         price: data.price,
         instructorName: data.instructorName,
-    }
+    };
 
-    // useEffect(() => {
-    //     setMine(isCourseMine());
-    //     console.log(myCourseId)
-    //     console.log(data.id)
-    // }, [myCourseId])
-    
     return (
         <div className="basis-3/4 w-[70%] h-full bg-white border border-gray-200 rounded-lg my-5 mx-3 dark:bg-gray-800 dark:border-gray-700 ">
             <CourseBuyModal show={showModal} buyInfo={buyInfo} onClose={toggleModal} />
-            {/* 강의 배너 */}
             <div className="w-full h-[350px] p-2 rounded-t-lg shadow bg-gradient-to-r from-black from-0% via-gray-400 via-30% to-black to-55% flex flex-row items-center justify-evenly">
                 <img src={data.imgUrl} alt="" className="rounded-lg h-60 w-[300px]" />
                 <div className="">
@@ -113,19 +103,15 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                             </button>
                         ) : (
                             <button
-                                onClick={toggleModal}
+                                onClick={handleCourseEnroll}
                                 type="button" className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                                 수강신청
                             </button>
                         )
                     }
-                    {/* <div className="text-white title flex items-center">
-                        <p className="ml-2">누적 수강생 : </p>
-                    </div> */}
                 </div>
             </div>
 
-            {/* 강의 Navbar */}
             <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-full mx-auto">
                 <ul className="mx-2 flex flex-wrap -mb-px">
                     {courseNavbar?.map((NavbarName, idx) => (
@@ -148,7 +134,6 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                 </ul>
             </div>
 
-            {/* 강의 설명부 */}
             {activeTab === '소개' &&
                 <blockquote className="text-base italic font-semibold text-gray-900 dark:text-white w-[80%] mx-auto mt-5 mb-8">
                     <svg className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 14">

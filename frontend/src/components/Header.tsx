@@ -3,17 +3,33 @@ import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './Modal/LoginModal';
 import MemberModfiyModal from "./Modal/MemeberModfiyModal";
 import { useUserStore } from '../store/store';
+import { getAllTages } from "../services/api";
 
+interface CourseTag {
+  id: number;
+  tagName: string;
+}
 
 function Header() {
   const [showModal, setShowModal] = useState(false);
   const [showModfiyModal, setShowModfiyModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false); // 카테고리 드롭다운 상태 추가
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { nickName, email, role } = useUserStore();
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
-  
+  const [courseTags, setCourseTags] = useState<CourseTag[]>([]);
+
+  const fetchTags = async () => {
+    const response = await getAllTages();
+    setCourseTags(response.data);
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
@@ -39,6 +55,14 @@ function Header() {
 
   const closeDropdown = () => {
     setDropdownOpen(false);
+  };
+
+  const toggleCategoryDropdown = () => {
+    setCategoryDropdownOpen(!categoryDropdownOpen);
+  };
+
+  const closeCategoryDropdown = () => {
+    setCategoryDropdownOpen(false);
   };
 
   const handleLogout = async () => {
@@ -71,20 +95,33 @@ function Header() {
       ) {
         closeDropdown();
       }
+
+      if (
+        categoryDropdownOpen &&
+        event.target !== null &&
+        !(event.target as HTMLElement).closest('#categoryDropdownButton') &&
+        !(event.target as HTMLElement).closest('#mega-menu-dropdown')
+      ) {
+        closeCategoryDropdown();
+      }
     };
 
     document.addEventListener('click', handleOutsideClick);
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [dropdownOpen]);
+  }, [dropdownOpen, categoryDropdownOpen]);
+
+  const handleCategoryItemClick = () => {
+    closeCategoryDropdown();
+  };
 
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md p-2 z-10 relative">
       {/* 로그인 모달 */}
       <LoginModal show={showModal} onClose={toggleModal} />
       <MemberModfiyModal show={showModfiyModal} onClose={toggleModfiyModal} />
-      
+
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto relative">
         <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           {/* 로고 SVG */}
@@ -196,7 +233,7 @@ function Header() {
         >
           <ul className="flex flex-col text-lg font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
-              <Link to={`/search`}
+              <Link to="/search"
                 className="block py-2 px-3 cursor-pointer md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 aria-current="page"
               >
@@ -204,24 +241,49 @@ function Header() {
               </Link>
             </li>
             <li>
-              <a
-                className="block py-2 px-3 cursor-pointer md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+              <button
+                id="categoryDropdownButton"
+                onClick={toggleCategoryDropdown}
+                className="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700"
               >
                 카테고리
-              </a>
+                <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+                </svg>
+              </button>
+              {categoryDropdownOpen && (
+                <div
+                  id="mega-menu-dropdown"
+                  className="mt-4 absolute z-10 grid w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700"
+                >
+                  <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+                    <ul className="space-y-4">
+                    {courseTags?.map((item, idx) => (
+                      <li key={idx} onClick={handleCategoryItemClick}>
+                        <Link to={`/search?tag=${item.id}`}>
+                          <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                            {item.tagName}
+                          </a>
+                        </Link>
+                      </li>
+                    ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </li>
           </ul>
-          <form className="flex items-center mx-auto" onSubmit={handleSearchSubmit}>   
-              <label htmlFor="simple-search" className="sr-only">Search</label>
-              <div className="relative w-[400px] ml-10">
-                  <input onChange={handleSearchChange} type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="강의 정보로 검색해보세요." required />
-              </div>
-              <button type="submit" className="p-2.5 ms-2 text-sm font-medium text-white bg-[#6366f1] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                  </svg>
-                  <span className="sr-only">Search</span>
-              </button>
+          <form className="flex items-center mx-auto" onSubmit={handleSearchSubmit}>
+            <label htmlFor="simple-search" className="sr-only">Search</label>
+            <div className="relative w-[400px] ml-10">
+              <input onChange={handleSearchChange} type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="강의 정보로 검색해보세요." required />
+            </div>
+            <button type="submit" className="p-2.5 ms-2 text-sm font-medium text-white bg-[#6366f1] rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+              </svg>
+              <span className="sr-only">Search</span>
+            </button>
           </form>
         </div>
       </div>

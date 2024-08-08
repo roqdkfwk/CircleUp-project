@@ -66,7 +66,7 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
                 </div>
 
                 <div className="flex justify-center border-b rounded-t pb-2">
-                    <svg class="text-gray-400 mx-2 my-auto w-5 h-5 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <svg className="text-gray-400 mx-2 my-auto w-5 h-5 dark:text-gray-200" aria-hidden="true" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
                     <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
