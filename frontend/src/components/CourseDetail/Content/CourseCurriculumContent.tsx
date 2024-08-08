@@ -42,9 +42,6 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
     }
 
     useEffect(() => {
-        console.log("lets go")
-        console.log(currIds)
-        console.log("강사가 어떻게 열었지? -> " + isModify)
 
         if (currIds.length != 0) {
             setNewCurrIds(currIds);
@@ -70,7 +67,7 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
                     "
                     onClick={toggleModal}
                 >
-                    Make New Curriculum
+                    커리큘럼 생성
                 </button>
             }
            {/* 기타 데이터 나타내기 */}
