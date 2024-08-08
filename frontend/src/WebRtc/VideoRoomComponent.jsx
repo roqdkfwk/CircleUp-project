@@ -253,6 +253,7 @@ class VideoRoomComponent extends Component {
     } catch (error) {
       console.error("Error accessing media devices.", error);
     }
+  }
   
 
   updateSubscribers() {
@@ -273,7 +274,7 @@ class VideoRoomComponent extends Component {
         this.updateLayout();
       }
     );
-  }}
+  }
 
   leaveSession() {
     const mySession = this.state.session;
