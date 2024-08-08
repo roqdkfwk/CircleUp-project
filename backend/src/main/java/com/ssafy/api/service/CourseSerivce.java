@@ -54,7 +54,7 @@ public class CourseSerivce {
                         arr -> (Long) arr[1]
                 ));
 
-        return courseRepository.findApprovedByKeyword(name, pageable)
+        return courseRepository.findByKeyword(name, pageable)
                 .stream()
                 .map(course ->
                         SearchRes.of(course,
@@ -72,7 +72,7 @@ public class CourseSerivce {
                         arr -> (Long) arr[1]
                 ));
 
-        return courseRepository.findApprovedByTagIds(tags, Long.valueOf(tags.size()), pageable)
+        return courseRepository.findByTagIds(tags, Long.valueOf(tags.size()), pageable)
                 .stream()
                 .map(course ->
                         SearchRes.of(course,
@@ -155,6 +155,7 @@ public class CourseSerivce {
         // 일반사용자용 : Course.status == Status.Approved
         if(member.getRole()==Role.User){
             course = courseRepository.findByIdAndStatus(courseId, Status.Approved);
+            if(course==null) course = courseRepository.findByIdAndStatus(courseId, Status.Completed);
         }
         // 강사용 : 강의의 강사id == memberId
         else if(member.getRole()==Role.Instructor){

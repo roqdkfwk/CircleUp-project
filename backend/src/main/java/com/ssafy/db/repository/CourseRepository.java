@@ -19,16 +19,16 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
 
     @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
     @Query("SELECT DISTINCT c FROM Course c " +
-            "WHERE c.status = 'Approved' and (c.name LIKE %:keyword% OR c.summary LIKE %:keyword%)")
-    List<Course> findApprovedByKeyword(@Param("keyword") String keyword, Pageable pageable);
+            "WHERE (c.status = 'Approved' or c.status = 'Completed') and (c.name LIKE %:keyword% OR c.summary LIKE %:keyword%)")
+    List<Course> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
     @Query("SELECT DISTINCT c FROM Course c " +
-            "WHERE c.status = 'Approved' and c.id in (" +
+            "WHERE (c.status = 'Approved' or c.status = 'Completed' )and c.id in (" +
             "SELECT c2.id FROM Course c2 " +
             "JOIN c2.courseTagList ct2 WHERE ct2.tag.id IN :tagIds " +
             "GROUP BY c2.id HAVING COUNT(ct2.tag.id) = :size )")
-    List<Course> findApprovedByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
+    List<Course> findByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
 
     ///////////////////////////////////////////////////////////////////////////////
 
@@ -63,29 +63,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
     Course findByIdAndInstructorId(Long courseId, Long instructorId);
     ///
     List<Course> findByStatusAndInstructorId(Status status, Long instructorId);
-
-
-    //////////////////////////////////////////////////////////////// No Status Query
-    @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
-    @Query("SELECT DISTINCT c FROM Course c " +
-            "WHERE c.name LIKE %:keyword% OR c.summary LIKE %:keyword%")
-    List<Course> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-    @EntityGraph(attributePaths = {"courseTagList", "courseTagList.tag"})
-    @Query("SELECT DISTINCT c FROM Course c " +
-            "WHERE c.id in (" +
-            "SELECT c2.id FROM Course c2 " +
-            "JOIN c2.courseTagList ct2 WHERE ct2.tag.id IN :tagIds " +
-            "GROUP BY c2.id HAVING COUNT(ct2.tag.id) = :size )")
-    List<Course> findByTagIds(@Param("tagIds") List<Long> tagIds, Long size, Pageable pageable);
-
-    List<Course> findByPrice(Long price, Pageable pageable);
-
-    List<Course> findAllByOrderByViewDesc(Pageable pageable);
-
-
-    @Query("SELECT c FROM Course c WHERE c.id IN (SELECT ct.course.id FROM course_tag ct WHERE ct.tag.id = :tagId)")
-    List<Course> findByTagId(@Param("tagId") Long tagId, Pageable pageable);
 
     @Query("SELECT CASE " +
             "WHEN c.instructor.id = :memberId THEN 2 " +

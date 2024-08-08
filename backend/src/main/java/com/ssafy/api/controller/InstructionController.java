@@ -73,7 +73,7 @@ public class InstructionController {
             Authentication authentication
     ){
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(instructionService.enqueueCourse(memberId, courseId));
+        return ResponseEntity.ok().body(instructionService.dequeueCourse(memberId, courseId));
     }
 
     @PostMapping(value = "/courses/instructions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
