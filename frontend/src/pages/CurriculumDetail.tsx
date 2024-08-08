@@ -13,7 +13,7 @@ const CurriculumDetail = () => {
     const navigate = useNavigate();
     
     const { nickName } = useUserStore();
-    const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useLiveStore();
+    const { liveCourseIds, liveCurriculumIds, setLiveCourseIds, setLiveCurriculumIds } = useLiveStore();
 
     const [live, setLive] = useState<boolean>(false);
     const { courseId } = useParams<{ courseId: string }>();
@@ -37,21 +37,21 @@ const CurriculumDetail = () => {
     // { Course } 컴포넌트에 Live state를 전역 상태로 관리 중인 Live 강의에서 꺼내와 True로 갱신
     const handleMakeLive = () => {
         // STEP 1. Send {live, idx} to Curriculum componet
-        if (!live) {
-            setLive(!live)
 
-            if (!liveCourses.includes(toNum(courseId)))
-                setLiveCourses([...liveCourses, toNum(courseId)])
-            if (!liveCurriculums.includes(curriculum_id))
-                setLiveCurriculums([...liveCurriculums, curriculum_id])
+            // setLive(!live)
 
-            console.log(liveCourses)
-            console.log(liveCurriculums)
+            // if (!liveCourseIds.includes(toNum(courseId)))
+            //     setLiveCourseIds([...liveCourseIds, toNum(courseId)])
+            // if (!liveCurriculumIds.includes(curriculum_id))
+            //     setLiveCurriculumIds([...liveCurriculumIds, curriculum_id])
+
+            console.log(liveCourseIds)
+            console.log(liveCurriculumIds)
             
             navigate(`/course/live/${courseId}`, {
                 state: { memberId: nickName, flag: true, curriId : curriculum_id }
             });
-        }
+        
     }
 
     // <todo> : 2. toggleEnterLive

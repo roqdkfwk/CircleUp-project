@@ -47,18 +47,18 @@ interface SearchState {
   }));
 
 interface LiveState {
-  liveCourses: number[];
-  liveCurriculums: number[];
+  liveCourseIds: number[];
+  liveCurriculumIds: number[];
 
-  setLiveCourses: (newLiveCourses: number[]) => void;
-  setLiveCurriculums: (newLiveCurriculums: number[]) => void;
+  setLiveCourseIds: (newLiveCourseIds: number[]) => void;
+  setLiveCurriculumIds: (newLiveCurriculumIds: number[]) => void;
 }
   
 export const useLiveStore = create <LiveState>((set) => ({
   
-  liveCourses: [],
-  liveCurriculums: [],
+  liveCourseIds: [],
+  liveCurriculumIds: [],
 
-  setLiveCourses: (newLiveCourses) => set({ liveCourses: [...newLiveCourses] }),
-  setLiveCurriculums: (newLiveCurriculums) => set({ liveCurriculums: [...newLiveCurriculums]})
+  setLiveCourseIds: (newLiveCourseIds) => set({ liveCourseIds: [...newLiveCourseIds] }),
+  setLiveCurriculumIds: (newLiveCurriculumIds) => set({ liveCurriculumIds: [...newLiveCurriculumIds]})
 }))
