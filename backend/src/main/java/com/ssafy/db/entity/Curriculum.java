@@ -50,8 +50,5 @@ public class Curriculum {
         if (curriculumUpdateReq.getDescription() != null) {
             this.description =curriculumUpdateReq.getDescription();
         }
-        if (curriculumUpdateReq.getImg() != null) { // 이미지는 기존꺼 삭제 후 다시 저장.. 사진 첨부 안했으면 그냥 그대로 두기
-            GCSUtil.updateCurrImg(this, bucket, curriculumUpdateReq.getImg());
-        }
     }
 }

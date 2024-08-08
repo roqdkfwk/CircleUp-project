@@ -124,11 +124,6 @@ public class InstructionService {
             throw new BadRequestException("More than one registered");
         }
 
-        List<Curriculum> curriculumIdList = course.getCurriculumList();
-        for(Curriculum curriculum : curriculumIdList){
-            GCSUtil.deleteCurrImg(curriculum.getId(), bucket);
-        }
-
         GCSUtil.deleteCourseImg(courseId, bucket);
 
         courseRepository.delete(course);
@@ -150,21 +145,10 @@ public class InstructionService {
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
-            // 빈 파일일때
-            if (curriculumPostReq.getImg() == null) {
-                throw new BadRequestException("Not File");
-            }
-            // 이미지 파일이 아닐때
-            String contentType = curriculumPostReq.getImg().getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
-                throw new BadRequestException("Not Image File");
-            }
 
             // Curriculum 생성 및 추가
             Curriculum newCurr = curriculumPostReq.toEntity(course);
-            newCurr = curriculumRepository.save(newCurr);
 
-            GCSUtil.saveCurrImg(newCurr, bucket, curriculumPostReq.getImg());
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
@@ -192,14 +176,7 @@ public class InstructionService {
             Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
                     () -> new NotFoundException("Curriculum not found")
             );
-            // 이미지가 유효하지 않을 때
-            MultipartFile img = curriculumUpdateReq.getImg();
-            if (img != null) {
-                String contentType = img.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
-                    throw new BadRequestException("Not Image File");
-                }
-            }
+
 
             // 변경사항 확인 후 적용
             curriculum.update(curriculumUpdateReq, bucket);
@@ -233,8 +210,6 @@ public class InstructionService {
         if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
-
-        GCSUtil.deleteCurrImg(curriculumId, bucket);
 
         curriculumRepository.delete(curriculum);
         curriculumRepository.flush();

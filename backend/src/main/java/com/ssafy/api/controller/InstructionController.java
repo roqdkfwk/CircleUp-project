@@ -86,7 +86,7 @@ public class InstructionController {
     }
 
     ////////////////////////////////////////////
-    @PostMapping(value = "/courses/{course_id}/curriculum", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/courses/{course_id}/curriculum")
     @ApiOperation(value = "새로운 커리큘럼 만들기")
     public ResponseEntity<Long> createCurriculum(
             @PathVariable(name = "course_id") Long courseId,
@@ -98,13 +98,12 @@ public class InstructionController {
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
-    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}")
     @ApiOperation(value = "기존 커리큘럼 수정")
     public ResponseEntity<Long> updateCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @PathVariable(name = "curriculum_id") Long curriculumId,
             @ModelAttribute CurriculumUpdateReq curriculumUpdateReq,
-            @RequestPart(name = "img", required = false) MultipartFile img,
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
