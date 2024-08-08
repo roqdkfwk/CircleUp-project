@@ -37,7 +37,7 @@ const CourseDetail = () => {
 
     return (
         <div className="flex flex-row w-[1300px] mx-auto">
-            <CourseDetailLeftBoard data={courseDetailInfoData} />
+            <CourseDetailLeftBoard data={courseDetailInfoData} isLive={isLive} />
             <CourseDetailRightBoard />
         </div>
     );
