@@ -10,8 +10,8 @@ import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Curriculum;
 import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.entity.Member;
-import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.entity.enums.Role;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -38,9 +38,9 @@ public class CourseSerivce {
     ////////////////////////////////////////
     public List<CoursesRes> getAdminPendingCourses(Long memberId) {
         Member admin = memberRepository.findById(memberId)
-                .orElseThrow(()-> new NotFoundException("ID not found"));
+                .orElseThrow(() -> new NotFoundException("ID not found"));
 
-        if(!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
+        if (!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
 
         return courseRepository.findAllByStatus(Status.Pending)
                 .stream()
@@ -51,9 +51,9 @@ public class CourseSerivce {
     // 상태 별 강의 조회 for 강사
     public List<CoursesRes> getMyCoursesByStatus(Long memberId, String status) {
         Member instructor = memberRepository.findById(memberId)
-                .orElseThrow(()-> new NotFoundException("ID not found"));
+                .orElseThrow(() -> new NotFoundException("ID not found"));
 
-        if(!instructor.getRole().equals(Role.Instructor)) throw new BadRequestException("Not Instructor");
+        if (!instructor.getRole().equals(Role.Instructor)) throw new BadRequestException("Not Instructor");
 
         return courseRepository.findByStatusAndInstructorId(Status.get(status), memberId)
                 .stream()
@@ -163,27 +163,27 @@ public class CourseSerivce {
 
     public CourseRes getCourseById(Long courseId, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
-                ()-> new NotFoundException("Member not found : Member_id is " + memberId)
+                () -> new NotFoundException("Member not found : Member_id is " + memberId)
         );
 
         Course course;
         // 일반사용자용 : Course.status == Status.Approved
-        if(member.getRole()==Role.User){
+        if (member.getRole() == Role.User) {
             course = courseRepository.findByIdAndStatus(courseId, Status.Approved);
-            if(course==null) course = courseRepository.findByIdAndStatus(courseId, Status.Completed);
+            if (course == null) course = courseRepository.findByIdAndStatus(courseId, Status.Completed);
         }
         // 강사용 : 강의의 강사id == memberId
-        else if(member.getRole()==Role.Instructor){
+        else if (member.getRole() == Role.Instructor) {
             course = courseRepository.findByIdAndInstructorId(courseId, memberId);
         }
         // admin용 : 조건 x
-        else{
+        else {
             course = courseRepository.findById(courseId).orElseThrow(
                     () -> new NotFoundException("Course not found : Course_id is " + courseId)
             );
         }
 
-        if(course == null){
+        if (course == null) {
             throw new BadRequestException("Access denied");
         }
         course.upView();
@@ -206,10 +206,10 @@ public class CourseSerivce {
     }
 
     @Transactional
-    public Boolean saveVideoUrl(String fileName, Long courseId, Long curriculumId) {
-        Curriculum curriculum = curriculumRepository.findByIndexNoAndCourseId(curriculumId, courseId)
-                .orElseThrow(() -> new NotFoundException("Not Found Curriculum")
-                );
+    public Boolean saveVideoUrl(String fileName, Long curriculumId) {
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Not Found Curriculum : curriculum_Id is " + curriculumId));
+
         curriculum.setRecUrl(GCSUtil.preUrl + fileName);
         curriculumRepository.save(curriculum);
         return true;

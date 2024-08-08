@@ -271,13 +271,9 @@ public class SessionController {
         String originalPath = OPENVIDU_RECORDINGPATH + "/" + courseId + "/" + courseId + ".mp4";
         String fileName = UUID.randomUUID().toString() + ".mp4";
 
-        // TODO 테스트
-        System.out.println(originalPath);
-        System.out.println(fileName);
-
         try (InputStream inputStream = new FileInputStream(originalPath)) {
             bucket.create(fileName, inputStream, "mp4");
-            courseSerivce.saveVideoUrl(fileName, courseId, curriculumId);
+            courseSerivce.saveVideoUrl(fileName, curriculumId);
             openvidu.deleteRecording(courseId.toString());
         } catch (Exception e) {
             return false;
