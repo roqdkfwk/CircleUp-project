@@ -1,6 +1,9 @@
+import { Bounce, toast } from "react-toastify";
 import { postCourseByUser } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { BuyInfo } from './../../types/BuyInfo';
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 interface CourseBuyProps {
     buyInfo: BuyInfo,
@@ -12,6 +15,7 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
 
     const formattedPrice = buyInfo.price === 0 ? "무료" : buyInfo.price.toLocaleString();
     const { myCourseId, setMyCourseId } = useUserStore();
+    const navigate = useNavigate();
 
     const handleRegisterCourseByUser = async () => {
         await postCourseByUser(buyInfo.id);
@@ -23,9 +27,20 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
     const handleSubmit = () => {
         handleRegisterCourseByUser();
 
-        alert("수강신청이 완료됐습니다.")
+        // window.location.href=`/courseDetail/${buyInfo.id}`
+        toast.info("수강신청이 완료됐습니다.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
+        navigate(`/courseDetail/${buyInfo.id}`)
         onClose();
-        window.location.href=`/courseDetail/${buyInfo.id}`
     }
 
     if (!show) {

@@ -1,5 +1,7 @@
 // import { dotenv } from "dotenv";
 import Router from "./routers/Routers";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import Course from "./components/Card/Course";
 // import OpenViduSession from "openvidu-react";
 
@@ -9,6 +11,7 @@ function App() {
   return (
     <div>
       <Router />
+      <ToastContainer />
     </div>
   );
 }

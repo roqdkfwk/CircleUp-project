@@ -3,6 +3,8 @@ import { getUserCourse, postLogin } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { useNavigate } from "react-router-dom";
 import { CourseInfo } from "../../types/CourseInfo";
+import { Bounce, toast } from "react-toastify";
+
 interface ModalProps {
     show: boolean;
     onClose: () => void;
@@ -12,7 +14,7 @@ function LoginModal({ show, onClose }: ModalProps) {
     const navigate = useNavigate();
     const [inputEmail, setInputEmail] = useState<string>('')
     const [pwd, setPwd] = useState<string>('')
-    const { setNickName, setEmail, setRole, setMyCourseId } = useUserStore();
+    const { setNickName, setEmail, setRole, setMyCourseId, setIsLoggedIn } = useUserStore();
 
     const loginInfo = {
         email: inputEmail,
@@ -29,34 +31,52 @@ function LoginModal({ show, onClose }: ModalProps) {
 
     const getMyCourses = async () => {
         const response = await getUserCourse();
-        
-        const myCourseIds = response.data.map((course: CourseInfo) => course.id)
-        setMyCourseId(myCourseIds)
+        const myCourseIds = response.data.map((course: CourseInfo) => course.id);
+        setMyCourseId(myCourseIds);
     }
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         try {
-            const response = await postLogin(loginInfo)
-            
+            const response = await postLogin(loginInfo);
             localStorage.setItem("refreshToken", response.data.refreshToken);
             localStorage.setItem("accessToken", response.data.accessToken);
             localStorage.setItem("userId", response.data.email);
-            
-            setEmail(response.data.email)
-            setNickName(response.data.name)
-            setRole(response.data.role)
+
+            setEmail(response.data.email);
+            setNickName(response.data.name);
+            setRole(response.data.role);
+            setIsLoggedIn(true);
             getMyCourses();
 
-            alert('로그인 성공!')
-            onClose()
-            navigate("/")
-            
+            toast.info('로그인 성공!', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            onClose();
+            navigate("/");
+
         } catch (error) {
-            alert('로그인에 실패하셨습니다.')
+            toast.error('로그인에 실패하셨습니다.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     };
-      
 
     if (!show) {
         return null;

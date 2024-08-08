@@ -4,6 +4,7 @@ import LoginModal from './Modal/LoginModal';
 import MemberModfiyModal from "./Modal/MemeberModfiyModal";
 import { useUserStore } from '../store/store';
 import { getAllTages } from "../services/api";
+import { Bounce, toast } from "react-toastify";
 
 interface CourseTag {
   id: number;
@@ -68,7 +69,17 @@ function Header() {
   const handleLogout = async () => {
     try {
       localStorage.clear();
-      alert("로그아웃");
+      toast.info('로그아웃', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+    });
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {

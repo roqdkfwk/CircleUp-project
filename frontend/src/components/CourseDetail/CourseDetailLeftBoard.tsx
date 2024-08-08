@@ -7,6 +7,7 @@ import { useUserStore } from "../../store/store";
 import CourseBuyModal from "../Modal/CourseBuyModal";
 import { useNavigate } from "react-router";
 import { BuyInfo } from './../../types/BuyInfo';
+import { toast, Bounce  } from "react-toastify";
 
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo
@@ -46,9 +47,19 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
             if (courseId !== data.id)
                 newMyCourseId.push(courseId);
         });
-        alert("수강취소가 완료됐습니다.");
+        toast.info("수강취소가 완료되었습니다.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
         setMyCourseId(newMyCourseId);
-        navigate(0);
+        navigate(`/courseDetail/${buyInfo.id}`)
     };
 
     const onClickDeleteBtn = () => {
@@ -57,12 +68,26 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
 
     const handleCourseEnroll = () => {
         if (!isLoggedIn) {
-            alert("로그인 후 가능한 기능입니다.")
+            toast.error('로그인이 필요한 기능입니다.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             navigate('/');
         } else {
             toggleModal();
         }
     }
+
+    useEffect(()=>{
+        fetchCheckRegister()
+    })
 
     const buyInfo: BuyInfo = {
         id: data.id,
