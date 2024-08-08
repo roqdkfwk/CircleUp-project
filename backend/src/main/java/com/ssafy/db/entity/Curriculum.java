@@ -37,8 +37,8 @@ public class Curriculum {
     @Column
     private Long time;
 
-    @Column(name = "img_url", length = 1000)
-    private String imgUrl;
+    @Column(name = "rec_url", length = 1000)
+    private String recUrl;
 
     protected Curriculum() {
     }
