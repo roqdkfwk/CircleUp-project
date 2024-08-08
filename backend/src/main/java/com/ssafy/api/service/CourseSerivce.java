@@ -33,6 +33,7 @@ public class CourseSerivce {
     private final TagRepository tagRepository;
     private final InstructorRepository instructorRepository;
     private final MemberRepository memberRepository;
+    private final CurriculumRepository curriculumRepository;
 
     ////////////////////////////////////////
 
