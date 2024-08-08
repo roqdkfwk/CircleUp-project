@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CurriculumInfo } from "../types/CurriculumInfo";
 
 import video_camera from './../assets/svgs/videoCamera.svg';
-import { useUserStore } from "../store/store";
+import { useLiveStore, useUserStore } from "../store/store";
 
 const CurriculumDetail = () => {
     // <ToDo> - curriculum 상세 페이지
@@ -11,7 +11,9 @@ const CurriculumDetail = () => {
     // 만약 라이브변수가 true -> 라이브 접속 가능..
     const location = useLocation();
     const navigate = useNavigate();
-    const { nickName, liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useUserStore();
+    
+    const { nickName } = useUserStore();
+    const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useLiveStore();
 
     const [live, setLive] = useState<boolean>(false);
     const { courseId } = useParams<{ courseId: string }>();
@@ -27,13 +29,6 @@ const CurriculumDetail = () => {
         if (isNaN(num))
             throw new Error(`Invalid number : ${value}`)
         return num;
-    }
-
-    const handleEnterLive = () => {
-        if (live)
-            console.log("go to live!")
-        else
-            console.log("nothing..")
     }
     // <todo> : 1. toggleMakeLive
     // - 강사가 버튼을 눌러 컨퍼런스 생성한다.
@@ -53,7 +48,9 @@ const CurriculumDetail = () => {
             console.log(liveCourses)
             console.log(liveCurriculums)
             
-            navigate(`/course/live/${courseId}`, { state: { memberId: nickName } });
+            navigate(`/course/live/${courseId}`, {
+                state: { memberId: nickName, flag: true, curriId : curriculum_id }
+            });
         }
     }
 
@@ -61,7 +58,13 @@ const CurriculumDetail = () => {
     // ( 해당 버튼은 라이브 상태여야 접속이 가능하다. )
     // - 수강생이 버튼을 눌러 컨퍼런스에 참가한다.
     // - 컨퍼런스 아이디 & 유저 아이디를 컨퍼런스에 전달한다.
-
+    const handleEnterLive = () => {
+        navigate(`/course/live/${courseId}`, {
+            state: {
+                memberId: nickName, flag: true, curriId : curriculum_id
+            }
+        })
+    }
     // < Rendering >
     // {..} 커리큘럼 라이브강의 저장소 (?)
     return (

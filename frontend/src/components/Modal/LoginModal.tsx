@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import { postLogin } from "../../services/api";
+import { getUserCourse, postLogin } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { useNavigate } from "react-router-dom";
 interface ModalProps {
@@ -11,7 +11,7 @@ function LoginModal({ show, onClose }: ModalProps) {
     const navigate = useNavigate();
     const [inputEmail, setInputEmail] = useState<string>('')
     const [pwd, setPwd] = useState<string>('')
-    const { setNickName, setEmail, setRole } = useUserStore();
+    const { setNickName, setEmail, setRole, setMyCourse } = useUserStore();
 
     const loginInfo = {
         email: inputEmail,
@@ -26,6 +26,11 @@ function LoginModal({ show, onClose }: ModalProps) {
         setPwd(e.target.value)
     }
 
+    const getMyCourses = async () => {
+        const response = await getUserCourse();
+        setMyCourse(response.data);
+    }
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         try {
@@ -38,6 +43,8 @@ function LoginModal({ show, onClose }: ModalProps) {
             setEmail(response.data.email)
             setNickName(response.data.name)
             setRole(response.data.role)
+            getMyCourses();
+
             alert('로그인 성공!')
             onClose()
             navigate("/")

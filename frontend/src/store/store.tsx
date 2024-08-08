@@ -12,14 +12,12 @@ interface Store {
   nickName: string;
   email: string;
   role: string;
-  liveCourses: number[];
-  liveCurriculums: number[];
+  myCourse: number[];
 
   setNickName: (newNickName: string) => void;
   setEmail: (newEmail: string) => void;
   setRole: (newRole: string) => void;
-  setLiveCourses: (newLiveCourses: number[]) => void;
-  setLiveCurriculums: (newLiveCurriculums: number[]) => void;
+  setMyCourse: (newMyCourse: number[]) => void;
 }
 
 export const useUserStore = create(persist<Store>((set) => ({
@@ -27,18 +25,15 @@ export const useUserStore = create(persist<Store>((set) => ({
   nickName: "hybrid",  
   email: "hyunho656@gmail.com",
   role: "",
-  liveCourses: [],
-  liveCurriculums: [],
+  myCourse: [],
 
   setNickName: (newNickName) => set({ nickName: newNickName }),
   setEmail: (newEmail) => set({ email : newEmail }),
   setRole: (newRole) => set({ role: newRole }),
-  setLiveCourses: (newLiveCourses) => set({ liveCourses: [...newLiveCourses] }),
-  setLiveCurriculums: (newLiveCurriculums) => set({ liveCurriculums: [...newLiveCurriculums]})
-    }),
-    {
-        name: 'userIdStorage',
-      },
+  setMyCourse: (newMyCourse) => set({ myCourse : [...newMyCourse]})
+}),
+    
+  {name: 'userIdStorage',},
 ))
 
 interface SearchState {
@@ -50,3 +45,20 @@ interface SearchState {
     searchValue: '',
     setSearchValue: (value) => set({ searchValue: value }),
   }));
+
+interface LiveState {
+  liveCourses: number[];
+  liveCurriculums: number[];
+
+  setLiveCourses: (newLiveCourses: number[]) => void;
+  setLiveCurriculums: (newLiveCurriculums: number[]) => void;
+}
+  
+export const useLiveStore = create <LiveState>((set) => ({
+  
+  liveCourses: [],
+  liveCurriculums: [],
+
+  setLiveCourses: (newLiveCourses) => set({ liveCourses: [...newLiveCourses] }),
+  setLiveCurriculums: (newLiveCurriculums) => set({ liveCurriculums: [...newLiveCurriculums]})
+}))

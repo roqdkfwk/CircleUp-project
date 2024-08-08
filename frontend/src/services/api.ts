@@ -205,7 +205,7 @@ export const createSession = (courseId: number, memberId : string) => {
         },
     })
 }
-// Session Token 발급
+// Session Token 발급 & Session 접속 ( 이미 생성된 Session )
 export const createToken = (sessionId: number) => {
     return axiosClient.post(`/sessions/${sessionId}/connections`, {}, {
         headers: {

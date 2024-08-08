@@ -1,11 +1,11 @@
 
 import { useEffect, useState } from "react";
 import { getUserCourse } from "../../services/api";
-import { CourseInfo } from "../../types/CourseInfo";
 import CourseGallery from "../../components/List/CourseGallery";
+import { useUserStore } from "../../store/store";
 
 const MyCourse = () => {
-    const [myCourse, setMyCourse] = useState<CourseInfo[]>([]);
+    const { myCourse } = useUserStore();
     const myCourseNavBar = [ '수강중인 강의' ]
 
     const [activeTab, setActiveTab] = useState<string>('수강중인 강의'); 
@@ -13,15 +13,6 @@ const MyCourse = () => {
     const handleTabClick = (NavbarName: string) => {
         setActiveTab(NavbarName);
     };
-
-    const fetchMemberCourse = async () => {
-        const response = await getUserCourse();
-        setMyCourse(response.data)
-    };
-
-    useEffect(() => {
-        fetchMemberCourse();
-    }, []);
 
     return (
         <div>
