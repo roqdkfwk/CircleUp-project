@@ -112,6 +112,10 @@ function Header() {
     };
   }, [dropdownOpen, categoryDropdownOpen]);
 
+  const handleCategoryItemClick = () => {
+    closeCategoryDropdown();
+  };
+
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md p-2 z-10 relative">
       {/* 로그인 모달 */}
@@ -229,7 +233,7 @@ function Header() {
         >
           <ul className="flex flex-col text-lg font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
-              <Link to={`/search`}
+              <Link to="/search"
                 className="block py-2 px-3 cursor-pointer md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 aria-current="page"
               >
@@ -255,7 +259,7 @@ function Header() {
                   <div className="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
                     <ul className="space-y-4">
                     {courseTags?.map((item, idx) => (
-                      <li key={idx}>
+                      <li key={idx} onClick={handleCategoryItemClick}>
                         <Link to={`/search?tag=${item.id}`}>
                           <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
                             {item.tagName}
