@@ -193,6 +193,10 @@ export const deleteMember = () => {
 export const postCourseByUser = (courseId: number) => {
     return axiosClient.post(`courses/registers/${courseId}`)
 }
+// 수강취소
+export const deleteCourseByUser = (courseId: number) => {
+    return axiosClient.delete(`courses/registers/${courseId}`)
+}
 
 // WebRTC 관련 axios
 // Session 생성

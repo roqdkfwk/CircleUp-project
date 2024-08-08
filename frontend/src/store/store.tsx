@@ -12,12 +12,12 @@ interface Store {
   nickName: string;
   email: string;
   role: string;
-  myCourse: number[];
+  myCourseId: number[];
 
   setNickName: (newNickName: string) => void;
   setEmail: (newEmail: string) => void;
   setRole: (newRole: string) => void;
-  setMyCourse: (newMyCourse: number[]) => void;
+  setMyCourseId: (newMyCourseId: number[]) => void;
 }
 
 export const useUserStore = create(persist<Store>((set) => ({
@@ -25,12 +25,12 @@ export const useUserStore = create(persist<Store>((set) => ({
   nickName: "hybrid",  
   email: "hyunho656@gmail.com",
   role: "",
-  myCourse: [],
+  myCourseId: [],
 
   setNickName: (newNickName) => set({ nickName: newNickName }),
   setEmail: (newEmail) => set({ email : newEmail }),
   setRole: (newRole) => set({ role: newRole }),
-  setMyCourse: (newMyCourse) => set({ myCourse : [...newMyCourse]})
+  setMyCourseId: (newMyCourseId) => set({ myCourseId : [...newMyCourseId]})
 }),
     
   {name: 'userIdStorage',},

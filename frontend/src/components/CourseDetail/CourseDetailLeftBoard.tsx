@@ -1,28 +1,64 @@
 import { CourseDetailInfo } from '../../types/CourseDetailInfo';
 import { FaUser, FaWonSign } from "react-icons/fa";
-import { postCourseByUser } from "../../services/api";
-import { useState } from "react";
+import { deleteCourseByUser } from "../../services/api";
+import { useEffect, useState } from "react";
 import CourseCurriculumContent from "./Content/CourseCurriculumContent";
+import { useUserStore } from "../../store/store";
+import CourseBuyModal from "../Modal/CourseBuyModal";
 
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo
 }
 
 const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
-    const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
-    const handleRegisterCourseByUser = async () => {
-        const response = await postCourseByUser(data.id)
-        console.log(response.data);
-    };
+    
     const courseNavbar = ['소개', '커리큘럼', '공지사항', '코멘트']
     const [activeTab, setActiveTab] = useState<string>('소개');
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [mine, setMine] = useState<boolean>(false);
+    const { myCourseId, setMyCourseId } = useUserStore();
 
     const handleTabClick = (NavbarName: string) => {
         setActiveTab(NavbarName);
     };
 
+    const toggleModal = () => {
+        setShowModal(!showModal);
+    };
+
+    const isCourseMine = () => {
+        for (let i = 0; i < myCourseId.length; i++)
+            if (myCourseId[i] == data.id)
+                return true;
+        return false;
+    }
+
+    const handleDeleteMyCourse = async () => {
+        await deleteCourseByUser(data.id);
+        
+        const newMyCourseId: number[] = [];
+        myCourseId.map(courseId => {
+            if (courseId !== data.id)
+                newMyCourseId.push(courseId)
+        });
+
+        setMyCourseId(newMyCourseId);
+    }
+
+    const onClickDeleteBtn = () => {
+        handleDeleteMyCourse();
+        alert("수강취소가 완료되었습니다!!")
+    }
+
+    useEffect(() => {
+        setMine(isCourseMine());
+        console.log(myCourseId)
+        console.log(data.id)
+    }, [myCourseId])
+    
     return (
         <div className="basis-3/4 w-[70%] h-full bg-white border border-gray-200 rounded-lg my-5 mx-3 dark:bg-gray-800 dark:border-gray-700 ">
+            <CourseBuyModal show={showModal} newCourseId={data.id} onClose={toggleModal} />
             {/* 강의 배너 */}
             <div className="w-full h-[350px] p-2 rounded-t-lg shadow bg-gradient-to-r from-black from-0% via-gray-400 via-30% to-black to-55% flex flex-row items-center justify-evenly">
                 <img src={data.imgUrl} alt="" className="rounded-lg h-60 w-[300px]" />
@@ -40,9 +76,20 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                     <div className="text-white title flex items-center">
                         <FaWonSign style={{color: 'gray'}} /><p className="ml-2">{ data.price==0 ? "무료" : formattedPrice }</p>
                     </div>
-                    <button
-                        onClick={handleRegisterCourseByUser}
-                        type="button" className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">수강신청</button>
+                    {
+                        mine ?
+                            <button
+                                onClick={onClickDeleteBtn}
+                                type="button" className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                                수강취소
+                            </button>
+                            :
+                            <button
+                                onClick={toggleModal}
+                                type="button" className="mt-4 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                                수강신청
+                            </button>
+                    }
                     {/* <div className="text-white title flex items-center">
                         <p className="ml-2">누적 수강생 : </p>
                     </div> */}
@@ -61,8 +108,8 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                                     handleTabClick(NavbarName)
                                 }}
                                 className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${activeTab === NavbarName
-                                        ? 'text-blue-600 border-blue-600'
-                                        : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+                                    ? 'text-blue-600 border-blue-600'
+                                    : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
                                     }`}
                             >
                                 {NavbarName}
@@ -80,9 +127,9 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                     </svg>
                     <p>"{data.description}"</p>
                 </blockquote>}
-            
+
             {activeTab === '커리큘럼' &&
-                <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} onCurriculums={() => {}} />
+                <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} onCurriculums={() => { }} />
             }
         </div>
     )
