@@ -3,6 +3,7 @@ package com.ssafy.api.service;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,11 @@ public class RegisterService {
         // 이미 수강중이면
         if (existRegister(memberId, courseId)) {
             throw new ConflictException("Already registered");
+        }
+
+        // 강의가 열려있지 않다면
+        if (courseRepository.findByIdAndStatus(courseId, Status.Approved) == null){
+            throw new BadRequestException("Course is not approved");
         }
 
         // 수강등록 성공여부

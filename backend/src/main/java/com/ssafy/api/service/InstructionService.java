@@ -10,6 +10,7 @@ import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.util.GCSUtil;
 import com.ssafy.db.entity.*;
+import com.ssafy.db.entity.enums.Status;
 import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,10 @@ public class InstructionService {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
+            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+                throw new BadRequestException("Status is "+course.getStatus());
+            }
+
             MultipartFile img = courseModifyUpdateReq.getImg();
             if (img != null) {
                 String contentType = img.getContentType();
@@ -108,20 +113,24 @@ public class InstructionService {
 
     public void deleteCourse(Long courseId, Long memberId)  {
         // 1. 유효성 검증
-        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Instructor not found")
-        );
-
         Course course = courseRepository.findById(courseId).orElseThrow(
                 ()-> new NotFoundException("Course is not found")
         );
 
-        if (!course.getInstructor().equals(instructor)) {
-            throw new BadRequestException("Instructor doesn't own the course");
+        if(course.getStatus().equals(Status.Pending) || course.getStatus().equals(Status.Completed)){
+            throw new BadRequestException("Status is "+ course.getStatus());
         }
 
-        if (registerRepository.countByCourseId(courseId) > 0) {
-            throw new BadRequestException("More than one registered");
+        if (course.getStatus().equals(Status.Approved) && registerRepository.countByCourseId(courseId) > 0) {
+            throw new BadRequestException("Registrant exists");
+        }
+
+        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("Instructor not found")
+        );
+
+        if (!course.getInstructor().equals(instructor)) {
+            throw new BadRequestException("Instructor doesn't own the course");
         }
 
         GCSUtil.deleteCourseImg(courseId, bucket);
@@ -129,24 +138,65 @@ public class InstructionService {
         courseRepository.delete(course);
     }
 
+    public CourseRes enqueueCourse(Long memberId, Long courseId){
+        Instructor instructor = instructorRepository.findById(memberId)
+                .orElseThrow(()-> new NotFoundException("Instructor not found"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        if (!course.getInstructor().equals(instructor)) {
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        if(course.getStatus()!=Status.Draft) throw new BadRequestException("Status is not Draft");
+
+        course.setStatus(Status.Pending);
+        courseRepository.save(course);
+
+        return CourseRes.of(course);
+    } // 강의 개설 신청 for 강사
+
+    public CourseRes dequeueCourse(Long memberId, Long courseId){
+        Instructor instructor = instructorRepository.findById(memberId)
+                .orElseThrow(()-> new NotFoundException("Instructor not found"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+
+        if (!course.getInstructor().equals(instructor)) {
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        if(course.getStatus()!=Status.Pending) throw new BadRequestException("Status is not Pending");
+
+        course.setStatus(Status.Draft);
+        courseRepository.save(course);
+
+        return CourseRes.of(course);
+    } // 강의 개설 신청 취소 for 강사
+
     // Curriculum 관리
 
     public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId) {
         try {
-            // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
-            // 강의가 유효하지 않을 때
+
             Course course = courseRepository.findById(courseId).orElseThrow(
                     ()-> new NotFoundException("Course is not found")
             );
-            // 강의의 강사가 아닐 때
+
+            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+                throw new BadRequestException("Status is "+course.getStatus());
+            }
+
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
-            // Curriculum 생성 및 추가
+
             Curriculum newCurr = curriculumPostReq.toEntity(course);
 
             curriculumRepository.save(newCurr);
@@ -160,25 +210,28 @@ public class InstructionService {
 
     public CourseRes updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId) {
         try {
-            // 요청자가 강사가 아닐 때
             Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                     () -> new NotFoundException("Instructor not found")
             );
-            // 강의가 유효하지 않을 때
+
             Course course = courseRepository.findById(courseId).orElseThrow(
                     ()-> new NotFoundException("Course is not found")
             );
-            // 강의의 강사가 아닐 때
+
+            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+                throw new BadRequestException("Status is "+course.getStatus());
+            }
+
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
-            // 커리큘럼이 유효하지 않을 때
+
             Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
                     () -> new NotFoundException("Curriculum not found")
             );
 
 
-            // 변경사항 확인 후 적용
+
             curriculum.update(curriculumUpdateReq, bucket);
             curriculumRepository.save(curriculum);
 
@@ -190,7 +243,6 @@ public class InstructionService {
     }
 
     public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId) {
-        // 1. 유효성 검증
         Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("Instructor not found")
         );
@@ -198,6 +250,10 @@ public class InstructionService {
         Course course = courseRepository.findById(courseId).orElseThrow(
                 ()-> new NotFoundException("Course is not found")
         );
+
+        if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+            throw new BadRequestException("Status is "+course.getStatus());
+        }
 
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");

@@ -1,11 +1,9 @@
 package com.ssafy.db.entity;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.request.CourseModifyUpdateReq;
-import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.util.GCSUtil;
+import com.ssafy.db.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,6 +56,9 @@ public class Course {
 
     @Column(nullable = false)
     private double rating;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseTag> courseTagList;
