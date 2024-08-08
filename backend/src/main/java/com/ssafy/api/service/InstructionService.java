@@ -117,7 +117,7 @@ public class InstructionService {
                 ()-> new NotFoundException("Course is not found")
         );
 
-        if(!course.getStatus().equals(Status.Pending) && !course.getStatus().equals(Status.Completed)){
+        if(course.getStatus().equals(Status.Pending) || course.getStatus().equals(Status.Completed)){
             throw new BadRequestException("Status is "+ course.getStatus());
         }
 
