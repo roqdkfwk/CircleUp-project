@@ -1,11 +1,11 @@
 
 import { useEffect, useState } from "react";
-import { getUserCourse } from "../../services/api";
 import CourseGallery from "../../components/List/CourseGallery";
-import { useUserStore } from "../../store/store";
+import { CourseInfo } from "../../types/CourseInfo";
+import { getUserCourse } from "../../services/api";
 
 const MyCourse = () => {
-    const { myCourse } = useUserStore();
+    const [myCourses, setMyCourses] = useState<CourseInfo[]>([]); 
     const myCourseNavBar = [ '수강중인 강의' ]
 
     const [activeTab, setActiveTab] = useState<string>('수강중인 강의'); 
@@ -13,6 +13,15 @@ const MyCourse = () => {
     const handleTabClick = (NavbarName: string) => {
         setActiveTab(NavbarName);
     };
+
+    const handleGetMyCourse = async () => {
+        const response = await getUserCourse();
+        setMyCourses(response.data)
+    }
+
+    useEffect(() => {
+        handleGetMyCourse();
+    }, [])
 
     return (
         <div>
@@ -35,7 +44,7 @@ const MyCourse = () => {
                 </ul>
             </div>
             <div className="w-[80%] mx-auto mt-8">
-                <CourseGallery data={myCourse} ver={1}/>
+                <CourseGallery data={myCourses} ver={1}/>
             </div>
         </div>
 

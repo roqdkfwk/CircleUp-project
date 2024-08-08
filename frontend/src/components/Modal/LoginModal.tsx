@@ -2,6 +2,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { getUserCourse, postLogin } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { useNavigate } from "react-router-dom";
+import { CourseInfo } from "../../types/CourseInfo";
 interface ModalProps {
     show: boolean;
     onClose: () => void;
@@ -11,7 +12,7 @@ function LoginModal({ show, onClose }: ModalProps) {
     const navigate = useNavigate();
     const [inputEmail, setInputEmail] = useState<string>('')
     const [pwd, setPwd] = useState<string>('')
-    const { setNickName, setEmail, setRole, setMyCourse } = useUserStore();
+    const { setNickName, setEmail, setRole, setMyCourseId } = useUserStore();
 
     const loginInfo = {
         email: inputEmail,
@@ -28,7 +29,9 @@ function LoginModal({ show, onClose }: ModalProps) {
 
     const getMyCourses = async () => {
         const response = await getUserCourse();
-        setMyCourse(response.data);
+        
+        const myCourseIds = response.data.map((course: CourseInfo) => course.id)
+        setMyCourseId(myCourseIds)
     }
 
     const handleSubmit = async (event: FormEvent) => {
