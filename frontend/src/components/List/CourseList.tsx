@@ -10,7 +10,6 @@ import { useState } from "react";
 import angleLeft from './../../assets/svgs/angleLeft.svg';
 import angleRight from './../../assets/svgs/angleRight.svg';
 
-
 interface CourseListProps {
     data: CourseInfo[],
     title: string,

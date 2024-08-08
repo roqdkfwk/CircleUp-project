@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getCourseDetail } from '../services/api';
+import { getCourseDetail, getIsLive } from '../services/api';
 import { CourseDetailInfo } from '../types/CourseDetailInfo';
 import CourseDetailLeftBoard from '../components/CourseDetail/CourseDetailLeftBoard';
 import CourseDetailRightBoard from "../components/CourseDetail/CourseDetailRightBoard";
@@ -10,14 +10,25 @@ const CourseDetail = () => {
     const numericCourseId = Number(courseId);
     
     const [courseDetailInfoData, setCourseDetailInfoData] = useState<CourseDetailInfo | null>(null);
+    const [isLive, setIsLive] = useState<boolean>(false);
 
     const fetchDetailCourse = async () => {
         const response = await getCourseDetail(numericCourseId);
         setCourseDetailInfoData(response.data);
     }
 
+    const fetchIsLiveCourse = async () => {
+        const response = await getIsLive(Number(courseId));
+        
+        if (response.status === 200) {
+            setIsLive(true)
+            console.log(isLive)
+        }
+    }
+
     useEffect(() => {
         fetchDetailCourse();
+        fetchIsLiveCourse();
     }, []);
 
     if (!courseDetailInfoData) {

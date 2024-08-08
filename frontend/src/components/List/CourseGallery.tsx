@@ -19,7 +19,7 @@ function isCourseDetailInfoBySearch(item: CourseDetailInfoBySearch | CourseInfo)
 function CourseGallery({ data, ver }: SearchCourseListProps) {
 
     const navigate = useNavigate();
-
+    
     function handleConsole() {
         navigate(`/courseManagementMake`);
     }

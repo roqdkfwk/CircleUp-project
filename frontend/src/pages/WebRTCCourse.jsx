@@ -1,4 +1,3 @@
-import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
 import "../WebRtc/VideoRoomComponent.css";
@@ -8,8 +7,8 @@ import ToolbarComponent from "../WebRtc/toolbar/ToolbarComponent";
 import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
 import UserModel from "../WebRtc/models/user-model";
 import { useLocation, useParams } from "react-router";
-import { createSession, createToken } from "../services/api"
-import { useLiveStore } from "../store/store";
+import { createSession, createToken, leaveLiveSession } from "../services/api"
+import UserStoreWrapper from "../services/UserStoreWrapper"
 
 function useTest() {
   const params = useParams();
@@ -40,7 +39,6 @@ class VideoRoomComponent extends Component {
     let curriId = this.props.curriId;
     this.remotes = [];
     this.localUserAccessAllowed = false;
-    //const { liveCourseIds, liveCurriculumIds, setLiveCourseIds, setLiveCurriculumIds } = useLiveStore();
 
     this.state = {
       mySessionId: sessionName,
@@ -51,14 +49,15 @@ class VideoRoomComponent extends Component {
       subscribers: [],
       chatDisplay: "none",
       currentVideoDevice: undefined,
-
-      // liveCourseIds: [],
-      // liveCurriculumIds: [],
-      // setLiveCourseIds: () => {},
-      // setLiveCurriculumIds: () => {},
-
       nsfwProb: 0,
-
+      
+      nickName: "",
+      email: "",
+      role: "",
+      
+      setNickName: () => {},
+      setEmail: () => {},
+      setRole: () => {},
     };
     
     this.joinSession = this.joinSession.bind(this);
@@ -77,6 +76,18 @@ class VideoRoomComponent extends Component {
     this.checkNotification = this.checkNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
     this.webSocket = null;
+  }
+
+  handleStoreData = (storeData) => {
+    this.setState({
+      nickName: storeData.nickName,
+      email: storeData.email,
+      role: storeData.role,
+      
+      setNickName: storeData.setNickName,
+      setEmail: storeData.setEmail,
+      setRole: storeData.setRole,
+    })
   }
 
   componentDidMount() {
@@ -167,6 +178,8 @@ class VideoRoomComponent extends Component {
         var token = await this.getToken(this.props.isHost, this.state.mySessionId);
         console.log("Make a Token!!")
         console.log(token);
+        console.log("haha, get a storeData")
+        console.log(this.state.nickName + " : " + this.state.role)
         this.connect(token);
       } catch (error) {
         console.error("There was an error getting the token:", error.code, error.message);
@@ -314,6 +327,10 @@ class VideoRoomComponent extends Component {
   leaveSession() {
     const mySession = this.state.session;
 
+    if (this.state.role === 'Instructor') {
+      this.fetchLeaveLiveSession(this.props.course_id);
+    }
+
     if (mySession) {
       mySession.disconnect();
     }
@@ -322,7 +339,7 @@ class VideoRoomComponent extends Component {
     this.setState({
       session: undefined,
       subscribers: [],
-      mySessionId: "SessionA",
+      mySessionId: "ClosedSession",
       myUserName: "OpenVidu_User" + Math.floor(Math.random() * 100),
       localUser: undefined,
     });
@@ -330,14 +347,8 @@ class VideoRoomComponent extends Component {
       this.props.leaveSession();
     }
 
-    // Session 나가면, 모든 사용자가 나가도록 하기
-    // 그리고 해당 CourseId, CurriculuId Live에서 빼 주도록 하기..
-    // const newLiveCourseIds = this.liveCourseIds.filter(courseId => courseId !== this.state.mySessionId);
-    // const newCurriculumIds = this.liveCurriculumIds.filter(currId => currId !== this.state.myCurriId);
-
-    // this.setLiveCourseIds(newLiveCourseIds);
-    // this.setLiveCurriculumIds(newCurriculumIds);
     // redirect 사용하여, 메인 페이지로 이동하기
+    window.location.href = `/courseDetail/${this.props.course_id}`;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -621,6 +632,7 @@ class VideoRoomComponent extends Component {
 
     return (
       <div className="container" id="container">
+        <UserStoreWrapper onStoreData={this.handleStoreData} />
         <ToolbarComponent
           sessionId={mySessionId}
           user={localUser}
@@ -662,7 +674,6 @@ class VideoRoomComponent extends Component {
   }
 
   async getToken(flag, sessionId) {
-  
     if (!flag)
       return await this.fetchCreateToken(sessionId);
     else {
@@ -678,6 +689,11 @@ class VideoRoomComponent extends Component {
 
   async fetchCreateToken(sessionId) {
     const response = await createToken(sessionId);
+    return response.data;
+  }
+
+  async fetchLeaveLiveSession(sessionId) {
+    const response = await leaveLiveSession(sessionId);
     return response.data;
   }
 }
