@@ -12,28 +12,18 @@ import com.ssafy.db.repository.CourseRepository;
 import com.ssafy.db.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminService {
 
     private final MemberRepository memberRepository;
     private final CourseRepository courseRepository;
-
-    public List<CoursesRes> getAdminPendingCourses(Long memberId) {
-        Member admin = memberRepository.findById(memberId)
-                .orElseThrow(()-> new NotFoundException("ID not found"));
-
-        if(!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
-
-        return courseRepository.findAllByStatus(Status.Pending)
-                .stream()
-                .map(CoursesRes::of)
-                .collect(Collectors.toList());
-    } // 승인 대기 중인 강의 for 관리자
 
     public CourseRes rejectCourse(Long courseId, Long memberId){
         Member admin = memberRepository.findById(memberId)

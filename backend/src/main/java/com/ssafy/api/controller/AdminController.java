@@ -51,6 +51,6 @@ public class AdminController {
             Authentication authentication
     ){
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(adminService.getAdminPendingCourses(memberId));
+        return ResponseEntity.ok().body(courseService.getAdminPendingCourses(memberId));
     }
 }

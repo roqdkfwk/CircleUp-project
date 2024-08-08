@@ -36,6 +36,17 @@ public class CourseSerivce {
     private final CurriculumRepository curriculumRepository;
 
     ////////////////////////////////////////
+    public List<CoursesRes> getAdminPendingCourses(Long memberId) {
+        Member admin = memberRepository.findById(memberId)
+                .orElseThrow(()-> new NotFoundException("ID not found"));
+
+        if(!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
+
+        return courseRepository.findAllByStatus(Status.Pending)
+                .stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
+    } // 승인 대기 중인 강의 for 관리자
 
     // 상태 별 강의 조회 for 강사
     public List<CoursesRes> getMyCoursesByStatus(Long memberId, String status) {
