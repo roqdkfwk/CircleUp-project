@@ -23,7 +23,7 @@ function useTest() {
       course_id={params.course_id}
       curriculum_id={location.state.curriId}
       member_id={location.state.memberId}
-      isHost = {location.state.flag}
+      isHost={location.state.flag}
     ></VideoRoomComponent>
   );
 }
@@ -37,20 +37,26 @@ class VideoRoomComponent extends Component {
     this.layout = new OpenViduLayout();
     let sessionName = this.props.course_id;
     let userName = this.props.member_id;
+    let curriId = this.props.curriId;
     this.remotes = [];
     this.localUserAccessAllowed = false;
+    //const { liveCourseIds, liveCurriculumIds, setLiveCourseIds, setLiveCurriculumIds } = useLiveStore();
+
     this.state = {
       mySessionId: sessionName,
+      myCurriId: curriId,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
       subscribers: [],
       chatDisplay: "none",
       currentVideoDevice: undefined,
+      liveCourseIds: [],
+      liveCurriculumIds: [],
+      setLiveCourseIds: () => {},
+      setLiveCurriculumIds: () => {},
     };
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { liveCourses, liveCurriculums, setLiveCourses, setLiveCurriculums } = useLiveStore();
-
+    
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -265,6 +271,11 @@ class VideoRoomComponent extends Component {
 
     // Session 나가면, 모든 사용자가 나가도록 하기
     // 그리고 해당 CourseId, CurriculuId Live에서 빼 주도록 하기..
+    // const newLiveCourseIds = this.liveCourseIds.filter(courseId => courseId !== this.state.mySessionId);
+    // const newCurriculumIds = this.liveCurriculumIds.filter(currId => currId !== this.state.myCurriId);
+
+    // this.setLiveCourseIds(newLiveCourseIds);
+    // this.setLiveCurriculumIds(newCurriculumIds);
     // redirect 사용하여, 메인 페이지로 이동하기
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
