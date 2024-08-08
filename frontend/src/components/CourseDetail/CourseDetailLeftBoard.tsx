@@ -6,11 +6,11 @@ import CourseCurriculumContent from "./Content/CourseCurriculumContent";
 import { useUserStore } from "../../store/store";
 import CourseBuyModal from "../Modal/CourseBuyModal";
 import { useNavigate } from "react-router";
+import { BuyInfo } from './../../types/BuyInfo';
 
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo
 }
-
 const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
     const navigate = useNavigate();
     const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
@@ -67,6 +67,13 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
         checkUserCourse
     })
 
+    const buyInfo: BuyInfo = {
+        id: data.id,
+        courseName: data.courseName,
+        price: data.price,
+        instructorName: data.instructorName,
+    }
+
     // useEffect(() => {
     //     setMine(isCourseMine());
     //     console.log(myCourseId)
@@ -75,7 +82,7 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
     
     return (
         <div className="basis-3/4 w-[70%] h-full bg-white border border-gray-200 rounded-lg my-5 mx-3 dark:bg-gray-800 dark:border-gray-700 ">
-            <CourseBuyModal show={showModal} newCourseId={data.id} onClose={toggleModal} />
+            <CourseBuyModal show={showModal} buyInfo={buyInfo} onClose={toggleModal} />
             {/* 강의 배너 */}
             <div className="w-full h-[350px] p-2 rounded-t-lg shadow bg-gradient-to-r from-black from-0% via-gray-400 via-30% to-black to-55% flex flex-row items-center justify-evenly">
                 <img src={data.imgUrl} alt="" className="rounded-lg h-60 w-[300px]" />
