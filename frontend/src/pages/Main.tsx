@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { getSpecialCourse } from '../services/api';
+import { getLiveCourses, getSpecialCourse } from '../services/api';
 import HotCourseList from "../components/List/HotCourseList";
 import CourseList from "../components/List/CourseList";
 import { CourseInfo } from './../types/CourseInfo';
+import { useLiveStore } from "../store/store";
 
 const Main = () => {
+
+    const { setLiveCourseIds } = useLiveStore();
 
     const [hotCourses, setHotCourses] = useState<CourseInfo[]>([])
     const [freeCourses, setFreeCourses] = useState<CourseInfo[]>([])
@@ -18,6 +21,11 @@ const Main = () => {
         }
 
         return await getSpecialCourse(data)
+    }
+
+    const fetchLiveCourse = async () => {
+        const response = await getLiveCourses();
+        setLiveCourseIds(response.data.map((str: string) => Number(str)));
     }
 
     useEffect(() => {
@@ -41,6 +49,7 @@ const Main = () => {
         fetchFreeCourses()
         fetchRecCourses()
         fetchNewCourses()
+        fetchLiveCourse()
     },[])
 
     return (

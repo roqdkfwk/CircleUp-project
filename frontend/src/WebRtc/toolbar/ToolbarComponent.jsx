@@ -57,6 +57,7 @@ export default class ToolbarComponent extends Component {
   }
 
   leaveSession() {
+    /// Modal ///
     this.props.leaveSession();
   }
 

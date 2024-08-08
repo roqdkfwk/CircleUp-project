@@ -32,7 +32,6 @@ const CourseManagementDetail = () => {
     const fetchDetailCourse = async () => {
       const response = await fetchDetailCourseData();
       setCourseDetails(response.data);
-      console.log(response.data)
     };
 
     fetchDetailCourse();

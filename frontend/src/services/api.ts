@@ -218,6 +218,22 @@ export const createToken = (sessionId: number) => {
         },
     })
 }
+// Session 퇴장
+export const leaveLiveSession = (sessionId: number, curriculum_id: number) => {
+    return axiosClient.delete(`/sessions/${sessionId}?curriculum_id=${curriculum_id}`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+// Live 상태인 강의 조회
+export const getLiveCourses = () => {
+    return axiosClient.get(`/sessions/courses`)
+}
+// 강의가 Live인지 조회
+export const getIsLive = (courseId: number) => {
+    return axiosClient.get(`/sessions/${courseId}`)
+}
 
 ////////////////////////////////////////////////////////////
 // Interceptor - JWT 로직 ( AccessToken & RefreshToken )
