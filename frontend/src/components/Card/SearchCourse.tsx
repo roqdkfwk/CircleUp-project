@@ -21,12 +21,13 @@ const SearchCourse = ({ data } : SearchCourseProps ) => {
             <img className="rounded-t-lg mx-auto w-full h-[150px] " src={data.imgUrl} alt="" />
         
             <div className="px-5 py-3">
-                <div className="w-full flex"> 
+                <h5 className="text-base title tracking-tight mb-[2px] max-h-[50px] text-gray-800 dark:text-white overflow-hidden text-ellipsis whitespace-nowrap">{data.name}</h5>
+                <div className="w-full flex my-2"> 
                     {data.tags.map((tagName, idx) => (
-                        <span className="bg-indigo-100 text-indigo-800 text-sm me-2 mt-[2px] px-2.5 rounded dark:bg-indigo-900 dark:text-indigo-300" key={idx}>{tagName}</span>
+                        <span className="bg-indigo-100 text-indigo-800 text-sm me-2 px-2.5 rounded dark:bg-indigo-900 dark:text-indigo-300" key={idx}>{tagName}</span>
                     ))}
                 </div>
-                <h5 className="text-base title tracking-tight my-[10px] min-h-[50px] text-gray-800 dark:text-white">{data.name}</h5>
+                <h3 className="text-sm tracking-tight my-[0px] min-h-[50px] text-gray-800 dark:text-white">{data.summary}</h3>
                 <div className="text-gray-500 text-sm flex items-center">
                     <FaUser style={{color: 'gray'}} /><p className="ml-2">{data.registeredCnt}</p>
                 </div>

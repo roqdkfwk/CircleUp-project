@@ -2,7 +2,7 @@ export interface CourseDetailInfoBySearch {
     id: number,
     imgUrl: string,
     name: string,
-    summary: FileList | null,
+    summary: string,
     price: number,
     view: number,
     registeredCnt: number,
