@@ -268,7 +268,7 @@ public class SessionController {
 
     private Boolean saveVideo(Long courseId, Long curriculumId) {
 
-        String originalPath = OPENVIDU_RECORDINGPATH + "/" + courseId + "/" + curriculumId + ".mp4";
+        String originalPath = OPENVIDU_RECORDINGPATH + "/" + courseId + "/" + courseId + ".mp4";
         String fileName = UUID.randomUUID().toString() + ".mp4";
 
         // TODO 테스트
