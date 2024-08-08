@@ -30,6 +30,7 @@ const MyCourseBanner = ({
     
     // <ToDo> - 수강자가 수강 진행 중인 경우의 상태, { 수강 신청 버튼 X & 라이브 참가 허용 }
     const { role } = useUserStore();
+    const formattedPrice = price === 0 ? "무료" : price.toLocaleString();
     
     const hiddenFileInput = useRef<HTMLInputElement | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string | null>(imgUrl);
@@ -238,7 +239,7 @@ const MyCourseBanner = ({
                 </div>
                 <div className="text-white title flex items-center">
                     <FaWonSign style={{color: 'gray'}} />
-                    <p className="ml-2">{ price==0 ? "무료" : price }</p>
+                    <p className="ml-2">{ price==0 ? "무료" : formattedPrice }</p>
                 </div>
                 {
                     role === 'User' && isDetail ?

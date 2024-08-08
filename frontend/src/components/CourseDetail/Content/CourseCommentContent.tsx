@@ -5,7 +5,7 @@ const CourseCommentContent = () => {
     */
     return (
         <div>
-
+            
         </div>
     )
 }
