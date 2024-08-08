@@ -28,7 +28,6 @@ const Router = () => {
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify/:courseId" element={<CourseManagementModify />} />
         <Route path="/courseManagementDetail/:courseId" element={<CourseManagementDetail />} />
-        <Route path="/search/:searchKeyword" element={<Search />} />
 
         <Route path="/curriculumDetail/:courseId" element={<CurriculumDetail />} />
 

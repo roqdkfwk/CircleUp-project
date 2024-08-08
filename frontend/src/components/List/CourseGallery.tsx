@@ -34,15 +34,10 @@ function CourseGallery({ data, ver }: SearchCourseListProps) {
                 </div>
             ))}
             {ver === 3 &&
-                <button
-                    className="
-                    w-1/2 h-1/2
-                    text-white bg-blue-700 hover:bg-blue-800 
-                    focus:ring-4 focus:ring-blue-300 
-                    font-medium rounded-lg 
-                    text-sm px-4 py-2.5 mx-10 my-10
-                    focus:outline-none dark:focus:ring-blue-800"
-                    onClick={handleConsole}>Create New Course!</button>
+                <button type="button" className="w-[100px] h-[100px] m-auto text-2xl text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-center"
+                    onClick={handleConsole}>
+                    <p>+</p>
+                </button>
             }
         </div>
     );

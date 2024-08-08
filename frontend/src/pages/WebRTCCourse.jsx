@@ -29,7 +29,7 @@ function useTest() {
 }
 
 var localUser = new UserModel();
-
+const AI_SERVER_URL = import.meta.env.VITE_AI_ADDRESS;
 class VideoRoomComponent extends Component {
   constructor(props) {
     super(props);
@@ -51,10 +51,14 @@ class VideoRoomComponent extends Component {
       subscribers: [],
       chatDisplay: "none",
       currentVideoDevice: undefined,
-      liveCourseIds: [],
-      liveCurriculumIds: [],
-      setLiveCourseIds: () => {},
-      setLiveCurriculumIds: () => {},
+
+      // liveCourseIds: [],
+      // liveCurriculumIds: [],
+      // setLiveCourseIds: () => {},
+      // setLiveCurriculumIds: () => {},
+
+      nsfwProb: 0,
+
     };
     
     this.joinSession = this.joinSession.bind(this);
@@ -72,7 +76,7 @@ class VideoRoomComponent extends Component {
     this.toggleChat = this.toggleChat.bind(this);
     this.checkNotification = this.checkNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
-
+    this.webSocket = null;
   }
 
   componentDidMount() {
@@ -119,7 +123,39 @@ class VideoRoomComponent extends Component {
         await this.connectToSession();
       }
     );
+
+    this.setupWebSocket();
   }
+
+  // FastAPI 웹소켓부분
+  setupWebSocket() {
+    const websocketUrl =
+      AI_SERVER_URL.startsWith("ws://") || AI_SERVER_URL.startsWith("wss://")
+        ? AI_SERVER_URL
+        : `ws://${AI_SERVER_URL}`;
+
+    console.log("Connecting to WebSocket at:", websocketUrl);
+    this.webSocket = new WebSocket(websocketUrl);
+
+    this.webSocket.onopen = () => {
+      console.log("WebSocket connection opened");
+    };
+
+    this.webSocket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      console.log("Received from server:", data);
+      this.setState({ nsfwProb: data.nsfw_prob });
+    };
+
+    this.webSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    this.webSocket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+  }
+  //
 
   async connectToSession() {
     if (this.props.token !== undefined) {
@@ -176,53 +212,78 @@ class VideoRoomComponent extends Component {
     await this.OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
-
-    let publisher = this.OV.initPublisher(undefined, {
-      audioSource: undefined,
-      videoSource: undefined,
-      publishAudio: localUser.isAudioActive(),
-      publishVideo: localUser.isVideoActive(),
-      resolution: "640x480",
-      frameRate: 30,
-      insertMode: "APPEND",
-      mirror: false,
-    });
-
-    if (this.state.session.capabilities.publish) {
-      publisher.on("accessAllowed", () => {
-        this.state.session.publish(publisher).then(() => {
-          this.updateSubscribers();
-          this.localUserAccessAllowed = true;
-          if (this.props.joinSession) {
-            this.props.joinSession();
-          }
-        });
-      });
-    }
-
-    localUser.setNickname(this.state.myUserName);
-    localUser.setConnectionId(this.state.session.connection.connectionId);
-    localUser.setScreenShareActive(false);
-    localUser.setStreamManager(publisher);
-
-    this.subscribeToUserChanged();
-    this.subscribeToStreamDestroyed();
-    this.sendSignalUserChanged({ isScreenShareActive: localUser.isScreenShareActive() });
-
-    this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, async () => {
-      
-      const newPublisher = this.OV.initPublisher(undefined, {
-        audioSource: publisher.stream.getAudioTracks()[0],
-        videoSource: videoDevices[0].deviceId,
+  
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const videoTrack = mediaStream.getVideoTracks()[0];
+  
+      if (!videoTrack) {
+        console.error("No video track found");
+        return;
+      }
+  
+      console.log("MediaStream obtained: ", mediaStream);
+  
+      let publisher = this.OV.initPublisher(undefined, {
+        videoSource: videoTrack,
         publishAudio: localUser.isAudioActive(),
         publishVideo: localUser.isVideoActive(),
         resolution: "640x480",
-        frameRate: 30,
+        frameRate: 15, // 프레임레이트 줄이기
         insertMode: "APPEND",
         mirror: false,
       });
-
-    });
+  
+      if (this.state.session.capabilities.publish) {
+        publisher.on("accessAllowed", () => {
+          console.log("Publisher access allowed");
+          this.state.session.publish(publisher).then(() => {
+            console.log("Session published");
+            this.updateSubscribers();
+            this.localUserAccessAllowed = true;
+            if (this.props.joinSession) {
+              this.props.joinSession();
+            }
+          });
+        });
+      }
+  
+      publisher.on("accessDenied", (error) => {
+        console.error("Access denied: ", error);
+      });
+  
+      localUser.setNickname(this.state.myUserName);
+      localUser.setConnectionId(this.state.session.connection.connectionId);
+      localUser.setScreenShareActive(false);
+      localUser.setStreamManager(publisher);
+      this.setState({ currentVideoDevice: videoTrack, localUser: localUser });
+  
+      const sendFrame = async () => {
+        const imageCapture = new ImageCapture(videoTrack);
+        try {
+          const bitmap = await imageCapture.grabFrame();
+          const canvas = document.createElement('canvas');
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const context = canvas.getContext('2d');
+          context.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
+          canvas.toBlob(blob => {
+            if (this.webSocket.readyState === WebSocket.OPEN) {
+              console.log("Sending frame to server");
+              this.webSocket.send(blob);
+            }
+          }, 'image/jpeg');
+        } catch (error) {
+          console.error("Error capturing frame:", error);
+        }
+      };
+      
+      // 프레임 전송 빈도 줄이기
+      setInterval(sendFrame, 1000); // 10 FPS로 전송
+  
+    } catch (error) {
+      console.error("Error accessing media devices.", error);
+    }
   }
   
 

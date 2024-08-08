@@ -29,8 +29,8 @@ const CourseManagement = () => {
         fetchMyCourses();
     }, []);
 
-    if (myCourses.length === 0)
-        return (<div>Token 재갱신 중 || Loading...</div>);
+    // if (myCourses.length === 0)
+    //     return (<div>Token 재갱신 중 || Loading...</div>);
 
     return (
         <div>

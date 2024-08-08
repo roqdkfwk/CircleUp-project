@@ -74,7 +74,7 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                         <FaUser style={{ color: 'gray' }} /><p className="ml-2">{data.instructorName}</p>
                     </div>
                     <div className="text-white title flex items-center">
-                        <FaWonSign style={{ color: 'gray' }} /><p className="ml-2">{data.price == 0 ? "무료" : data.price}</p>
+                        <FaWonSign style={{color: 'gray'}} /><p className="ml-2">{ data.price==0 ? "무료" : formattedPrice }</p>
                     </div>
                     {
                         mine ?
