@@ -3,13 +3,11 @@ package com.ssafy.api.controller;
 import com.google.cloud.storage.Bucket;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.common.custom.RequiredAuth;
-import com.ssafy.db.repository.CurriculumRepository;
 import io.openvidu.java.client.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +15,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //@ApiIgnore
 @Api(tags = {"Live"})
@@ -33,13 +30,16 @@ public class SessionController {
 
     private final CourseSerivce courseSerivce;
     private final Bucket bucket;
+
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
     @Value("${OPENVIDU_SECRET}")
     private String OPENVIDU_SECRET;
+    @Value("${OPENVIDU_RECORDINGPATH}")
+    private String OPENVIDU_RECORDINGPATH;
+
     private OpenVidu openvidu;
-    @Autowired
-    private CurriculumRepository curriculumRepository;
+
 
     public SessionController(CourseSerivce courseSerivce, Bucket bucket) {
         this.courseSerivce = courseSerivce;
@@ -94,21 +94,21 @@ public class SessionController {
     })
     @ApiOperation(value = "Live 종료", notes = "강사는 라이브를 종료하고 화면녹화파일을 저장한다")
     public ResponseEntity<ArrayList<String>> sessionClose(
-            @PathVariable(name = "course_id") String courseId,
+            @PathVariable(name = "course_id") String course_id,
+            @RequestParam(name = "curriculum_id") Long curriculumId,
             Authentication authentication
     ) throws OpenViduJavaClientException, OpenViduHttpException {
+        Long courseId = Long.valueOf(course_id);
         Long memberId = Long.valueOf(authentication.getName());
         if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
-            openvidu.stopRecording(courseId);
-            // TODO 녹화파일 업로드 추가
-            String curriculumId = "1";
-            saveVideo(courseId, curriculumId);
-            Session session = openvidu.getActiveSession(courseId);
-            session.close();
+            openvidu.stopRecording(course_id);
+            if (!saveVideo(courseId, curriculumId)) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            openvidu.getActiveSession(course_id).close();
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
     }
 
     /**
@@ -166,19 +166,13 @@ public class SessionController {
      * Live 종료
      */
     @DeleteMapping("/dev/{course_id}")
-    @ApiOperation(value = "(개발용) Live 종료", notes = "라이브를 종료하고 화면녹화파일을 저장한다")
+    @ApiOperation(value = "(개발용) Live 종료", notes = "라이브를 종료하고 화면녹화파일을 (로컬에) 저장한다")
     public ResponseEntity<ArrayList<String>> recordingList(
             @PathVariable("course_id") String courseId
     ) throws OpenViduJavaClientException, OpenViduHttpException {
-
-        try {
-            openvidu.stopRecording(courseId);
-        } catch (Exception e) {
-        } finally {
-            openvidu.getActiveSession(courseId).close();
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
+        openvidu.stopRecording(courseId);
+        openvidu.getActiveSession(courseId).close();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -218,7 +212,39 @@ public class SessionController {
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
+    ///////////////////////////////////////////////////// 녹화 파일 관리용
+
+    @GetMapping("/dev/recording")
+    @ApiOperation(value = "(개발용) 녹화 파일 목록", notes = "현재 저장된 녹화 파일 목록을 반환합니다")
+    public ResponseEntity<?> recordingList(
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+        List<Recording> recordings =
+                openvidu.listRecordings();
+
+        List<String> recordingIds = recordings.stream().map(recording -> recording.getId()).collect(Collectors.toList());
+        return new ResponseEntity<>(recordingIds, HttpStatus.OK);
+    }
+
+    @PostMapping("/dev/recording")
+    @ApiOperation(value = "(개발용) 녹화 중지", notes = "녹화를 중지시킵니다")
+    public ResponseEntity<Void> recordingStop(
+            @RequestParam(name = "course_id") String courseId
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+        openvidu.stopRecording(courseId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/dev/recording")
+    @ApiOperation(value = "(개발용) 녹화 삭제", notes = "녹화된 파일을 삭제합니다")
+    public ResponseEntity<Void> recordingDelete(
+            @RequestParam(name = "course_id") String courseId
+    ) throws OpenViduJavaClientException, OpenViduHttpException {
+        openvidu.deleteRecording(courseId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     /////////////////////////////////////////////////////
+
     private String makeSession(String courseId) {
         try {
             Map<String, Object> map = new HashMap<>();
@@ -240,21 +266,20 @@ public class SessionController {
         }
     }
 
-    ///////////////////////////////////////////////////// 임시용
-    @GetMapping("/dev/test")
-    public ResponseEntity<?> save(
-    ) {
-        String sourcePath = "/opt/openvidu/recordings/321/321.mp4";
-        try (InputStream inputStream = new FileInputStream(sourcePath)) {
-            bucket.create("107c5dfa-2c8b-4f15-9885-34446c82b021.mp4", inputStream, "mp4");
-        } catch (IOException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+
+    private Boolean saveVideo(Long courseId, Long curriculumId) {
+
+        String originalPath = OPENVIDU_RECORDINGPATH + File.pathSeparator + courseId + File.pathSeparator + curriculumId + ".mp4";
+        String fileName = UUID.randomUUID().toString();
+
+        System.out.println(originalPath);
+        try (InputStream inputStream = new FileInputStream(originalPath)) {
+            bucket.create(fileName + ".mp4", inputStream, "mp4");
+            courseSerivce.saveVideoUrl(fileName, courseId, curriculumId);
+            openvidu.deleteRecording(courseId.toString());
+        } catch (Exception e) {
+            return false;
         }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private Boolean saveVideo(String courseId, String curriculumId) {
-
         return true;
     }
 }

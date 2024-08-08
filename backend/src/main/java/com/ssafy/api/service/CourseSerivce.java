@@ -4,17 +4,20 @@ import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.SearchRes;
 import com.ssafy.common.custom.NotFoundException;
+import com.ssafy.common.util.GCSUtil;
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Curriculum;
 import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.repository.CourseRepository;
+import com.ssafy.db.repository.CurriculumRepository;
 import com.ssafy.db.repository.InstructorRepository;
-import com.ssafy.db.repository.RegisterRepository;
 import com.ssafy.db.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +31,7 @@ public class CourseSerivce {
     private final CourseRepository courseRepository;
     private final TagRepository tagRepository;
     private final InstructorRepository instructorRepository;
-    private final RegisterRepository registerRepository;
+    private final CurriculumRepository curriculumRepository;
 
     public List<SearchRes> getCoursesByTitle(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -149,7 +152,17 @@ public class CourseSerivce {
         return instructorId.equals(memberId);
     }
 
-    public boolean existRegister(Long memberId, Long courseId) {
+    public Boolean existRegister(Long memberId, Long courseId) {
         return courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null;
+    }
+
+    @Transactional
+    public Boolean saveVideoUrl(String fileName, Long courseId, Long curriculumId) {
+        Curriculum curriculum = curriculumRepository.findByIndexNoAndCourseId(curriculumId, courseId)
+                .orElseThrow(() -> new NotFoundException("Not Found Curriculum")
+                );
+        curriculum.setDescription(GCSUtil.preUrl + fileName);
+        curriculumRepository.save(curriculum);
+        return true;
     }
 }
