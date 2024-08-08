@@ -112,7 +112,7 @@ public class InstructionController {
     ) {
         Long memberId = Long.valueOf(authentication.getName());
         instructionService.deleteCourse(courseId, memberId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     ////////////////////////////////////////////
@@ -151,6 +151,6 @@ public class InstructionController {
     ) {
         Long memberId = Long.valueOf(authentication.getName());
         instructionService.deleteCurriculum(courseId, curriculumId, memberId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 }
