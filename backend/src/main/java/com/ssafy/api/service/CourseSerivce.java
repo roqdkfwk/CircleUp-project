@@ -161,31 +161,11 @@ public class CourseSerivce {
                 .stream().map(CoursesRes::of).collect(Collectors.toList());
     }
 
-    public CourseRes getCourseById(Long courseId, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Member not found : Member_id is " + memberId)
+    public CourseRes getCourseById(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found : Course_id is " + courseId)
         );
 
-        Course course;
-        // 일반사용자용 : Course.status == Status.Approved
-        if (member.getRole() == Role.User) {
-            course = courseRepository.findByIdAndStatus(courseId, Status.Approved);
-            if (course == null) course = courseRepository.findByIdAndStatus(courseId, Status.Completed);
-        }
-        // 강사용 : 강의의 강사id == memberId
-        else if (member.getRole() == Role.Instructor) {
-            course = courseRepository.findByIdAndInstructorId(courseId, memberId);
-        }
-        // admin용 : 조건 x
-        else {
-            course = courseRepository.findById(courseId).orElseThrow(
-                    () -> new NotFoundException("Course not found : Course_id is " + courseId)
-            );
-        }
-
-        if (course == null) {
-            throw new BadRequestException("Access denied");
-        }
         course.upView();
         return CourseRes.of(course);
     }

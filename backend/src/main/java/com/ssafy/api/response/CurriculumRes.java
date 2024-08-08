@@ -13,14 +13,12 @@ public class CurriculumRes {
     Long indexNo;
     String curriculumName;
     String description;
-    String recUrl;
 
     public static CurriculumRes of(Curriculum curriculum) {
         return CurriculumRes.builder()
                 .id(curriculum.getId())
                 .indexNo(curriculum.getIndexNo())
                 .curriculumName(curriculum.getName())
-                .recUrl(curriculum.getRecUrl())
                 .description(curriculum.getDescription()).build();
     }
 }
