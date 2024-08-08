@@ -34,25 +34,25 @@ public class GCSUtil {
         saveCourseImg(course, bucket, img);
     }
 
-    public static void saveCurrImg(Curriculum newCurr, Bucket bucket, MultipartFile img){
-        try{
-            String blobName = "curriculum_" + newCurr.getId() + "_banner";
-            bucket.create(blobName, img.getBytes(), img.getContentType());
-
-            newCurr.setImgUrl(preUrl+blobName);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void updateCurrImg(Curriculum curriculum, Bucket bucket, MultipartFile img){
-        deleteCurrImg(curriculum.getId(), bucket);
-        saveCurrImg(curriculum, bucket, img);
-    }
-
-    public static void deleteCurrImg(Long curriculumId, Bucket bucket){
-        String blobName = "curriculum_" + curriculumId + "_banner";
-        Blob blob = bucket.get(blobName);
-        blob.delete();
-    }
+//    public static void saveCurrImg(Curriculum newCurr, Bucket bucket, MultipartFile img){
+//        try{
+//            String blobName = "curriculum_" + newCurr.getId() + "_banner";
+//            bucket.create(blobName, img.getBytes(), img.getContentType());
+//
+//            newCurr.setImgUrl(preUrl+blobName);
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public static void updateCurrImg(Curriculum curriculum, Bucket bucket, MultipartFile img){
+//        deleteCurrImg(curriculum.getId(), bucket);
+//        saveCurrImg(curriculum, bucket, img);
+//    }
+//
+//    public static void deleteCurrImg(Long curriculumId, Bucket bucket){
+//        String blobName = "curriculum_" + curriculumId + "_banner";
+//        Blob blob = bucket.get(blobName);
+//        blob.delete();
+//    }
 }

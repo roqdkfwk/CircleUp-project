@@ -133,11 +133,6 @@ public class InstructionService {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        List<Curriculum> curriculumIdList = course.getCurriculumList();
-        for(Curriculum curriculum : curriculumIdList){
-            GCSUtil.deleteCurrImg(curriculum.getId(), bucket);
-        }
-
         GCSUtil.deleteCourseImg(courseId, bucket);
 
         courseRepository.delete(course);
@@ -201,20 +196,9 @@ public class InstructionService {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
-            if (curriculumPostReq.getImg() == null) {
-                throw new BadRequestException("Not File");
-            }
-
-            String contentType = curriculumPostReq.getImg().getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
-                throw new BadRequestException("Not Image File");
-            }
-
 
             Curriculum newCurr = curriculumPostReq.toEntity(course);
-            newCurr = curriculumRepository.save(newCurr);
 
-            GCSUtil.saveCurrImg(newCurr, bucket, curriculumPostReq.getImg());
             curriculumRepository.save(newCurr);
 
             return CourseRes.of(course);
@@ -246,13 +230,6 @@ public class InstructionService {
                     () -> new NotFoundException("Curriculum not found")
             );
 
-            MultipartFile img = curriculumUpdateReq.getImg();
-            if (img != null) {
-                String contentType = img.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) { // contentType 확인 >> img 아니면 예외처리
-                    throw new BadRequestException("Not Image File");
-                }
-            }
 
 
             curriculum.update(curriculumUpdateReq, bucket);
@@ -289,8 +266,6 @@ public class InstructionService {
         if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
-
-        GCSUtil.deleteCurrImg(curriculumId, bucket);
 
         curriculumRepository.delete(curriculum);
         curriculumRepository.flush();

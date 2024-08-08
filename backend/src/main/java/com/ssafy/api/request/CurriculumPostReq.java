@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class CurriculumPostReq {
-    MultipartFile img;
     String name;
     String description;
 
