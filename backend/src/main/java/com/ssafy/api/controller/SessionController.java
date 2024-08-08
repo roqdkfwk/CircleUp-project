@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
@@ -269,12 +268,15 @@ public class SessionController {
 
     private Boolean saveVideo(Long courseId, Long curriculumId) {
 
-        String originalPath = OPENVIDU_RECORDINGPATH + File.pathSeparator + courseId + File.pathSeparator + curriculumId + ".mp4";
-        String fileName = UUID.randomUUID().toString();
+        String originalPath = OPENVIDU_RECORDINGPATH + "/" + courseId + "/" + curriculumId + ".mp4";
+        String fileName = UUID.randomUUID().toString() + ".mp4";
 
+        // TODO 테스트
         System.out.println(originalPath);
+        System.out.println(fileName);
+
         try (InputStream inputStream = new FileInputStream(originalPath)) {
-            bucket.create(fileName + ".mp4", inputStream, "mp4");
+            bucket.create(fileName, inputStream, "mp4");
             courseSerivce.saveVideoUrl(fileName, courseId, curriculumId);
             openvidu.deleteRecording(courseId.toString());
         } catch (Exception e) {
