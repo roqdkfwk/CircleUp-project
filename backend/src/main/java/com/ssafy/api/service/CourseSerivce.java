@@ -161,7 +161,7 @@ public class CourseSerivce {
         Curriculum curriculum = curriculumRepository.findByIndexNoAndCourseId(curriculumId, courseId)
                 .orElseThrow(() -> new NotFoundException("Not Found Curriculum")
                 );
-        curriculum.setDescription(GCSUtil.preUrl + fileName);
+        curriculum.setRecUrl(GCSUtil.preUrl + fileName);
         curriculumRepository.save(curriculum);
         return true;
     }
