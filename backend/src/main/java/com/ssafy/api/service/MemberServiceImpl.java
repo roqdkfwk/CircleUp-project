@@ -68,13 +68,6 @@ public class MemberServiceImpl implements MemberService {
         Long memberId = jwtUtil.extractId(accessToken);
         Member member = getMemberById(memberId);
 
-//        // 회원의 Favor 모두 찾아서 석제
-//        List<Favor> favors = favorRepository.findByMemberId(memberId);
-//        for (Favor favor : favors) {
-//            favorRepository.delete(favor);
-//        }
-//        member.setRefreshToken(null);
-
         memberRepository.delete(member);
     }
 

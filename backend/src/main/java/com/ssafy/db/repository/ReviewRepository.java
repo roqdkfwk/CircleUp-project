@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
     List<Review> findByCourseId(Long courseId);
 
     @Query("SELECT r FROM Review r WHERE r.member.id = :memberId AND r.course.id = :courseId")

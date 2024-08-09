@@ -93,7 +93,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                 () -> new NotFoundException("존재하지 않는 공지입니다")
         );
     }
-
     //////////////////////////////////////////////////////////////////////
 
     public boolean checkAuthority(Long memberId, Long courseId) {

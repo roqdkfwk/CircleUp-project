@@ -57,7 +57,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
         );
-        return ReviewGetRes.of(review);
+        return ReviewGetRes.fromEntity(review);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewGetRes> getReviewsByCourse(Long courseId) {
         List<Review> reviews = reviewRepository.findByCourseId(courseId);
         return reviews.stream()
-                .map(ReviewGetRes::of)
+                .map(ReviewGetRes::fromEntity)
                 .collect(Collectors.toList());
     }
 

@@ -2,7 +2,6 @@ package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Review;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,35 +13,17 @@ import java.time.LocalDateTime;
 @Builder
 @ApiModel("ReviewGetResponse")
 public class ReviewGetRes {
+    Long id;
+    Long memberId;
+    String memberName;
+    Long courseId;
+    String courseName;
+    Integer rating;
+    String content;
+    LocalDateTime createAt;
+    LocalDateTime updateAt;
 
-    @ApiModelProperty(name = "리뷰 ID")
-    private Long id;
-
-    @ApiModelProperty(name = "사용자 ID")
-    private Long memberId;
-
-    @ApiModelProperty(name = "사용자 이름")
-    private String memberName;
-
-    @ApiModelProperty(name = "강의 ID")
-    private Long courseId;
-
-    @ApiModelProperty(name = "강의 이름")
-    private String courseName;
-
-    @ApiModelProperty(name = "별점")
-    private Integer rating;
-
-    @ApiModelProperty(name = "리뷰 내용")
-    private String content;
-
-    @ApiModelProperty(name = "등록일")
-    private LocalDateTime createAt;
-
-    @ApiModelProperty(name = "수정일")
-    private LocalDateTime updateAt;
-
-    public static ReviewGetRes of(Review review) {
+    public static ReviewGetRes fromEntity(Review review) {
         return ReviewGetRes.builder()
                 .id(review.getId())
                 .memberId(review.getMember().getId())
