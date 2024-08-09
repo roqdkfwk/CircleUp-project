@@ -44,6 +44,8 @@ public class Member {
     private String contactTel;
 
     ////////////////////////////////////////////////////////////////////////////////
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private Instructor instructor;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favor> favors = new ArrayList<>();
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
