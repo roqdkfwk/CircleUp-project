@@ -4,6 +4,7 @@ import com.ssafy.api.request.ReviewCreatePostReq;
 import com.ssafy.api.request.ReviewUpdatePatchReq;
 import com.ssafy.api.response.ReviewGetRes;
 import com.ssafy.api.service.ReviewService;
+import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -31,10 +32,11 @@ public class ReviewController {
             @ApiResponse(code = 401, message = "인증 실패"),
             @ApiResponse(code = 500, message = "서버 오류")
     })
+    @RequiredAuth
     public ResponseEntity<Long> addReview(
+            Authentication authentication,
             @RequestBody ReviewCreatePostReq reviewCreatePostReq,
-            @PathVariable Long courseId,
-            Authentication authentication
+            @PathVariable Long courseId
     ) {
         Long memberId = Long.valueOf(authentication.getName());
         Long reviewId = reviewService.createReview(reviewCreatePostReq, courseId, memberId);
@@ -47,7 +49,6 @@ public class ReviewController {
             @ApiResponse(code = 404, message = "해당 리뷰 없음")
     )
     public ResponseEntity<ReviewGetRes> getReview(
-//            @PathVariable(value = "courseId") Long courseId,
             @PathVariable(value = "reviewId") Long reviewId
     ) {
         ReviewGetRes reviewGetRes = reviewService.getReview(reviewId);
@@ -69,10 +70,11 @@ public class ReviewController {
             @ApiResponse(code = 400, message = "잘못된 요청"),
             @ApiResponse(code = 404, message = "해당 리뷰 없음")
     })
+    @RequiredAuth
     public ResponseEntity<Void> updateReview(
+            Authentication authentication,
             @PathVariable Long reviewId,
-            @RequestBody ReviewUpdatePatchReq reviewUpdatePatchReq,
-            Authentication authentication
+            @RequestBody ReviewUpdatePatchReq reviewUpdatePatchReq
     ) {
         Long memberId = Long.valueOf(authentication.getName());
         reviewService.updateReview(reviewId, reviewUpdatePatchReq, memberId);
@@ -81,6 +83,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @ApiOperation(value = "리뷰 삭제", notes = "리뷰를 삭제합니다.")
+    @RequiredAuth
     public ResponseEntity<Void> deleteReview(
             @PathVariable Long reviewId,
             Authentication authentication

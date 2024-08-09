@@ -3,7 +3,7 @@ package com.ssafy.api.controller;
 import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.response.MemberModifyUpdateRes;
-import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.api.response.MemberRes;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
@@ -56,7 +56,7 @@ public class MemberController {
             @ApiResponse(code = 404, message = "회원 없음")
     })
     @RequiredAuth
-    public ResponseEntity<MemberReadGetRes> readMember(
+    public ResponseEntity<MemberRes> readMember(
             Authentication authentication,
             @RequestHeader("Authorization") String accessToken
     ) {
@@ -78,6 +78,9 @@ public class MemberController {
             @RequestBody MemberModifyUpdateReq memberModifyUpdateReq
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(memberService.modifyMember(memberId, memberModifyUpdateReq));
+        MemberModifyUpdateRes memberModifyUpdateRes = memberService.modifyMember(memberId, memberModifyUpdateReq);
+        return ResponseEntity.ok()
+                .header("Authorization", memberModifyUpdateRes.getAccessToken())
+                .body(memberModifyUpdateRes);
     }
 }
