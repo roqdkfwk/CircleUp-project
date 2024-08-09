@@ -14,14 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Announcement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    // 게시글 번호
-//    @Column(name = "number", nullable = false)
-//    private Long number;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -37,8 +32,6 @@ public class Announcement {
 
     @Column(length = 2000)
     private String content;
-//    content와 description 중 뭐가 더 나음?
-//    private String description;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
