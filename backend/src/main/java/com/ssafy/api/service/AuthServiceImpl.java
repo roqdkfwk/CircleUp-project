@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
         member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 
-        return MemberLoginPostRes.toEntity(member, accessToken, refreshToken);
+        return MemberLoginPostRes.fromEntity(member, accessToken, refreshToken);
     }
 
     @Override

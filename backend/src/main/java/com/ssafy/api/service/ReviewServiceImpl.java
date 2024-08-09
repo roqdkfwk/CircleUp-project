@@ -14,6 +14,7 @@ import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.db.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -35,11 +37,9 @@ public class ReviewServiceImpl implements ReviewService {
         Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 강의입니다.")
         );
-
         if (courseRepository.checkRegisterStatus(memberId, courseId) != 1) {
             throw new UnAuthorizedException("수강하지 않은 강의에 대해서는 리뷰를 작성할 수 없습니다.");
         }
-
         if (reviewRepository.findByMemberIdAndCourseId(memberId, courseId).isPresent()) {
             throw new ConflictException("이미 작성한 리뷰가 존재합니다.");
         }
@@ -52,6 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReviewGetRes getReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
@@ -60,6 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewGetRes> getReviewsByCourse(Long courseId) {
         List<Review> reviews = reviewRepository.findByCourseId(courseId);
         return reviews.stream()
