@@ -1,11 +1,17 @@
+import CommentList from "../../List/CommentList";
 
-const CourseCommentContent = () => {    
+interface CourseCommentContentProps {
+    isModify: string,
+    courseId: number,
+}
+
+const CourseCommentContent = ({isModify, courseId} : CourseCommentContentProps) => {    
     /*
         강의 하위 Comment 출력하는 Content
     */
     return (
         <div>
-            
+            <CommentList courseId={courseId} />
         </div>
     )
 }

@@ -9,6 +9,7 @@ import { useNavigate } from "react-router";
 import { BuyInfo } from './../../types/BuyInfo';
 import video_camera from './../../assets/svgs/videoCamera.svg';
 import { toast, Bounce  } from "react-toastify";
+import CourseCommentContent from "./Content/CourseCommentContent";
 
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo,
@@ -173,6 +174,10 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
 
             {activeTab === '커리큘럼' &&
                 <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} onCurriculums={() => { }} />
+            }
+
+            {activeTab === '코멘트' &&
+                <CourseCommentContent isModify={'userDetail'} courseId={data.id} />
             }
         </div>
     )
