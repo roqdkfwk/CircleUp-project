@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,7 +17,6 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 public class Member {
-
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,23 +43,15 @@ public class Member {
     @Column(name = "contact_tel", length = 45)
     private String contactTel;
 
+    ////////////////////////////////////////////////////////////////////////////////
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favor> favors = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Register> registers = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Announcement> announcements = new ArrayList<>();
+    ////////////////////////////////////////////////////////////////////////////////
+
     protected Member() {
-    }
-
-    public static Member modifiedMember(
-            MemberModifyUpdateReq memberModifyUpdateReq,
-            Long memberId,
-            String email
-    ) {
-
-        return Member.builder()
-                .id(memberId)
-                .email(email)
-                .pw(memberModifyUpdateReq.getPw())
-                .name(memberModifyUpdateReq.getName())
-                .role(memberModifyUpdateReq.getRole())
-                .contactEmail(memberModifyUpdateReq.getContactEmail())
-                .contactTel(memberModifyUpdateReq.getContactTel())
-                .build();
     }
 }

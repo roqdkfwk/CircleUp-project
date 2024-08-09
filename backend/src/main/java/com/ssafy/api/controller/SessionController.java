@@ -96,18 +96,24 @@ public class SessionController {
             @PathVariable(name = "course_id") String course_id,
             @RequestParam(name = "curriculum_id") Long curriculumId,
             Authentication authentication
-    ) throws OpenViduJavaClientException, OpenViduHttpException {
+    ) {
         Long courseId = Long.valueOf(course_id);
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
             openvidu.stopRecording(course_id);
+            openvidu.getActiveSession(course_id).close();
+        } catch (Exception e) {
+
+        } finally {
             if (!saveVideo(courseId, curriculumId)) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            openvidu.getActiveSession(course_id).close();
-            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -169,7 +175,6 @@ public class SessionController {
     public ResponseEntity<ArrayList<String>> recordingList(
             @PathVariable("course_id") String courseId
     ) throws OpenViduJavaClientException, OpenViduHttpException {
-        openvidu.stopRecording(courseId);
         openvidu.getActiveSession(courseId).close();
         return new ResponseEntity<>(HttpStatus.OK);
     }

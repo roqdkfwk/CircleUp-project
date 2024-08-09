@@ -114,7 +114,11 @@ public class CourseSerivce {
     public List<CoursesRes> getCoursesByView(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return courseRepository.findAllByStatusOrderByViewDesc(Status.Approved, pageable).stream().map(CoursesRes::of).collect(Collectors.toList());
+        return courseRepository
+                .findAllByStatusOrderByViewDesc(Status.Approved, pageable)
+                .stream()
+                .map(CoursesRes::of)
+                .collect(Collectors.toList());
     }
 
     public List<CoursesRes> getFreeCourses(int page, int size) {
@@ -129,6 +133,7 @@ public class CourseSerivce {
     public List<CoursesRes> getLatestCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
+
         return courseRepository.findAllByStatus(Status.Approved, pageable)
                 .stream()
                 .map(CoursesRes::of)

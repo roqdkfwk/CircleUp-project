@@ -1,12 +1,10 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,7 +19,6 @@ public class SearchRes {
     Long price;
     Long view;
     Long registeredCnt;
-    Status status;
     List<String> tags;
 
     public static SearchRes of(Course course, Long registeredCnt, List<String> tags) {
@@ -32,7 +29,6 @@ public class SearchRes {
                 course.getPrice(),
                 course.getView(),
                 registeredCnt == null ? 0 : registeredCnt,
-                course.getStatus(),
                 tags
         );
     }

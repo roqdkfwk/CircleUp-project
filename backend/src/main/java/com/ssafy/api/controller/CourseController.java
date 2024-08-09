@@ -1,8 +1,8 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
+import com.ssafy.api.service.CourseDetailService;
 import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.api.service.SearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -22,7 +22,7 @@ import java.util.List;
 public class CourseController {
 
     private final CourseSerivce courseService;
-    private final SearchService searchService;
+    private final CourseDetailService searchService;
 
     @GetMapping("/tag")
     @ApiOperation(value = "태그 목록 조회")

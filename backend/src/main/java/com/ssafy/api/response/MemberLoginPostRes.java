@@ -18,7 +18,7 @@ public class MemberLoginPostRes {
     String email;
     Role role;
 
-    public static MemberLoginPostRes toEntity(Member member, String accessToken, String refreshToken) {
+    public static MemberLoginPostRes fromEntity(Member member, String accessToken, String refreshToken) {
         return MemberLoginPostRes.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

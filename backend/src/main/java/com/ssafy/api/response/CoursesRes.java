@@ -1,7 +1,6 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +15,6 @@ public class CoursesRes {
     Long view;
     int ratingNum;
     String ratingStr;
-    Status status;
 
     public static CoursesRes of(Course course) {
         return new CoursesRes(course.getId(),
@@ -26,7 +24,6 @@ public class CoursesRes {
                 course.getPrice(),
                 course.getView(),
                 (int) Math.round(course.getRating()),
-                String.format("%.1f", course.getRating()),
-                course.getStatus());
+                String.format("%.1f", course.getRating()));
     }
 }
