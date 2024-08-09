@@ -38,7 +38,7 @@ const CourseDetail = () => {
     return (
         <div className="flex flex-row w-[1300px] mx-auto">
             <CourseDetailLeftBoard data={courseDetailInfoData} isLive={isLive} />
-            <CourseDetailRightBoard />
+            <CourseDetailRightBoard courseId={numericCourseId}  />
         </div>
     );
 };

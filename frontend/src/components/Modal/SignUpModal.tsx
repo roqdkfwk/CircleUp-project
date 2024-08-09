@@ -1,73 +1,88 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useUserStore } from "../../store/store";
 import TagList from "../List/TagList";
 import { Member } from "../../types/Member";
 import MakeTagModal from "./MakeTagModal";
-import { updateMember } from "../../services/api";
+import { postSignUp } from "../../services/api";
 import { useNavigate } from "react-router";
 import { tagMapping } from "../../services/tagMapping";
 
-interface MemberModfiyModalProps {
+interface SignUpModalProps {
     show: boolean,
     onClose: () => void,
 }
 
-const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
+interface NewMember extends Member {
+    email: string,
+    role: string,
+}
+
+const roles: string[] = ['User', 'Instructor', 'Admin'];
+
+const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
 
     const navigate = useNavigate();
-    const { role, email, setNickName } = useUserStore();
     const [checkPwd, setCheckPwd] = useState<string>('');
-    const [userInfo, setUserInfo] = useState<Member>({
-            pw: '',
-            name: '',
-            role: role,
-            contactEmail: '',
-            contactTel: '',
-            tags: [],
-        
+    const [userInfo, setUserInfo] = useState<NewMember>({
+        pw: '',
+        name: '',
+        role: '',
+        email: '',
+
+        contactEmail: '',
+        contactTel: '',
+        tags: [],
+
     })
     const [showModal, setShowModal] = useState<boolean>(false);
 
-    const handleNickNameChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({...userInfo, name : e.target.value})
-    const handlePwdChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({...userInfo, pw : e.target.value})
-    const handleCheckPwdChange = (e: ChangeEvent<HTMLInputElement>) => setCheckPwd(e.target.value);
-    const handleInputContactEmailChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({...userInfo, contactEmail : e.target.value})
-    const handleInputContactTelChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({...userInfo, contactTel : e.target.value})
-    const handleInputTags = (Tags : string[]) => setUserInfo({...userInfo, tags : Tags})
+    const handleNickNameChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, name: e.target.value })
+    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, email: e.target.value })
+    const handleRoleChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, role: e.target.value })
 
-    const handleSubmit = async (event: FormEvent) => { 
+    const handlePwdChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, pw: e.target.value })
+    const handleCheckPwdChange = (e: ChangeEvent<HTMLInputElement>) => setCheckPwd(e.target.value);
+
+    const handleInputContactEmailChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, contactEmail: e.target.value })
+    const handleInputContactTelChange = (e: ChangeEvent<HTMLInputElement>) => setUserInfo({ ...userInfo, contactTel: e.target.value })
+    const handleInputTags = (Tags: string[]) => setUserInfo({ ...userInfo, tags: Tags })
+
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         try {
             if (checkPwd === userInfo.pw) {
-                console.log(userInfo)
+                if (roles.includes(userInfo.role)) {
+                   
+                    const JsonData: Record<string, unknown>  = {
+                        pw: userInfo.pw,
+                        name: userInfo.name,
+                        role: userInfo.role,
+                        email: userInfo.email,
+                        contactEmail: userInfo.contactEmail,
+                        contactTel: userInfo.contactTel,
+                        tags: tagMapping(userInfo.tags),
+                    };
+    
+                    const response = await postSignUp(JsonData);
 
-                const JsonData: Record<string, unknown>  = {
-                    pw: userInfo.pw,
-                    name: userInfo.name,
-                    role: userInfo.role,
-                    contactEmail: userInfo.contactEmail,
-                    contactTel: userInfo.contactTel,
-                    tags: tagMapping(userInfo.tags),
-                };
-                const response = await updateMember(email, JsonData);
+                    console.log(response.data);
 
-                console.log(response.data);
-                setNickName(response.data.member.name);
+                    alert('회원 가입 성공! 다시 로그인 해 주세요.')
 
-                alert('회원 수정 성공!')
-
-                onClose()
-                navigate("/")
+                    onClose()
+                    navigate("/")
+                }
+                else
+                    alert(`Role은 'User', 'Instructor' 둘 중 하나만 가능합니다.`)
             }
             else
                 alert('비밀번호가 같지 않습니다.')
 
         } catch (error) {
-            alert('회원 수정에 실패하셨습니다.')
+            alert('회원 생성에 실패하셨습니다.')
         }
     }
-
+    
     const toggleTagModal = () => {
         setShowModal(!showModal);
     }
@@ -79,7 +94,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
             < MakeTagModal tags={userInfo.tags} updateFunc={handleInputTags} show={showModal} onClose={toggleTagModal} />
-            <div id="default-modal" className="relative p-4 w-full max-w-md max-h-full">
+            <div id="default-modal" className="relative p-4 w-full max-w-md max-h-full overflow-y-auto">
                 <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
 
                     <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
@@ -136,7 +151,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                                     -31.679688 2.171875 -32.847656 2.171875 -34.203125 C 2.171875 -35.554688 2.65625 -36.71875 3.625
                                     -37.6875 Z M 2.828125 -24.203125 L 2.828125 0 L 11.1875 0 L 11.1875 -24.203125 Z M 2.828125 -24.203125 " />
                                     </g></g></g><g fill="#5271ff" fill-opacity="1"><g transform="translate(56.44931, 60.582478)"><g>
-                                    <path d="M 2.828125 0 L 2.828125 -24.203125 L 11.1875 -24.203125 L 11.1875 -20.703125 L 11.28125 
+                                        <path d="M 2.828125 0 L 2.828125 -24.203125 L 11.1875 -24.203125 L 11.1875 -20.703125 L 11.28125 
                                         -20.703125 C 11.34375 -20.828125 11.441406 -20.984375 11.578125 -21.171875 C 11.722656 -21.367188 12.03125
                                         -21.703125 12.5 -22.171875 C 12.96875 -22.640625 13.46875 -23.0625 14 -23.4375 C 14.539062 -23.820312
                                         15.234375 -24.160156 16.078125 -24.453125 C 16.929688 -24.753906 17.800781 -24.90625 18.6875 -24.90625
@@ -159,7 +174,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                                 -18.0625 " /></g></g></g><g fill="#5271ff" fill-opacity="1"><g transform="translate(95.737415, 60.582478)">
                                     <g><path d="M 2.828125 0 L 2.828125 -40.5625 L 11.1875 -40.5625 L 11.1875 0 Z M 2.828125 0 " />
                                     </g></g></g><g fill="#5271ff" fill-opacity="1"><g transform="translate(106.066455, 60.582478)"><g>
-                                    <path d="M 27.3125 -10.9375 L 9.765625 -10.9375 C 9.765625 -9.238281 10.3125 -7.976562 11.40625 -7.15625 
+                                        <path d="M 27.3125 -10.9375 L 9.765625 -10.9375 C 9.765625 -9.238281 10.3125 -7.976562 11.40625 -7.15625 
                                     C 12.507812 -6.34375 13.707031 -5.9375 15 -5.9375 C 16.351562 -5.9375 17.421875 -6.117188 18.203125
                                     -6.484375 C 18.992188 -6.847656 19.890625 -7.5625 20.890625 -8.625 L 26.9375 -5.609375 C 24.414062
                                     -1.398438 20.234375 0.703125 14.390625 0.703125 C 10.742188 0.703125 7.613281 -0.546875 5 -3.046875
@@ -211,6 +226,38 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                                     focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
                                     dark:placeholder-gray-400 dark:text-white"
                                     placeholder="nickname"
+                                    required />
+                            </div>
+                            <div>
+                                <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                    역할
+                                </label>
+                                <input
+                                    type="text"
+                                    name="role"
+                                    id="role"
+                                    value={userInfo.role}
+                                    onChange={handleRoleChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                                    focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
+                                    dark:placeholder-gray-400 dark:text-white"
+                                    placeholder="학생이면 User, 강사면 Instructor를 입력 해 주세요."
+                                    required />
+                            </div>
+                            <div>
+                                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                    이메일
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value={userInfo.email}
+                                    onChange={handleEmailChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                                    focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
+                                    dark:placeholder-gray-400 dark:text-white"
+                                    placeholder="name@company.com"
                                     required />
                             </div>
                             <div>
@@ -273,7 +320,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                                     focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
                                     dark:placeholder-gray-400 dark:text-white"
                                     placeholder="01-2345-6789"
-                                    required />    
+                                    required />
                             </div>
                             <div>
                                 <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -298,7 +345,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                                 onClick={handleSubmit}
                                 className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                             >
-                                변경하기
+                                회원가입
                             </button>
                         </form>
                     </div>
@@ -309,4 +356,4 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
         </div>);
 }
 
-export default MemberModfiyModal;
+export default SignUpModal;

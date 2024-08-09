@@ -1,6 +1,16 @@
-import { FaDownload } from "react-icons/fa";
+import CourseVideo from "../Card/CourseVideo";
 
-const CourseDetailRightBoard = () => {
+interface CourseDetailRightBoardProps {
+    courseId : number,
+}
+
+const CourseDetailRightBoard = ({ courseId }: CourseDetailRightBoardProps) => {
+
+    // <todo> - Fetch, 이전 강의 동영상 Lists 얻어오기
+    // curriculum get api 통해서 얻으면 됨!
+
+    // 만약 courseId가 내가 수강 중인 강의가 아니면 no render!
+
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-[33%] mt-5 h-full">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -27,48 +37,9 @@ const CourseDetailRightBoard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            1주차
-                        </th>
-                        <td className="px-8 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-9 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            2주차
-                        </th>
-                        <td className="px-8 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-9 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr className="bg-white dark:bg-gray-800">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            3주차
-                        </th>
-                        <td className="px-8 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-9 py-4">
-                            <FaDownload />
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                            <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
+                    <CourseVideo videoUrl="" count={0} />
+                    <CourseVideo videoUrl="" count={1} />
+                    <CourseVideo videoUrl="" count={2} />
                 </tbody>
             </table>
         </div>

@@ -172,8 +172,12 @@ export const postLogin = (data: Login) => {
 export const postLogout = () => {
     return axiosClient.get('auth/logout');
 }
+// 회원 가입 요청
+export const postSignUp = (newMember: Record<string, unknown>) => {
+    return axiosClient.post(`/member/signup`, newMember);
+}
 // 회원 변경 요청
-export const updateMember = (id: string, member: FormData) => {
+export const updateMember = (id: string, member: Record<string, unknown>) => {
     return axiosClient.patch(`/member/modify`, member, {
         headers: {
             'Requires-Auth': true,
