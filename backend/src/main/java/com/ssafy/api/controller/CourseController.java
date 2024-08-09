@@ -3,7 +3,6 @@ package com.ssafy.api.controller;
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseDetailService;
 import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.api.service.RegisterSynchService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +25,6 @@ public class CourseController {
 
     private final CourseSerivce courseService;
     private final CourseDetailService courseDetailService;
-    private final RegisterSynchService registerSynchService;
 
     @GetMapping("/tag")
     @ApiOperation(value = "태그 목록 조회")
@@ -119,9 +117,9 @@ public class CourseController {
         Long memberId = Long.valueOf(authentication.getName());
         Long courseId = courseDetailService.getCourseIdOfCurr(curriculumId); // error 가능
 
-        if(registerSynchService.isRegistered(courseId, memberId)){
-            return ResponseEntity.ok().body(courseDetailService.getCurriculumUrls(curriculumId));
-        }
+        if(courseService.existRegister(memberId, courseId)){
+        return ResponseEntity.ok().body(courseDetailService.getCurriculumUrls(curriculumId));
+    }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
