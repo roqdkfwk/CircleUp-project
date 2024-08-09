@@ -176,10 +176,6 @@ class VideoRoomComponent extends Component {
       try {
         console.log(this.props.isHost + " : " + this.state.mySessionId)
         var token = await this.getToken(this.props.isHost, this.state.mySessionId);
-        console.log("Make a Token!!")
-        console.log(token);
-        console.log("haha, get a storeData")
-        console.log(this.state.nickName + " : " + this.state.role)
         this.connect(token);
       } catch (error) {
         console.error("There was an error getting the token:", error.code, error.message);
@@ -328,11 +324,15 @@ class VideoRoomComponent extends Component {
     const mySession = this.state.session;
 
     if (this.state.role === 'Instructor') {
-      this.fetchLeaveLiveSession(this.props.course_id);
+      console.log(this.props)
+      console.log(this.state)
+      this.fetchLeaveLiveSession(Number(this.props.course_id), this.props.curriculum_id);
+      console.log("endend by" + this.state.myUserName)
     }
 
     if (mySession) {
       mySession.disconnect();
+      console.log("#########disconnect############")
     }
 
     this.OV = null;
@@ -348,7 +348,7 @@ class VideoRoomComponent extends Component {
     }
 
     // redirect 사용하여, 메인 페이지로 이동하기
-    window.location.href = `/courseDetail/${this.props.course_id}`;
+    //window.location.href = `/courseDetail/${this.props.course_id}`;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -692,8 +692,8 @@ class VideoRoomComponent extends Component {
     return response.data;
   }
 
-  async fetchLeaveLiveSession(sessionId) {
-    const response = await leaveLiveSession(sessionId);
+  async fetchLeaveLiveSession(sessionId, curriculum_id) {
+    const response = await leaveLiveSession(sessionId, curriculum_id);
     return response.data;
   }
 }

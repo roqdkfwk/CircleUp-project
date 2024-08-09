@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getLiveCourses, getSpecialCourse } from '../services/api';
+import { getSpecialCourse } from '../services/api';
 import HotCourseList from "../components/List/HotCourseList";
 import CourseList from "../components/List/CourseList";
 import { CourseInfo } from './../types/CourseInfo';
-import { useLiveStore } from "../store/store";
+// import { useLiveStore } from "../store/store";
 
 const Main = () => {
 
-    const { setLiveCourseIds } = useLiveStore();
+    // const { setLiveCourseIds } = useLiveStore();
 
     const [hotCourses, setHotCourses] = useState<CourseInfo[]>([])
     const [freeCourses, setFreeCourses] = useState<CourseInfo[]>([])
@@ -23,10 +23,11 @@ const Main = () => {
         return await getSpecialCourse(data)
     }
 
-    const fetchLiveCourse = async () => {
-        const response = await getLiveCourses();
-        setLiveCourseIds(response.data.map((str: string) => Number(str)));
-    }
+    // const fetchLiveCourse = async () => {
+    //     const response = await getLiveCourses();
+    //     console.log(response.data)
+    //     setLiveCourseIds(response.data.map((str: string) => Number(str)));
+    // }
 
     useEffect(() => {
         const fetchHotCourses = async() => {
@@ -49,7 +50,7 @@ const Main = () => {
         fetchFreeCourses()
         fetchRecCourses()
         fetchNewCourses()
-        fetchLiveCourse()
+        // fetchLiveCourse()
     },[])
 
     return (

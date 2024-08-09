@@ -1,22 +1,14 @@
 import { useEffect, useState } from "react";
-import { getLiveCourses, getMyCourse } from "../../services/api";
+import { getMyCourse } from "../../services/api";
 import { CourseInfo } from "../../types/CourseInfo";
 import CourseGallery from './../../components/List/CourseGallery';
-import { useLiveStore } from "../../store/store";
-
 
 const CourseManagement = () => {
 
-    const { setLiveCourseIds } = useLiveStore();
     const [myCourses, setMyCourse] = useState<CourseInfo[]>([]);
 
     const fetchMyCourseData = async() => {
         return await getMyCourse();
-    }
-
-    const fetchLiveCourse = async () => {
-        const response = await getLiveCourses();
-        setLiveCourseIds(response.data.map((str: string) => Number(str)));
     }
 
     const myCourseNavBar = [ '진행중인 강의' ]
@@ -34,7 +26,6 @@ const CourseManagement = () => {
         }
 
         fetchMyCourses();
-        fetchLiveCourse();
     }, []);
 
     // if (myCourses.length === 0)
