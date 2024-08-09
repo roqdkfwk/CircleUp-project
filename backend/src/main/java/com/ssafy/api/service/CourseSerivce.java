@@ -200,16 +200,4 @@ public class CourseSerivce {
         curriculumRepository.save(curriculum);
         return true;
     }
-
-
-    public CurriculumUrlRes getCurriculumUrls(Long curriculumId) {
-        Curriculum curriculum = curriculumRepository.findById(curriculumId)
-                .orElseThrow(() -> new NotFoundException("Curriculum not found with ID: " + curriculumId));
-
-        CurriculumUrlRes curriculumUrlRes = CurriculumUrlRes.fromEntity(curriculum);
-        curriculumUrlRes.setDocUrl(curriculum.getDocUrl());
-        curriculumUrlRes.setRecUrl(curriculum.getRecUrl());
-
-        return curriculumUrlRes;
-    }
 }
