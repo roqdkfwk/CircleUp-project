@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.CurriculumUrlRes;
 import com.ssafy.api.response.SearchRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
@@ -193,5 +194,17 @@ public class CourseSerivce {
         curriculum.setRecUrl(GCSUtil.preUrl + fileName);
         curriculumRepository.save(curriculum);
         return true;
+    }
+
+
+    public CurriculumUrlRes getCurriculumUrls(Long curriculumId) {
+        Curriculum curriculum = curriculumRepository.findById(curriculumId)
+                .orElseThrow(() -> new NotFoundException("Curriculum not found with ID: " + curriculumId));
+
+        CurriculumUrlRes curriculumUrlRes = CurriculumUrlRes.fromEntity(curriculum);
+        curriculumUrlRes.setDocUrl(curriculum.getDocUrl());
+        curriculumUrlRes.setRecUrl(curriculum.getRecUrl());
+
+        return curriculumUrlRes;
     }
 }

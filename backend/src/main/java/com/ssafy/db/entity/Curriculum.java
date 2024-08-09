@@ -40,6 +40,9 @@ public class Curriculum {
     @Column(name = "rec_url", length = 1000)
     private String recUrl;
 
+    @Column(name = "doc_url", length = 1000)
+    private String docUrl;
+
     protected Curriculum() {
     }
 

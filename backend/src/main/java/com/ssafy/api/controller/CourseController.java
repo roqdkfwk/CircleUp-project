@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.kurento.client.internal.server.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,5 +99,13 @@ public class CourseController {
             @RequestParam(required = false, value = "id") List<Long> ids
     ) {
         return ResponseEntity.ok().body(searchService.getCurriculumById(ids));
+    }
+
+    @GetMapping("curriculums/{curriculum_id}/dataUrls")
+    @ApiOperation(value = "주차별 학습용 문서 url, 녹화 영상 url 반환")
+    public ResponseEntity<CurriculumUrlRes> getCurrUrls(
+            @PathVariable(name = "curriculum_id") Long curriculumId
+    ){
+        return ResponseEntity.ok().body(courseService.getCurriculumUrls(curriculumId));
     }
 }
