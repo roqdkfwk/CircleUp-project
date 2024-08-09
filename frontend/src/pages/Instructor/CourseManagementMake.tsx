@@ -1,4 +1,3 @@
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState } from "react";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
@@ -66,7 +65,6 @@ const CourseManagementMake = () => {
         <div>
             <div className="flex flex-row">
                 <CourseManagementBoard flag={"instructorMake"} data={newCourse} onNewMyCourse={updateNewCourse} />
-                <RightSideBar />
             </div>
             <div className="flex flex-row">
                 <div className="basis-3/4 flex justify-end mr-2">

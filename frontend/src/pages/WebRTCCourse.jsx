@@ -329,6 +329,8 @@ class VideoRoomComponent extends Component {
       this.fetchLeaveLiveSession(Number(this.props.course_id), this.props.curriculum_id);
       console.log("endend by" + this.state.myUserName)
     }
+    else
+      alert("강의를 종료합니다.");
 
     if (mySession) {
       mySession.disconnect();
@@ -348,7 +350,7 @@ class VideoRoomComponent extends Component {
     }
 
     // redirect 사용하여, 메인 페이지로 이동하기
-    //window.location.href = `/courseDetail/${this.props.course_id}`;
+    window.location.href = `/courseDetail/${this.props.course_id}`;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 

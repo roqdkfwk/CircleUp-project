@@ -23,7 +23,7 @@ const CurriculumManagementModify = () => {
 
         });
     const [backgroundImage, setBackgroundImage] = useState<string>("");
-    const [newFile, setNewFile] = useState<FileList | null>(null);
+    // const [newFile, setNewFile] = useState<FileList | null>(null);
 
     const fetchDelete = async () => {
         return await deleteCurriculum(Number(courseId), Number(curriculumId));
@@ -48,8 +48,8 @@ const CurriculumManagementModify = () => {
         try {
             const formData = new FormData();
 
-            for (let i = 0; i < newFile!.length; i++)
-                formData.append("img", newFile![i])
+            // for (let i = 0; i < newFile!.length; i++)
+            //     formData.append("img", newFile![i])
 
             formData.append('description', modifiedCurriculum.description);
             formData.append('name', modifiedCurriculum.curriculumName);
@@ -69,17 +69,17 @@ const CurriculumManagementModify = () => {
         hiddenFileInput.current?.click();
     }
 
-    const handleAddImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const Files = e.target?.files;
-        const fileUploaded = Files?.[0];
-        /*<ToDo> - Error 처리를 따로 해 주기 => checkImg(fileUploaded)*/
+    // const handleAddImg = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const Files = e.target?.files;
+    //     const fileUploaded = Files?.[0];
+    //     /*<ToDo> - Error 처리를 따로 해 주기 => checkImg(fileUploaded)*/
 
-        if (fileUploaded) {
-            const imageUrl = URL.createObjectURL(fileUploaded);
-            setBackgroundImage(imageUrl);
-            setNewFile(Files);
-        }
-    }
+    //     if (fileUploaded) {
+    //         const imageUrl = URL.createObjectURL(fileUploaded);
+    //         setBackgroundImage(imageUrl);
+    //         // setNewFile(Files);
+    //     }
+    // }
 
     const handleCurriculumName =
         (e: ChangeEvent<HTMLInputElement>) => setModifiedCurriculum({ ...modifiedCurriculum, curriculumName: e.target.value });
@@ -96,7 +96,7 @@ const CurriculumManagementModify = () => {
             <div className="relative">
                 <form >
                     <input
-                        type="file" onChange={handleAddImg}
+                        type="file" onChange={() => {}}
                         ref={hiddenFileInput}
                         style={{ display: 'none' }} />
                     <button

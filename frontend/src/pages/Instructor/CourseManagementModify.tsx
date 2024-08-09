@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useLocation } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
@@ -93,7 +91,6 @@ const CourseManagementModify = () => {
         <div>
             <div className="flex flex-row">
                 <CourseStatusBoard flag={"instructorModify"} data={modifiedCourses} onNewMyCourse={updateModifiedCourse} />
-                <RightSideBar />
             </div>
             <div className="flex flex-row">
                 <div className="basis-3/4 flex justify-end mr-2">

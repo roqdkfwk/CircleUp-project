@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import CourseGallery from "../../components/List/CourseGallery";
 import { CourseInfo } from "../../types/CourseInfo";
-import { getLiveCourses, getUserCourse } from "../../services/api";
-import { useLiveStore } from "../../store/store";
+import { getUserCourse } from "../../services/api";
+//import { useLiveStore } from "../../store/store";
 
 const MyCourse = () => {
 
-    const { setLiveCourseIds } = useLiveStore();
+    //const { setLiveCourseIds } = useLiveStore();
     const [myCourses, setMyCourses] = useState<CourseInfo[]>([]);
     
     const myCourseNavBar = [ '수강중인 강의' ]
@@ -23,14 +23,14 @@ const MyCourse = () => {
         setMyCourses(response.data)
     }
 
-    const fetchLiveCourse = async () => {
-        const response = await getLiveCourses();
-        setLiveCourseIds(response.data.map((str: string) => Number(str)));
-    }
+    // const fetchLiveCourse = async () => {
+    //     const response = await getLiveCourses();
+    //     setLiveCourseIds(response.data.map((str: string) => Number(str)));
+    // }
 
     useEffect(() => {
         handleGetMyCourse();
-        fetchLiveCourse();
+        // fetchLiveCourse();
     }, [])
 
     return (

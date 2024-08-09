@@ -59,7 +59,7 @@ const CourseManagementDetail = () => {
     <div>
       <div className="flex flex-row">
         <CourseManagementBoard flag={"instructorDetail"} data={courseDetails} />
-        <RightSideBar />
+        <RightSideBar courseId={numericCourseId} />
       </div>
       <div className="flex flex-row">
         <div className="flex basis-2/3 justify-end ml-10">

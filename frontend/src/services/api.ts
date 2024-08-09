@@ -29,13 +29,11 @@ export interface NewCourse {
 
 }
 
-///////////////////////////////////////////////////////////////////////
+/* Course API */
 // 1. 메인페이지 강의 리스트 렌더링 위한 조회 -> course?size={}&type={}
 export const getSpecialCourse = (params: Course) => {
     return axiosClient.get(`/courses?size=${params.size}&type=${params.type}`);
 };
-
-
 // 강의 검색 조회
 export const getCourseBySearch = (params: SearchCourse) => {
     console.log(params.keyword)
@@ -48,7 +46,6 @@ export const getCourseBySearch = (params: SearchCourse) => {
     }
     return axiosClient.get(query);
 };
-
 // 태그 조회
 export const getAllTages = () => {
     return axiosClient.get(`/tag`);
@@ -125,6 +122,7 @@ export const checkUserCourse = (course_id: number) => {
     })
 }
 
+/* Curriculum API */
 // 커리큘럼 조회
 export const getCurriculums = (data: number[]) => {
     let query = `/curriculums?`;
@@ -164,6 +162,29 @@ export const deleteCurriculum = (course_id : number, curriculum_id : number) => 
     })
 }
 
+/* Comment API */
+// GET CommentList
+export const getCommentList = (courseId : number) => {
+    return axiosClient.get(`courses/${courseId}/reviews`);
+}
+// GET Comment
+export const getComment = (courseId: number, reviewId: number) => {
+    return axiosClient.get(`courses/${courseId}/reviews/${reviewId}`);
+}
+// CREATE Comment
+export const postComment = (courseId: number, content : Record<string, unknown>) => {
+    return axiosClient.post(`courses/${courseId}/reviews`, content,);
+}
+// UPDATE Comment
+export const patchComment = (courseId: number, reviewId: number, content: Record<string, unknown>) => {
+    return axiosClient.patch(`courses/${courseId}/reviews/${reviewId}`, content,);
+}
+// DELETE Comment
+export const deleteComment = (courseId: number, reviewId: number) => {
+    return axiosClient.delete(`courses/${courseId}/reviews/${reviewId}`,)
+}
+
+/* Member API */
 // 로그인 요청
 export const postLogin = (data: Login) => {
     return axiosClient.post('auth/login', data);
@@ -202,7 +223,7 @@ export const deleteCourseByUser = (courseId: number) => {
     return axiosClient.delete(`courses/registers/${courseId}`)
 }
 
-// WebRTC 관련 axios
+/* Session, Live Course API */
 // Session 생성
 export const createSession = (courseId: number, memberId : string) => {
     return axiosClient.post(`/sessions/${courseId}`, null, {
