@@ -88,9 +88,9 @@ public class InstructionService {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
-            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
-                throw new BadRequestException("Status is "+course.getStatus());
-            }
+//            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+//                throw new BadRequestException("Status is "+course.getStatus());
+//            }
 
             MultipartFile img = courseModifyUpdateReq.getImg();
             if (img != null) {
@@ -117,11 +117,14 @@ public class InstructionService {
                 ()-> new NotFoundException("Course is not found")
         );
 
-        if(course.getStatus().equals(Status.Pending) || course.getStatus().equals(Status.Completed)){
-            throw new BadRequestException("Status is "+ course.getStatus());
-        }
-
-        if (course.getStatus().equals(Status.Approved) && registerRepository.countByCourseId(courseId) > 0) {
+//        if(course.getStatus().equals(Status.Pending) || course.getStatus().equals(Status.Completed)){
+//            throw new BadRequestException("Status is "+ course.getStatus());
+//        }
+//
+//        if (course.getStatus().equals(Status.Approved) && registerRepository.countByCourseId(courseId) > 0) {
+//            throw new BadRequestException("Registrant exists");
+//        }
+        if (registerRepository.countByCourseId(courseId) > 0) {
             throw new BadRequestException("Registrant exists");
         }
 
@@ -188,9 +191,9 @@ public class InstructionService {
                     ()-> new NotFoundException("Course is not found")
             );
 
-            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
-                throw new BadRequestException("Status is "+course.getStatus());
-            }
+//            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+//                throw new BadRequestException("Status is "+course.getStatus());
+//            }
 
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
@@ -218,9 +221,9 @@ public class InstructionService {
                     ()-> new NotFoundException("Course is not found")
             );
 
-            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
-                throw new BadRequestException("Status is "+course.getStatus());
-            }
+//            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+//                throw new BadRequestException("Status is "+course.getStatus());
+//            }
 
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
@@ -251,9 +254,9 @@ public class InstructionService {
                 ()-> new NotFoundException("Course is not found")
         );
 
-        if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
-            throw new BadRequestException("Status is "+course.getStatus());
-        }
+//        if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
+//            throw new BadRequestException("Status is "+course.getStatus());
+//        }
 
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");

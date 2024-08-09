@@ -38,7 +38,8 @@ public class CourseCreatePostReq {
                 .totalCourse(0L)
                 .completedCourse(0L)
                 .rating(0.0)
-                .status(Status.Draft)
+//                .status(Status.Draft)
+                .status(Status.Approved)
                 .build();
     }
 
