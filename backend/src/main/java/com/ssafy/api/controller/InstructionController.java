@@ -76,7 +76,10 @@ public class InstructionController {
         return ResponseEntity.ok().body(instructionService.dequeueCourse(memberId, courseId));
     }
 
-    @PostMapping(value = "/courses/instructions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/courses/instructions",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ApiOperation(value = "새로운 강의 만들기")
     public ResponseEntity<Long> createCourse(
             @ModelAttribute CourseCreatePostReq courseCreatePostReq,
@@ -117,7 +120,10 @@ public class InstructionController {
 
     ////////////////////////////////////////////
     @PostMapping(value = "/courses/{course_id}/curriculum")
-    @ApiOperation(value = "새로운 커리큘럼 만들기")
+    @ApiOperation(value = "새로운 커리큘럼 만들기",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Long> createCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @ModelAttribute CurriculumPostReq curriculumPostReq,
@@ -129,7 +135,10 @@ public class InstructionController {
     }
 
     @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}")
-    @ApiOperation(value = "기존 커리큘럼 수정")
+    @ApiOperation(value = "기존 커리큘럼 수정",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Long> updateCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @PathVariable(name = "curriculum_id") Long curriculumId,
