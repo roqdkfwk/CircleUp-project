@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SearchService {
+public class CourseDetailService {
 
     private final InstructorRepository instructorRepository;
     private final TagRepository tagRepository;
@@ -29,7 +29,7 @@ public class SearchService {
     }
 
     public List<TagRes> getTagList() {
-        return tagRepository.findAll().stream().map(tag -> new TagRes(tag.getId(), tag.getName())).collect(Collectors.toList());
+        return tagRepository.getTags();
     }
 
     public InstructorRes getInstructorByCourseId(Long id) {

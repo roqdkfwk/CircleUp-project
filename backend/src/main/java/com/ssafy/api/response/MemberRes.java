@@ -7,16 +7,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Builder
-@ApiModel("MemberReadGetResponse")
-public class MemberReadGetRes {
-
-    @ApiModelProperty(name = "회원 ID")
-    private Long id;
+@ApiModel("MemberResponse")
+public class MemberRes {
 
     @ApiModelProperty(name = "로그인용 이메일")
     private String email;
@@ -36,15 +32,13 @@ public class MemberReadGetRes {
     @ApiModelProperty(name = "선호하는 태그")
     private List<String> tags;
 
-    public static MemberReadGetRes of(Member member, List<String> tagNameList) {
-        return MemberReadGetRes.builder()
-                .id(member.getId())
+    public static MemberRes fromEntity(Member member, List<String> tagNameList) {
+        return MemberRes.builder()
                 .email(member.getEmail())
                 .name(member.getName())
                 .role(member.getRole())
                 .contactEmail(member.getContactEmail())
                 .contactTel(member.getContactTel())
-                // 리턴값으로 선호하는 태그 추가
                 .tags(tagNameList)
                 .build();
     }
