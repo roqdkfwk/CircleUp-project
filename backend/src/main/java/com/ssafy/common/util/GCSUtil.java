@@ -1,12 +1,8 @@
 package com.ssafy.common.util;
 
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
-import com.ssafy.api.request.CourseCreatePostReq;
-import com.ssafy.api.request.CurriculumPostReq;
 import com.ssafy.db.entity.Course;
-import com.ssafy.db.entity.Curriculum;
 import org.springframework.web.multipart.MultipartFile;
 
 public class GCSUtil {

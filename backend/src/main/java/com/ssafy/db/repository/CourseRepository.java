@@ -58,10 +58,8 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
 
     List<Course> findAllByStatus(Status status);
 
-    ////
     Course findByIdAndStatus(Long courseId, Status status);
-    Course findByIdAndInstructorId(Long courseId, Long instructorId);
-    ///
+
     List<Course> findByStatusAndInstructorId(Status status, Long instructorId);
 
     @Query("SELECT CASE " +
