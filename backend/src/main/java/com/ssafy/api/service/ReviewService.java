@@ -17,7 +17,7 @@ public interface ReviewService {
 
     void updateReview(Long reviewId, ReviewUpdatePatchReq reviewUpdatePatchReq, Long memberid);
 
-    void deleteReview(Long reviewId, Long memberid);
+    void deleteReview(Long reviewId, Long memberId);
 
     void calculateRating(Course course);
 }

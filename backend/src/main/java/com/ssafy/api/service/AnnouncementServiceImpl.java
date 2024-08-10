@@ -8,6 +8,7 @@ import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.db.entity.Announcement;
 import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Member;
+import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.AnnouncementRepository;
 import com.ssafy.db.repository.CourseRepository;
 import com.ssafy.db.repository.MemberRepository;
@@ -41,6 +42,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         Announcement announcement = AnnouncementCreatePostReq.toEntity(announcementCreatePostReq, author, course);
         announcementRepository.save(announcement);
+
         return announcement.getId();
     }
 
@@ -104,7 +106,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                 () -> new NotFoundException("존재하지 않는 강의입니다.")
         );
 
-        if (course.getInstructor().getId().equals(memberId) || "Admin".equals(author.getRole())) {
+        if (course.getInstructor().getId().equals(memberId) || Role.Admin.equals(author.getRole())) {
             return true;
         }
         return false;

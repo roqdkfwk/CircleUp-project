@@ -17,7 +17,6 @@ public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    // 로그인
     @Override
     public MemberLoginPostRes login(MemberLoginPostReq loginReq) {
         Member member = memberRepository.findByEmail(loginReq.getEmail()).orElseThrow(
@@ -30,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member.getId());
 
-        // Refresh 토큰을 Member 엔티티에 저장
         member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 

@@ -42,7 +42,7 @@ public class ReviewGetRes {
     @ApiModelProperty(name = "수정일")
     private LocalDateTime updateAt;
 
-    public static ReviewGetRes of(Review review) {
+    public static ReviewGetRes fromEntity(Review review) {
         return ReviewGetRes.builder()
                 .id(review.getId())
                 .memberId(review.getMember().getId())

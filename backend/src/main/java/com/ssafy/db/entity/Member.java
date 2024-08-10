@@ -1,6 +1,5 @@
 package com.ssafy.db.entity;
 
-import com.ssafy.api.request.MemberModifyUpdateReq;
 import com.ssafy.db.entity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

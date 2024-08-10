@@ -1,8 +1,8 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.request.MemberSignupPostReq;
-import com.ssafy.api.response.MemberModifyUpdateRes;
+import com.ssafy.api.response.MemberUpdatePostRes;
 import com.ssafy.api.response.MemberRes;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
@@ -34,7 +34,6 @@ public class MemberServiceImpl implements MemberService {
     private final FavorRepository favorRepository;
     private final JwtUtil jwtUtil;
 
-    // 회원가입
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
         Member member = MemberSignupPostReq.toEntity(memberSignupPostReq);
@@ -57,7 +56,6 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    // 회원탈퇴
     @Override
     public void withdrawMemberByToken(String token) {
         String accessToken = token.replace("Bearer ", "");
@@ -67,18 +65,9 @@ public class MemberServiceImpl implements MemberService {
 
         Long memberId = jwtUtil.extractId(accessToken);
         Member member = getMemberById(memberId);
-
-//        // 회원의 Favor 모두 찾아서 석제
-//        List<Favor> favors = favorRepository.findByMemberId(memberId);
-//        for (Favor favor : favors) {
-//            favorRepository.delete(favor);
-//        }
-//        member.setRefreshToken(null);
-
         memberRepository.delete(member);
     }
 
-    // 마이페이지
     @Override
     public MemberRes getMyInfo(Long memberId, String accessToken) {
         if (!jwtUtil.validateToken(accessToken)) {
@@ -95,16 +84,15 @@ public class MemberServiceImpl implements MemberService {
         return MemberRes.fromEntity(member, tagNameList);
     }
 
-    // 회원정보수정
     @Override
-    public MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
+    public MemberUpdatePostRes modifyMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq) {
         Member member = getMemberById(memberId);
         List<Favor> favors = favorRepository.findByMemberId(member.getId());
         for (Favor favor : favors) {
             favorRepository.delete(favor);
         }
 
-        List<Long> tags = memberModifyUpdateReq.getTags();;
+        List<Long> tags = memberUpdatePatchReq.getTags();;
         List<String> tagNameList = new ArrayList<>();
         for (Long tagId : tags) {
             Tag tag = tagRepository.findById(tagId).orElseThrow(
@@ -114,13 +102,13 @@ public class MemberServiceImpl implements MemberService {
             saveFavor(member, tag);
             tagNameList.add(tag.getName());
         }
-        MemberModifyUpdateReq.toEntity(memberModifyUpdateReq, member);
+        MemberUpdatePatchReq.toEntity(memberUpdatePatchReq, member);
         String newAccessToken = jwtUtil.generateAccessToken(member);
         String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
         member.setRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        return MemberModifyUpdateRes.fromEntity(member, newAccessToken, tagNameList);
+        return MemberUpdatePostRes.fromEntity(member, newAccessToken, tagNameList);
     }
 
     @Override

@@ -9,5 +9,4 @@ public class TagRes {
 
     Long id;
     String tagName;
-
 }

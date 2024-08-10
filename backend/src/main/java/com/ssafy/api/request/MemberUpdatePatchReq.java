@@ -2,7 +2,6 @@ package com.ssafy.api.request;
 
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class MemberModifyUpdateReq {
+public class MemberUpdatePatchReq {
     String pw;
     String name;
     Role role;
@@ -19,12 +18,12 @@ public class MemberModifyUpdateReq {
     List<Long> tags;
 
     public static void toEntity(
-            MemberModifyUpdateReq memberModifyUpdateReq,
+            MemberUpdatePatchReq memberUpdatePatchReq,
             Member member
     ) {
-        member.setPw(memberModifyUpdateReq.getPw());
-        member.setRole(memberModifyUpdateReq.getRole());
-        member.setContactEmail(memberModifyUpdateReq.getContactEmail());
-        member.setContactTel(memberModifyUpdateReq.getContactTel());
+        member.setPw(memberUpdatePatchReq.getPw());
+        member.setRole(memberUpdatePatchReq.getRole());
+        member.setContactEmail(memberUpdatePatchReq.getContactEmail());
+        member.setContactTel(memberUpdatePatchReq.getContactTel());
     }
 }
