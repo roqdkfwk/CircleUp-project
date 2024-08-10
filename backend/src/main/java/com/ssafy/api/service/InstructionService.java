@@ -1,10 +1,7 @@
 package com.ssafy.api.service;
 
 import com.google.cloud.storage.Bucket;
-import com.ssafy.api.request.CourseCreatePostReq;
-import com.ssafy.api.request.CourseModifyUpdateReq;
-import com.ssafy.api.request.CurriculumPostReq;
-import com.ssafy.api.request.CurriculumUpdateReq;
+import com.ssafy.api.request.*;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
