@@ -42,14 +42,14 @@ public class Member {
     @Column(name = "contact_tel", length = 45)
     private String contactTel;
 
-    ////////////////////////////////////////////////////////////////////////////////
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favor> favors = new ArrayList<>();
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Register> registers = new ArrayList<>();
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Announcement> announcements = new ArrayList<>();
-    ////////////////////////////////////////////////////////////////////////////////
 
     protected Member() {
     }

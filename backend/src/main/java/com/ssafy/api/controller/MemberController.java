@@ -73,12 +73,12 @@ public class MemberController {
             @ApiResponse(code = 401, message = "유효하지 않은 토큰")
     )
     @RequiredAuth
-    public ResponseEntity<MemberUpdatePostRes> modifyMember(
+    public ResponseEntity<MemberUpdatePostRes> updateMember(
             Authentication authentication,
             @RequestBody MemberUpdatePatchReq memberUpdatePatchReq
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        MemberUpdatePostRes memberUpdatePostRes = memberService.modifyMember(memberId, memberUpdatePatchReq);
+        MemberUpdatePostRes memberUpdatePostRes = memberService.updateMember(memberId, memberUpdatePatchReq);
         return ResponseEntity.ok()
                 .header("Authorization", memberUpdatePostRes.getAccessToken())
                 .body(memberUpdatePostRes);
