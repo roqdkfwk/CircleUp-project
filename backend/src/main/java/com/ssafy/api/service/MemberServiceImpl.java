@@ -17,6 +17,7 @@ import com.ssafy.db.repository.InstructorRepository;
 import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.db.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +34,12 @@ public class MemberServiceImpl implements MemberService {
     private final TagRepository tagRepository;
     private final FavorRepository favorRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
         Member member = MemberSignupPostReq.toEntity(memberSignupPostReq);
+        member.setPw(passwordEncoder.encode(member.getPw()));
         List<Long> tags = memberSignupPostReq.getTags();
 
         for (Long tagId : tags) {
