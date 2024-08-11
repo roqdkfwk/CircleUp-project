@@ -11,7 +11,6 @@ import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.repository.AnnouncementRepository;
 import com.ssafy.db.repository.CourseRepository;
-import com.ssafy.db.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +24,10 @@ import java.util.stream.Collectors;
 public class AnnouncementServiceImpl implements AnnouncementService {
 
     private final AnnouncementRepository announcementRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+//    private final CourseSerivce courseSerivce;
     private final CourseRepository courseRepository;
+    private final CourseSerivce courseSerivce;
 
     @Override
     public Long createAnnouncement(
@@ -37,7 +38,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if (!checkAuthority(memberId, courseId)) {
             throw new UnAuthorizedException("공지사항을 작성할 권한이 없습니다.");
         }
-        Member author = memberRepository.getOne(memberId);
+        Member author = memberService.getById(memberId);
+//        Course course = courseService.getById(courseId);
         Course course = courseRepository.getOne(courseId);
 
         Announcement announcement = AnnouncementCreatePostReq.toEntity(announcementCreatePostReq, author, course);
@@ -91,7 +93,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     //////////////////////////////////////////////////////////////////////
     private Announcement checkAnnouncement(Long announcementId){
-        return  announcementRepository.findById(announcementId).orElseThrow(
+        return announcementRepository.findById(announcementId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 공지입니다")
         );
     }
@@ -99,9 +101,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     //////////////////////////////////////////////////////////////////////
 
     public boolean checkAuthority(Long memberId, Long courseId) {
-        Member author = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("존재하지 않는 회원입니다.")
-        );
+        Member author = memberService.findById(memberId);
+//        Course course = courseSerivce.findById(courseId);
         Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 강의입니다.")
         );

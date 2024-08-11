@@ -4,6 +4,7 @@ import com.ssafy.api.request.ReviewCreatePostReq;
 import com.ssafy.api.request.ReviewUpdatePatchReq;
 import com.ssafy.api.response.ReviewGetRes;
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Review;
 
 import java.util.List;
 
@@ -20,4 +21,8 @@ public interface ReviewService {
     void deleteReview(Long reviewId, Long memberId);
 
     void calculateRating(Course course);
+
+    Review findById(Long reviewId);
+
+    boolean checkAuthority(Long memberId, Review review);
 }

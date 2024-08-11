@@ -64,7 +64,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Long memberId = jwtUtil.extractId(accessToken);
-        Member member = getMemberById(memberId);
+        Member member = findById(memberId);
         memberRepository.delete(member);
     }
 
@@ -73,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnAuthorizedException("Unauthorized access");
         }
-        Member member = getMemberById(memberId);
+        Member member = findById(memberId);
         List<Favor> favors = favorRepository.findByMemberId(member.getId());
         List<String> tagNameList = new ArrayList<>();
         for (Favor favor : favors) {
@@ -85,8 +85,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberUpdatePostRes modifyMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq) {
-        Member member = getMemberById(memberId);
+    public MemberUpdatePostRes updateMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq) {
+        Member member = findById(memberId);
         List<Favor> favors = favorRepository.findByMemberId(member.getId());
         for (Favor favor : favors) {
             favorRepository.delete(favor);
@@ -120,9 +120,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public Member getMemberById(Long memberId) {
+    public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
+    public Member getById(Long memberId) {
+        return memberRepository.getOne(memberId);
     }
 
     @Override

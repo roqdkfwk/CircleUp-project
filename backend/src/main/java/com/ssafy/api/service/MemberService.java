@@ -15,11 +15,13 @@ public interface MemberService {
 
     MemberRes getMyInfo(Long memberId, String accessToken);
 
-    MemberUpdatePostRes modifyMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq);
+    MemberUpdatePostRes updateMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq);
 
     Member getMemberByEmail(String email);
 
-    Member getMemberById(Long memberId);
+    Member findById(Long memberId);
+
+    Member getById(Long memberId);
 
     void saveFavor(Member member, Tag tag);
 }
