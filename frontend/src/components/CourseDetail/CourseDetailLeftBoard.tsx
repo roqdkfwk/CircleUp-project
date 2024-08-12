@@ -18,7 +18,6 @@ interface CourseDetailLeftBoardProps {
 
 const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => {
     const navigate = useNavigate();
-    console.log(data.price.toLocaleString())
     const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
     const [registerValue, setRegisterValue] = useState<number>();
     const courseNavbar = ['소개', '커리큘럼', '공지사항', '코멘트']
@@ -71,6 +70,7 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
     };
 
     const handleCourseEnroll = () => {
+        console.log()
         if (!isLoggedIn) {
             toast.error('로그인이 필요한 기능입니다.', {
                 position: "top-center",
