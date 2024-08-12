@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "reviews")
+@Table(name = "review")
 public class Review {
     @Id
+    @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -36,13 +37,4 @@ public class Review {
 
     @Column
     private LocalDateTime updatedAt;
-
-    @Column
-    private boolean isDeleted;
-
-    @Column
-    private int helpfulCount;
-
-    @Column
-    private int reportCount;
 }

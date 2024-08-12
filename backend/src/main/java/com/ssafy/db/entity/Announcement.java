@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Announcement {
     @Id
+    @Column(name = "announcement_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
