@@ -24,7 +24,8 @@ public class AuthServiceImpl implements AuthService {
         Member member = memberRepository.findByEmail(loginReq.getEmail()).orElseThrow(
                 () -> new UnAuthorizedException("아이디 또는 비밀번호가 틀렸습니다")
         );
-        if (!passwordEncoder.matches(loginReq.getPassword(), member.getPw())) {
+        // if (!passwordEncoder.matches(loginReq.getPassword(), member.getPw()))
+        if (!member.getPw().equals(loginReq.getPassword())) {
             throw new UnAuthorizedException("아이디 또는 비밀번호가 틀렸습니다");
         }
 
