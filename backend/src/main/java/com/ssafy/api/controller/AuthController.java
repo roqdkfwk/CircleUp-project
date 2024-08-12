@@ -36,7 +36,6 @@ public class AuthController {
     }
     /////////////////////////////////////////////////////
 
-    // 로그인
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
     @ApiResponses(value = {
@@ -48,7 +47,6 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.login(loginReq));
     }
 
-    // AccessToken 재발급
     @PostMapping("/reissue")
     @ApiOperation(value = "Access Token 재발급", notes = "Refresh Token 을 통해 새로운 Access Token을 발급합니다<br/>DB에 저장된 Refresh Token과 일치해야합니다")
     @ApiResponses(value = {

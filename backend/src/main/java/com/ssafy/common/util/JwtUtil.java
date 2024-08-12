@@ -105,14 +105,14 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             // 접두사 제거
-            String memberToken = token.replace(TOKEN_PREFIX, "");
+            String actualToken = token.replace(TOKEN_PREFIX, "");
             Jwts.parserBuilder().setSigningKey(secretKey)
                     .requireIssuer(ISSUER)
                     .build()
-                    .parseClaimsJws(memberToken)
+                    .parseClaimsJws(actualToken)
                     .getBody();
 
-            return !isTokenExpired(memberToken);
+            return !isTokenExpired(actualToken);
         } catch (ExpiredJwtException e) {
             return false;
         } catch (JwtException | IllegalArgumentException e) {
