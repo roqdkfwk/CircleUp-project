@@ -19,7 +19,7 @@ function Header() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false); // 카테고리 드롭다운 상태 추가
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {isLoggedIn, setIsLoggedIn} = useUserStore();
   const { nickName, email, role } = useUserStore();
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
@@ -75,6 +75,7 @@ function Header() {
   const handleLogout = async () => {
     try {
       localStorage.clear();
+      setIsLoggedIn(false);
       toast.info('로그아웃', {
         position: "top-center",
         autoClose: 3000,
@@ -86,21 +87,18 @@ function Header() {
         theme: "light",
         transition: Bounce,
       });
-      setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
       alert("로그아웃 처리 문제 발생");
     }
   };
-
   useEffect(() => {
-    // localStorage에서 토큰 확인
     const refreshToken = localStorage.getItem('refreshToken');
     const accessToken = localStorage.getItem('accessToken');
-    if (refreshToken && accessToken) {
-      setIsLoggedIn(true);
+    if (!refreshToken || !accessToken) {
+      setIsLoggedIn(false);
     }
-  });
+  }, []);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
