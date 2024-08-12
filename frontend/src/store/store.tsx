@@ -23,8 +23,8 @@ interface Store {
 }
 
 export const useUserStore = create(persist<Store>((set) => ({
-  nickName: "hybrid",  
-  email: "hyunho656@gmail.com",
+  nickName: "",  
+  email: "",
   role: "",
   myCourseId: [],
   isLoggedIn: false,
