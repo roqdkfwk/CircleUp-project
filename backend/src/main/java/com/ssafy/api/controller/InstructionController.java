@@ -47,7 +47,7 @@ public class InstructionController {
     public ResponseEntity<List<CoursesRes>> getCoursesByStatus(
             @PathVariable(name = "status") String status,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(courseService.getMyCoursesByStatus(memberId, status));
     }
@@ -57,7 +57,7 @@ public class InstructionController {
     public ResponseEntity<CourseRes> sendRequest(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(instructionService.enqueueCourse(memberId, courseId));
     }
@@ -67,7 +67,7 @@ public class InstructionController {
     public ResponseEntity<CourseRes> cancelRequest(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(instructionService.dequeueCourse(memberId, courseId));
     }
@@ -157,4 +157,20 @@ public class InstructionController {
         instructionService.deleteCurriculum(courseId, curriculumId, memberId);
         return ResponseEntity.ok().build();
     }
+
+//    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}/document",
+//            consumes = MediaType.ALL_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE
+//    )
+//    @ApiOperation(value = "커리큘럼에 강의문서 올리기")
+//    public ResponseEntity<Long> uploadDoc(
+//            @RequestParam(name = "doc") MultipartFile doc,
+//            @PathVariable(name = "course_id") Long courseId,
+//            @PathVariable(name = "curriculum_id") Long curriculumId,
+//            Authentication authentication
+//    ) {
+//        Long memberId = Long.valueOf(authentication.getName());
+//        instructionService.uploadDoc(courseId, curriculumId, memberId, doc);
+//        return ResponseEntity.ok().body(courseId); // 개설한 강의 id를 반환
+//    }
 }

@@ -278,4 +278,29 @@ public class InstructionService {
             curriculumRepository.save(curr);
         }
     }
+
+    //
+
+    public void uploadDoc(Long courseId, Long curriculumId, Long memberId, MultipartFile doc){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found")
+        );
+
+        if(!course.getInstructor().getId().equals(memberId)){
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Curriculum not found")
+        );
+
+        try{
+            String blobName = "curriculum_"+curriculumId+"_doc";
+            bucket.create(blobName, doc.getBytes(), doc.getContentType());
+            curriculum.setDocUrl(GCSUtil.preUrl+blobName);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        curriculumRepository.save(curriculum);
+    }
 }
