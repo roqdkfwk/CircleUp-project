@@ -196,6 +196,36 @@ export const deleteComment = (courseId: number, reviewId: number) => {
     })
 }
 
+/* Notice API */
+// GET Notices
+export const getNotices = (courseId: number) => {
+    return axiosClient.get(`/courses/${courseId}/announcements`);
+}
+// CREATE Notice
+export const postNotice = (courseId: number, content: Record<string, unknown>) => {
+    return axiosClient.post(`/courses/${courseId}/announcements`, content, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+// UPDATE Notice
+export const patchNotice = (courseId: number, announcementId: number, content: Record<string, unknown>) => {
+    return axiosClient.patch(`/courses/${courseId}/announcements/${announcementId}`, content, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+// DELETE Notice
+export const deleteNotice = (courseId: number, announcementId: number) => {
+    return axiosClient.delete(`/courses/${courseId}/announcements/${announcementId}`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
+
 /* Member API */
 // 로그인 요청
 export const postLogin = (data: Login) => {

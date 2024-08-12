@@ -7,11 +7,12 @@ import CommentMakeModal from "../Modal/CommentMakeModal";
 
 interface CommentListProps {
     courseId: number,
+    isModify : string,
 }
 
-const CommentList = ({ courseId }: CommentListProps) => {
+const CommentList = ({ courseId, isModify }: CommentListProps) => {
 
-    const { role, nickName, myCourseId } = useUserStore();
+    const { nickName, myCourseId } = useUserStore();
     const [isMyCourse, setIsMyCourse] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [comments, setComments] = useState<CommentInfo[]>([]);
@@ -45,7 +46,7 @@ const CommentList = ({ courseId }: CommentListProps) => {
     };
 
     const handlePostComment = () => {
-        if (isMyCourse && role === 'User') {
+        if (isMyCourse && isModify === 'userDetail') {
             if (comments.find((comment) => comment.memberName === nickName))
                 alert("you alreday have post comment ");
             else
@@ -57,21 +58,26 @@ const CommentList = ({ courseId }: CommentListProps) => {
         setShowModal(!showModal);
     };
 
+    const updateComment = (deletedCommentId : number) => {
+        const newComment = comments.filter(comment => comment.id !== deletedCommentId);
+        setComments(newComment);
+    }
+
     const renderComments = () => {
         const startIndex = (currentPage - 1) * commentsPerPage;
         const selectedComments = comments.slice(startIndex, startIndex + commentsPerPage);
 
         return selectedComments.map((comment) => (
-            <CommentCard data={comment} />
+            <CommentCard data={comment} updateFunc={updateComment} />
         ));
     };
-
+    
     return (
         <div className="comment-list">
             < CommentMakeModal show={showModal} onClose={toggleModal} courseId={courseId} />
             {renderComments()}
 
-            {role === 'User' && <button type="button" className="
+            {isModify === 'userDetail' && <button type="button" className="
                 px-3 py-2 text-xs m-2 font-medium text-center text-white bg-blue-700 rounded-lg
                 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300
                 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

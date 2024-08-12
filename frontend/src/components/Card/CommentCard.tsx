@@ -6,9 +6,10 @@ import { deleteComment } from "../../services/api";
 
 interface CommentProps {
   data: CommentInfo,
+  updateFunc: (commentId: number) => void,
 }
 
-const CommentCard = ({ data }: CommentProps) => {
+const CommentCard = ({ data, updateFunc }: CommentProps) => {
 
   const { nickName } = useUserStore();
 
@@ -21,10 +22,10 @@ const CommentCard = ({ data }: CommentProps) => {
       }
 
       alert("삭제 완료!")
+      updateFunc(data.id);
       fetchDeleteComment();
-      window.location.href = `/courseDetail/${data.courseId}`;
+      //window.location.href = `/courseDetail/${data.courseId}`;
 
-      
     } catch (error) {
       console.error("오류로 인해 삭제 할 수 없습니다!");
     }

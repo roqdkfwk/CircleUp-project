@@ -30,6 +30,7 @@ const Router = () => {
         <Route path="/courseManagementDetail/:courseId" element={<CourseManagementDetail />} />
 
         <Route path="/curriculumDetail/:courseId" element={<CurriculumDetail />} />
+        <Route path="/NoticeDetail/:courseId" element={<></>} />
 
         <Route
           path="/curriculumManagementDetail/:courseId"
