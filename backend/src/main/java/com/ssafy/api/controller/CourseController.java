@@ -117,7 +117,7 @@ public class CourseController {
         Long memberId = Long.valueOf(authentication.getName());
         Long courseId = courseDetailService.getCourseIdOfCurr(curriculumId); // error 가능
 
-        if(courseService.existRegister(memberId, courseId)){
+        if(courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)){
         return ResponseEntity.ok().body(courseDetailService.getCurriculumUrls(curriculumId));
     }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
