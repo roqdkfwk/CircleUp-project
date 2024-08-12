@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface CourseRepository extends JpaRepository<Course, Long>, CourseRepositoryCustom {
+public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT r.course.id, COUNT(r) FROM Register r GROUP BY r.course.id")
     List<Object[]> countRegistersByCourse();
@@ -53,22 +53,11 @@ public interface CourseRepository extends JpaRepository<Course, Long>, CourseRep
             "(SELECT r.course.id FROM Register r WHERE r.member.id = :memberId)")
     List<Course> findByRegisteredMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT 1 FROM Register r WHERE r.member.id = :memberId AND r.course.id = :courseId")
-    Long existsRegisterByMemberIdAndCourseId(@Param("memberId") Long memberId, @Param("courseId") Long courseId);
-
     List<Course> findAllByStatus(Status status);
 
     Course findByIdAndStatus(Long courseId, Status status);
 
     List<Course> findByStatusAndInstructorId(Status status, Long instructorId);
 
-    @Query("SELECT CASE " +
-            "WHEN c.instructor.id = :memberId THEN 2 " +
-            "WHEN EXISTS (SELECT 1 FROM Register r WHERE r.member.id = :memberId AND r.course.id = :courseId) THEN 1 " +
-            "ELSE 0 " +
-            "END " +
-            "FROM Course c " +
-            "WHERE c.id = :courseId")
-    Long checkRegisterStatus(@Param("memberId") Long memberId, @Param("courseId") Long courseId);
 
 }

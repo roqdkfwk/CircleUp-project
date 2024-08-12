@@ -179,7 +179,7 @@ public class CourseSerivce {
     }
 
     public Boolean existRegister(Long memberId, Long courseId) {
-        return courseRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null;
+        return basicService.existsRegisterByMemberIdAndCourseId(memberId, courseId);
     }
 
     @Transactional
