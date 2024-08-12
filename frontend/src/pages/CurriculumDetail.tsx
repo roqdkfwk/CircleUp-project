@@ -21,27 +21,12 @@ const CurriculumDetail = () => {
     const searchParams = new URLSearchParams(location.search);
     const curriculum_id = Number(searchParams.get('curriculum_id'));
 
-    // type 필터링 함수
-    // const toNum = (value: string | undefined | null): number => {
-    //     const num = Number(value);
-    //     if (isNaN(num))
-    //         throw new Error(`Invalid number : ${value}`)
-    //     return num;
-    // }
-
-    const handleMakeLive = () => {
-        // setLive(!live)
-
-        // if (!liveCourseIds.includes(toNum(courseId)))
-        //     setLiveCourseIds([...liveCourseIds, toNum(courseId)])
-        // if (!liveCurriculumIds.includes(curriculum_id))
-        //     setLiveCurriculumIds([...liveCurriculumIds, curriculum_id])            
+    const handleMakeLive = () => {     
         navigate(`/course/live/${courseId}`, {
             state: { memberId: nickName, flag: true, curriId: curriculum_id }
         });
     }
 
-    // <todo> : 2. toggleEnterLive
     const fetchIsLiveCourse = async () => {
         const response = await getIsLive(Number(courseId));
 
@@ -58,20 +43,15 @@ const CurriculumDetail = () => {
                 memberId: nickName, flag: false, curriId: curriculum_id
             }
         })
-    }
+    }   
 
     useEffect(() => {
         fetchIsLiveCourse();
     }, []);
-    // < Rendering >
-    // {..} 커리큘럼 라이브강의 저장소 (?)
-    return (
-        <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <div className="relative">
-                <img className="rounded-t-lg w-full" src={curriData.imgUrl} alt="" />
-                {/* live && <img src={video_camera} alt="Live icon" className="absolute top-0 right-0 m-2 w-6 h-6" /> */}
-            </div>
 
+    return (
+        <div className="max-w-sm mt-5 ml-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            
             <div className="p-5">
                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {curriData.curriculumName}
@@ -93,8 +73,8 @@ const CurriculumDetail = () => {
                             Join Live!
                         </button>
                         :
-                        <div>
-                            강의는 라이브 상태가 아닙니다.
+                        <div className="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                            <span className="flex-1 ms-3 whitespace-nowrap">강의는 라이브 상태가 아닙니다.</span>
                         </div>
                     )
                 }

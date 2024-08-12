@@ -314,12 +314,12 @@ axiosClient.interceptors.response.use(
                     headers : {'refresh' : refreshToken}
                 });
             
-                const newRefreshToken = response.headers['refresh'];
+                const newAccessToken = response.headers['authorization'];
                 console.log(response.headers)
                 
-                originalRequest.headers.Authorization = `${newRefreshToken}`;
+                originalRequest.headers.Authorization = `${newAccessToken}`;
                 
-                localStorage.setItem("accessToken", newRefreshToken);
+                localStorage.setItem("accessToken", newAccessToken);
                 //localStorage.setItem("refreshToken", newRefreshToken);
                 return axiosClient(originalRequest);
 
