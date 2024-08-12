@@ -1,9 +1,6 @@
 package com.ssafy.api.controller;
 
-import com.ssafy.api.request.CourseCreatePostReq;
-import com.ssafy.api.request.CourseModifyUpdateReq;
-import com.ssafy.api.request.CurriculumPostReq;
-import com.ssafy.api.request.CurriculumUpdateReq;
+import com.ssafy.api.request.*;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.service.CourseSerivce;
@@ -14,7 +11,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -51,7 +47,7 @@ public class InstructionController {
     public ResponseEntity<List<CoursesRes>> getCoursesByStatus(
             @PathVariable(name = "status") String status,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(courseService.getMyCoursesByStatus(memberId, status));
     }
@@ -61,7 +57,7 @@ public class InstructionController {
     public ResponseEntity<CourseRes> sendRequest(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(instructionService.enqueueCourse(memberId, courseId));
     }
@@ -71,7 +67,7 @@ public class InstructionController {
     public ResponseEntity<CourseRes> cancelRequest(
             @PathVariable(name = "course_id") Long courseId,
             Authentication authentication
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
         return ResponseEntity.ok().body(instructionService.dequeueCourse(memberId, courseId));
     }
@@ -119,11 +115,11 @@ public class InstructionController {
     }
 
     ////////////////////////////////////////////
-    @PostMapping(value = "/courses/{course_id}/curriculum")
-    @ApiOperation(value = "새로운 커리큘럼 만들기",
+    @PostMapping(value = "/courses/{course_id}/curriculum",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @ApiOperation(value = "새로운 커리큘럼 만들기")
     public ResponseEntity<Long> createCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @ModelAttribute CurriculumPostReq curriculumPostReq,
@@ -134,11 +130,10 @@ public class InstructionController {
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
-    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}")
-    @ApiOperation(value = "기존 커리큘럼 수정",
+    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "기존 커리큘럼 수정")
     public ResponseEntity<Long> updateCurriculum(
             @PathVariable(name = "course_id") Long courseId,
             @PathVariable(name = "curriculum_id") Long curriculumId,
@@ -162,4 +157,20 @@ public class InstructionController {
         instructionService.deleteCurriculum(courseId, curriculumId, memberId);
         return ResponseEntity.ok().build();
     }
+
+//    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}/document",
+//            consumes = MediaType.ALL_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE
+//    )
+//    @ApiOperation(value = "커리큘럼에 강의문서 올리기")
+//    public ResponseEntity<Long> uploadDoc(
+//            @RequestParam(name = "doc") MultipartFile doc,
+//            @PathVariable(name = "course_id") Long courseId,
+//            @PathVariable(name = "curriculum_id") Long curriculumId,
+//            Authentication authentication
+//    ) {
+//        Long memberId = Long.valueOf(authentication.getName());
+//        instructionService.uploadDoc(courseId, curriculumId, memberId, doc);
+//        return ResponseEntity.ok().body(courseId); // 개설한 강의 id를 반환
+//    }
 }

@@ -1,10 +1,7 @@
 package com.ssafy.api.service;
 
 import com.google.cloud.storage.Bucket;
-import com.ssafy.api.request.CourseCreatePostReq;
-import com.ssafy.api.request.CourseModifyUpdateReq;
-import com.ssafy.api.request.CurriculumPostReq;
-import com.ssafy.api.request.CurriculumUpdateReq;
+import com.ssafy.api.request.*;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
@@ -280,5 +277,30 @@ public class InstructionService {
             curr.setIndexNo(idx+1L);
             curriculumRepository.save(curr);
         }
+    }
+
+    //
+
+    public void uploadDoc(Long courseId, Long curriculumId, Long memberId, MultipartFile doc){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found")
+        );
+
+        if(!course.getInstructor().getId().equals(memberId)){
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Curriculum not found")
+        );
+
+        try{
+            String blobName = "curriculum_"+curriculumId+"_doc";
+            bucket.create(blobName, doc.getBytes(), doc.getContentType());
+            curriculum.setDocUrl(GCSUtil.preUrl+blobName);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        curriculumRepository.save(curriculum);
     }
 }

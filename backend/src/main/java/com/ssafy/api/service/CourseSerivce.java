@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.CurriculumUrlRes;
 import com.ssafy.api.response.SearchRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;

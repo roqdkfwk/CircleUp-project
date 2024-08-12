@@ -3,12 +3,15 @@ package com.ssafy.api.controller;
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseDetailService;
 import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +24,12 @@ import java.util.List;
 public class CourseController {
 
     private final CourseSerivce courseService;
-    private final CourseDetailService searchService;
+    private final CourseDetailService courseDetailService;
 
     @GetMapping("/tag")
     @ApiOperation(value = "태그 목록 조회")
     public ResponseEntity<List<TagRes>> taglist() {
-        return ResponseEntity.ok().body(searchService.getTagList());
+        return ResponseEntity.ok().body(courseDetailService.getTagList());
     }
 
     @GetMapping("/courses")
@@ -85,7 +88,7 @@ public class CourseController {
     public ResponseEntity<InstructorRes> owner(
             @PathVariable(name = "course_id") Long id
     ) {
-        return ResponseEntity.ok().body(searchService.getInstructorByCourseId(id));
+        return ResponseEntity.ok().body(courseDetailService.getInstructorByCourseId(id));
     }
 
 
@@ -97,6 +100,28 @@ public class CourseController {
     public ResponseEntity<List<CurriculumRes>> curriculumList(
             @RequestParam(required = false, value = "id") List<Long> ids
     ) {
-        return ResponseEntity.ok().body(searchService.getCurriculumById(ids));
+        return ResponseEntity.ok().body(courseDetailService.getCurriculumById(ids));
     }
+
+    @GetMapping("curriculums/{curriculum_id}/dataUrls")
+    @ApiOperation(value = "주차별 학습용 문서 url, 녹화 영상 url 반환")
+    @RequiredAuth
+    @ApiResponses({
+            @ApiResponse(code = 401, message = "권한 없음(수강중인 회원이 아님)"),
+            @ApiResponse(code = 500, message = "로그인 상태가 아님")
+    })
+    public ResponseEntity<CurriculumUrlRes> getCurrUrls(
+            Authentication authentication,
+            @PathVariable(name = "curriculum_id") Long curriculumId
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+        Long courseId = courseDetailService.getCourseIdOfCurr(curriculumId); // error 가능
+
+        if(courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)){
+        return ResponseEntity.ok().body(courseDetailService.getCurriculumUrls(curriculumId));
+    }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+
 }
