@@ -3,7 +3,6 @@ package com.ssafy.api.response;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,8 +10,8 @@ import java.util.List;
 
 @Getter
 @Builder
-@ApiModel("MemberModifyUpdateRes")
-public class MemberModifyUpdateRes {
+@ApiModel("MemberUpdatePostResponse")
+public class MemberUpdatePostRes {
     String email;
     String name;
     Role role;
@@ -21,12 +20,12 @@ public class MemberModifyUpdateRes {
     String accessToken;
     List<String> tags;
 
-    public static MemberModifyUpdateRes fromEntity(
+    public static MemberUpdatePostRes fromEntity(
             Member member,
             String accessToken,
             List<String> tags
     ) {
-        return MemberModifyUpdateRes.builder()
+        return MemberUpdatePostRes.builder()
                 .email(member.getEmail())
                 .name(member.getName())
                 .role(member.getRole())

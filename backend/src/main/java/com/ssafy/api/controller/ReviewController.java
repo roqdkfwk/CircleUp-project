@@ -30,7 +30,6 @@ public class ReviewController {
             @ApiResponse(code = 201, message = "성공"),
             @ApiResponse(code = 400, message = "잘못된 요청"),
             @ApiResponse(code = 401, message = "인증 실패"),
-            @ApiResponse(code = 500, message = "서버 오류")
     })
     @RequiredAuth
     public ResponseEntity<Long> addReview(
@@ -51,8 +50,7 @@ public class ReviewController {
     public ResponseEntity<ReviewGetRes> getReview(
             @PathVariable(value = "reviewId") Long reviewId
     ) {
-        ReviewGetRes reviewGetRes = reviewService.getReview(reviewId);
-        return ResponseEntity.ok().body(reviewGetRes);
+        return ResponseEntity.ok().body(reviewService.getReview(reviewId));
     }
 
     @GetMapping

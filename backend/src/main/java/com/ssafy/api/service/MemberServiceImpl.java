@@ -1,8 +1,8 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.request.MemberSignupPostReq;
-import com.ssafy.api.response.MemberModifyUpdateRes;
+import com.ssafy.api.response.MemberUpdatePostRes;
 import com.ssafy.api.response.MemberRes;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
@@ -17,6 +17,7 @@ import com.ssafy.db.repository.InstructorRepository;
 import com.ssafy.db.repository.MemberRepository;
 import com.ssafy.db.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +34,12 @@ public class MemberServiceImpl implements MemberService {
     private final TagRepository tagRepository;
     private final FavorRepository favorRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    // 회원가입
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
         Member member = MemberSignupPostReq.toEntity(memberSignupPostReq);
+        // member.setPw(passwordEncoder.encode(member.getPw()));
         List<Long> tags = memberSignupPostReq.getTags();
 
         for (Long tagId : tags) {
@@ -57,7 +59,6 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    // 회원탈퇴
     @Override
     public void withdrawMemberByToken(String token) {
         String accessToken = token.replace("Bearer ", "");
@@ -66,18 +67,16 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Long memberId = jwtUtil.extractId(accessToken);
-        Member member = getMemberById(memberId);
-
+        Member member = findById(memberId);
         memberRepository.delete(member);
     }
 
-    // 마이페이지
     @Override
     public MemberRes getMyInfo(Long memberId, String accessToken) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnAuthorizedException("Unauthorized access");
         }
-        Member member = getMemberById(memberId);
+        Member member = findById(memberId);
         List<Favor> favors = favorRepository.findByMemberId(member.getId());
         List<String> tagNameList = new ArrayList<>();
         for (Favor favor : favors) {
@@ -88,16 +87,15 @@ public class MemberServiceImpl implements MemberService {
         return MemberRes.fromEntity(member, tagNameList);
     }
 
-    // 회원정보수정
     @Override
-    public MemberModifyUpdateRes modifyMember(Long memberId, MemberModifyUpdateReq memberModifyUpdateReq) {
-        Member member = getMemberById(memberId);
+    public MemberUpdatePostRes updateMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq) {
+        Member member = findById(memberId);
         List<Favor> favors = favorRepository.findByMemberId(member.getId());
         for (Favor favor : favors) {
             favorRepository.delete(favor);
         }
 
-        List<Long> tags = memberModifyUpdateReq.getTags();;
+        List<Long> tags = memberUpdatePatchReq.getTags();;
         List<String> tagNameList = new ArrayList<>();
         for (Long tagId : tags) {
             Tag tag = tagRepository.findById(tagId).orElseThrow(
@@ -107,13 +105,13 @@ public class MemberServiceImpl implements MemberService {
             saveFavor(member, tag);
             tagNameList.add(tag.getName());
         }
-        MemberModifyUpdateReq.toEntity(memberModifyUpdateReq, member);
+        MemberUpdatePatchReq.toEntity(memberUpdatePatchReq, member);
         String newAccessToken = jwtUtil.generateAccessToken(member);
         String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
         member.setRefreshToken(newRefreshToken);
         memberRepository.save(member);
 
-        return MemberModifyUpdateRes.fromEntity(member, newAccessToken, tagNameList);
+        return MemberUpdatePostRes.fromEntity(member, newAccessToken, tagNameList);
     }
 
     @Override
@@ -125,9 +123,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public Member getMemberById(Long memberId) {
+    public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
+    public Member getById(Long memberId) {
+        return memberRepository.getOne(memberId);
     }
 
     @Override

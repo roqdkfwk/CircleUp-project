@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final CourseSerivce courseSerivce;
     private final CourseRepository courseRepository;
 
     @Override
     public Long createReview(ReviewCreatePostReq reviewCreatePostReq, Long courseId, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("존재하지 않는 회원입니다.")
-        );
+        Member member = memberService.findById(memberId);
+//        Course course = courseSerivce.findById(courseId);
         Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 강의입니다.")
         );
@@ -54,9 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public ReviewGetRes getReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
-        );
+        Review review = findById(reviewId);
         return ReviewGetRes.fromEntity(review);
     }
 
@@ -71,11 +69,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void updateReview(Long reviewId, ReviewUpdatePatchReq reviewUpdatePatchReq, Long memberId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
-        );
-
-        if (!review.getMember().getId().equals(memberId)) {
+        Review review = findById(reviewId);
+        if (checkAuthority(memberId, review)) {
             throw new UnAuthorizedException("내가 작성하지 않은 리뷰는 수정할 수 없습니다.");
         }
 
@@ -98,10 +93,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReview(Long reviewId, Long memberId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new NotFoundException("리뷰를 찾을 수 없습니다.")
-        );
-        if (!review.getMember().getId().equals(memberId)) {
+        Review review = findById(reviewId);
+        if (checkAuthority(memberId, review)) {
             throw new UnAuthorizedException("내가 작성하지 않은 리뷰는 삭제할 수 없습니다.");
         }
 
@@ -117,5 +110,18 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElse(0.0);
         course.setRating(rating);
         courseRepository.save(course);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Review findById(Long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(
+                () -> new NotFoundException("리뷰를 찾을 수 없습니다."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkAuthority(Long memberId, Review review) {
+        return !review.getMember().getId().equals(memberId);
     }
 }
