@@ -26,8 +26,6 @@ public class CourseRes {
     String instructorName;
     String description;
     List<String> tags;
-    List<Long> curriculums;
-
 
     public static CourseRes fromEntity(Course course) {
         return CourseRes.builder()
@@ -43,9 +41,6 @@ public class CourseRes {
                 .tags(course.getCourseTagList().stream()
                         .map(CourseTag::getTag)
                         .map(Tag::getName)
-                        .collect(Collectors.toList()))
-                .curriculums(course.getCurriculumList().stream()
-                        .map(Curriculum::getId)
                         .collect(Collectors.toList()))
                 .build();
 //                .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
