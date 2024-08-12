@@ -91,7 +91,6 @@ public class CourseController {
         return ResponseEntity.ok().body(courseDetailService.getInstructorByCourseId(id));
     }
 
-
     @GetMapping("/curriculums")
     @ApiOperation(value = "커리큘럼 정보 조회")
     @ApiResponses({
@@ -122,6 +121,4 @@ public class CourseController {
     }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-
-
 }

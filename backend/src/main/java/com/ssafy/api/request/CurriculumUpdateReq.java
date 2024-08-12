@@ -7,6 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class CurriculumUpdateReq {
-    String name;
-    String description;
+    private String name;
+    private String description;
 }

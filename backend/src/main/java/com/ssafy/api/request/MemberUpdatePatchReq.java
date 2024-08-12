@@ -10,12 +10,12 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class MemberUpdatePatchReq {
-    String pw;
-    String name;
-    Role role;
-    String contactEmail;
-    String contactTel;
-    List<Long> tags;
+    private String pw;
+    private String name;
+    private Role role;
+    private String contactEmail;
+    private String contactTel;
+    private List<Long> tags;
 
     public static void toEntity(
             MemberUpdatePatchReq memberUpdatePatchReq,

@@ -66,6 +66,12 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Curriculum> curriculumList;
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Announcement> announcementList;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviewList;
+
     protected Course() {
     }
 
@@ -73,7 +79,7 @@ public class Course {
         this.view = this.view + 1;
     }
 
-    public void update(CourseModifyUpdateReq courseModifyUpdateReq, List<Tag> tagsReq, Bucket bucket){
+    public void update(CourseModifyUpdateReq courseModifyUpdateReq, List<Tag> tagsReq, Bucket bucket) {
         // 변경사항 확인 후 적용
         if (courseModifyUpdateReq.getName() != null) {
             this.setName(courseModifyUpdateReq.getName());
@@ -103,7 +109,7 @@ public class Course {
                 });
     }
 
-    public void addTag(List<Tag> tagsToAdd){
+    public void addTag(List<Tag> tagsToAdd) {
         for (Tag tag : tagsToAdd) {
             CourseTag courseTag = new CourseTag();
             courseTag.setTag(tag);

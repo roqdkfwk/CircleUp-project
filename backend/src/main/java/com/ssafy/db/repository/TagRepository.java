@@ -10,9 +10,6 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    @Query("select count(t) from Tag t")
-    Long getTagSize();
-
     @Query("select new com.ssafy.api.response.TagRes(t.id, t.name) from Tag t")
     List<TagRes> getTags();
 

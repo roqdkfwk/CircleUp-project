@@ -45,7 +45,6 @@ public class RegisterController {
         return ResponseEntity.ok().body(registerService.roleRegister(memberId, courseId));
     }
 
-
     @PostMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 신청")
     @ApiResponses({
@@ -61,7 +60,6 @@ public class RegisterController {
         return ResponseEntity.ok().build();
     }
 
-
     @DeleteMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 취소")
     @ApiResponses({
@@ -75,5 +73,4 @@ public class RegisterController {
         registerService.cancelRegister(memberId, courseId);
         return ResponseEntity.ok().build();
     }
-
 }

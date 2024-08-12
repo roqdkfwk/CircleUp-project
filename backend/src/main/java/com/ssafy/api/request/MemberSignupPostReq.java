@@ -13,25 +13,25 @@ import java.util.List;
 public class MemberSignupPostReq {
 
     @ApiModelProperty(name = "아이디", example = "circle@circle.com")
-    String email;
+    private String email;
 
     @ApiModelProperty(name = "비밀번호", example = "circle123")
-    String pw;
+    private String pw;
 
     @ApiModelProperty(name = "이름", example = "이름")
-    String name;
+    private String name;
 
     @ApiModelProperty(name = "역할", example = "사용자, 강사, 관리자")
-    Role role;
+    private Role role;
 
     @ApiModelProperty(name = "이메일", example = "연락용 이메일")
-    String contactEmail;
+    private String contactEmail;
 
     @ApiModelProperty(name = "핸드폰", example = "연락처")
-    String contactTel;
+    private String contactTel;
 
     @ApiModelProperty(name = "태그", example = "선호 카테고리")
-    List<Long> tags;
+    private List<Long> tags;
 
     public static Member toEntity(MemberSignupPostReq memberSignupPostReq) {
         return Member.builder()

@@ -24,10 +24,7 @@ import java.util.stream.Collectors;
 public class AnnouncementServiceImpl implements AnnouncementService {
 
     private final AnnouncementRepository announcementRepository;
-    private final MemberService memberService;
-//    private final CourseSerivce courseSerivce;
-    private final CourseRepository courseRepository;
-    private final CourseSerivce courseSerivce;
+    private final BasicService basicService;
 
     @Override
     public Long createAnnouncement(
@@ -38,9 +35,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if (!checkAuthority(memberId, courseId)) {
             throw new UnAuthorizedException("공지사항을 작성할 권한이 없습니다.");
         }
-        Member author = memberService.getById(memberId);
-//        Course course = courseService.getById(courseId);
-        Course course = courseRepository.getOne(courseId);
+        Member author = basicService.findMemberByMemberId(memberId);
+        Course course = basicService.findCourseByCourseId(courseId);
 
         Announcement announcement = AnnouncementCreatePostReq.toEntity(announcementCreatePostReq, author, course);
         announcementRepository.save(announcement);
@@ -100,13 +96,10 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     //////////////////////////////////////////////////////////////////////
 
     public boolean checkAuthority(Long memberId, Long courseId) {
-        Member author = memberService.findById(memberId);
-//        Course course = courseSerivce.findById(courseId);
-        Course course = courseRepository.findById(courseId).orElseThrow(
-                () -> new NotFoundException("존재하지 않는 강의입니다.")
-        );
+        Member author = basicService.findMemberByMemberId(memberId);
+        Course course = basicService.findCourseByCourseId(courseId);
 
-        if (course.getInstructor().getId().equals(memberId) || Role.Admin.equals(author.getRole())) {
+        if (course.getInstructor().getId().equals(memberId) || author.getRole().equals(Role.Admin)) {
             return true;
         }
         return false;

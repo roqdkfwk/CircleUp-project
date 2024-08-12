@@ -2,7 +2,6 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
-import com.ssafy.api.response.CurriculumUrlRes;
 import com.ssafy.api.response.SearchRes;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
@@ -13,7 +12,7 @@ import com.ssafy.db.entity.Instructor;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.entity.enums.Role;
 import com.ssafy.db.entity.enums.Status;
-import com.ssafy.db.repository.*;
+import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +30,12 @@ import java.util.stream.Collectors;
 public class CourseSerivce {
 
     private final CourseRepository courseRepository;
-    private final TagRepository tagRepository;
-    private final InstructorRepository instructorRepository;
-    private final MemberRepository memberRepository;
-    private final CurriculumRepository curriculumRepository;
+    private final BasicService basicService;
+    private final AppliedService appliedService;
 
     ////////////////////////////////////////
     public List<CoursesRes> getAdminPendingCourses(Long memberId) {
-        Member admin = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("ID not found"));
+        Member admin = basicService.findMemberByMemberId(memberId);
 
         if (!admin.getRole().equals(Role.Admin)) throw new BadRequestException("Not Admin");
 
@@ -51,8 +47,7 @@ public class CourseSerivce {
 
     // 상태 별 강의 조회 for 강사
     public List<CoursesRes> getMyCoursesByStatus(Long memberId, String status) {
-        Member instructor = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("ID not found"));
+        Member instructor = basicService.findMemberByMemberId(memberId);
 
         if (!instructor.getRole().equals(Role.Instructor)) throw new BadRequestException("Not Instructor");
 
@@ -101,7 +96,7 @@ public class CourseSerivce {
     public List<CoursesRes> getOfferingCourses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Long tagSize = tagRepository.getTagSize();
+        Long tagSize = basicService.getTagCount();
         LocalDate today = LocalDate.now();
         Long randomTagId = today.getDayOfYear() % tagSize + 1;
 
@@ -152,10 +147,8 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CoursesRes> getCoursesImade(Long id) {
-        Instructor instructor = instructorRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Not Found Instructor : Instructor_id is " + id)
-        );
+    public List<CoursesRes> getCoursesImade(Long memberId) {
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
         return courseRepository.findByInstructor(instructor).stream()
                 .map(CoursesRes::of)
@@ -173,7 +166,7 @@ public class CourseSerivce {
         );
 
         course.upView();
-        return CourseRes.of(course);
+        return CourseRes.fromEntity(course);
     }
 
     public Boolean existsCourse(Long courseId) {
@@ -181,9 +174,7 @@ public class CourseSerivce {
     }
 
     public Boolean instructorInCourse(Long courseId, Long memberId) {
-        Long instructorId = instructorRepository.findInstructorIdByCourseId(courseId).orElseThrow(
-                () -> new NotFoundException("Not Found Course : Course_id is " + courseId));
-        ;
+        Long instructorId = appliedService.getInstructorIdByCourseId(courseId);
         return instructorId.equals(memberId);
     }
 
@@ -193,11 +184,9 @@ public class CourseSerivce {
 
     @Transactional
     public Boolean saveVideoUrl(String fileName, Long curriculumId) {
-        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
-                () -> new NotFoundException("Not Found Curriculum : curriculum_Id is " + curriculumId));
-
+        Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
         curriculum.setRecUrl(GCSUtil.preUrl + fileName);
-        curriculumRepository.save(curriculum);
+        basicService.saveCurriculum(curriculum);
         return true;
     }
 }

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@ApiIgnore
 @Api(tags = {"Live"})
 @CrossOrigin(origins = "*")
 @RestController
@@ -38,7 +37,6 @@ public class SessionController {
     private String OPENVIDU_RECORDINGPATH;
 
     private OpenVidu openvidu;
-
 
     public SessionController(CourseSerivce courseSerivce, Bucket bucket) {
         this.courseSerivce = courseSerivce;
@@ -269,7 +267,6 @@ public class SessionController {
             throw new RuntimeException(e);
         }
     }
-
 
     private Boolean saveVideo(Long courseId, Long curriculumId) {
 
