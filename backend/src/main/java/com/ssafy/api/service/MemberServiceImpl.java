@@ -39,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
         Member member = MemberSignupPostReq.toEntity(memberSignupPostReq);
-        member.setPw(passwordEncoder.encode(member.getPw()));
+        // member.setPw(passwordEncoder.encode(member.getPw()));
         List<Long> tags = memberSignupPostReq.getTags();
 
         for (Long tagId : tags) {
