@@ -9,6 +9,9 @@ const CourseCommentContent = ({isModify, courseId} : CourseCommentContentProps) 
     /*
         강의 하위 Comment 출력하는 Content
     */
+    
+    console.log(isModify)
+    
     return (
         <div>
             <CommentList courseId={courseId} />
