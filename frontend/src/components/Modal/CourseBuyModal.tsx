@@ -3,7 +3,6 @@ import { postCourseByUser } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { BuyInfo } from './../../types/BuyInfo';
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
 
 interface CourseBuyProps {
     buyInfo: BuyInfo,

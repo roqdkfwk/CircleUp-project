@@ -303,6 +303,7 @@ axiosClient.interceptors.response.use(
                 });
             
                 const newRefreshToken = response.headers['refresh'];
+                console.log(response.headers)
                 
                 originalRequest.headers.Authorization = `${newRefreshToken}`;
                 
