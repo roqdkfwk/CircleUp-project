@@ -18,12 +18,12 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class CourseModifyUpdateReq {
-    MultipartFile img;
-    String name;
-    String summary;
-    String price;
-    String description;
-    String tags;
+    private MultipartFile img;
+    private String name;
+    private String summary;
+    private String price;
+    private String description;
+    private String tags;
 
     public List<Long> parseTags() throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();

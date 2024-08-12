@@ -1,9 +1,9 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.request.MemberSignupPostReq;
-import com.ssafy.api.response.MemberUpdatePostRes;
+import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.response.MemberRes;
+import com.ssafy.api.response.MemberUpdatePostRes;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.common.util.JwtUtil;
@@ -30,6 +30,7 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final BasicService basicService;
     private final InstructorRepository instructorRepository;
     private final TagRepository tagRepository;
     private final FavorRepository favorRepository;
@@ -43,9 +44,7 @@ public class MemberServiceImpl implements MemberService {
         List<Long> tags = memberSignupPostReq.getTags();
 
         for (Long tagId : tags) {
-            Tag tag = tagRepository.findById(tagId).orElseThrow(
-                    () -> new NotFoundException("존재하지 않는 태그입니다")
-            );
+            Tag tag = basicService.findTagByTagId(tagId);
             saveFavor(member, tag);
         }
         if (member.getRole().equals(Role.Instructor)) {
@@ -67,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Long memberId = jwtUtil.extractId(accessToken);
-        Member member = findById(memberId);
+        Member member = basicService.findMemberByMemberId(memberId);
         memberRepository.delete(member);
     }
 
@@ -76,8 +75,8 @@ public class MemberServiceImpl implements MemberService {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnAuthorizedException("Unauthorized access");
         }
-        Member member = findById(memberId);
-        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+        Member member = basicService.findMemberByMemberId(memberId);
+        List<Favor> favors = basicService.findAllFavorByMemberId(member.getId());
         List<String> tagNameList = new ArrayList<>();
         for (Favor favor : favors) {
             String tagName = favor.getTag().getName();
@@ -89,22 +88,21 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberUpdatePostRes updateMember(Long memberId, MemberUpdatePatchReq memberUpdatePatchReq) {
-        Member member = findById(memberId);
-        List<Favor> favors = favorRepository.findByMemberId(member.getId());
+        Member member = basicService.findMemberByMemberId(memberId);
+        List<Favor> favors = basicService.findAllFavorByMemberId(member.getId());
         for (Favor favor : favors) {
-            favorRepository.delete(favor);
+            basicService.deleteFavor(favor);
         }
 
-        List<Long> tags = memberUpdatePatchReq.getTags();;
+        List<Long> tags = memberUpdatePatchReq.getTags();
+
         List<String> tagNameList = new ArrayList<>();
         for (Long tagId : tags) {
-            Tag tag = tagRepository.findById(tagId).orElseThrow(
-                    () -> new NotFoundException("Not Found Tag : Tag is " + tagId)
-            );
-
+            Tag tag = basicService.findTagByTagId(tagId);
             saveFavor(member, tag);
             tagNameList.add(tag.getName());
         }
+
         MemberUpdatePatchReq.toEntity(memberUpdatePatchReq, member);
         String newAccessToken = jwtUtil.generateAccessToken(member);
         String newRefreshToken = jwtUtil.generateRefreshToken(memberId);
@@ -122,23 +120,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Member findById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("존재하지 않는 회원입니다."));
-    }
-
-    @Override
-    public Member getById(Long memberId) {
-        return memberRepository.getOne(memberId);
-    }
-
-    @Override
     @Transactional
     public void saveFavor(Member member, Tag tag) {
         Favor favor = new Favor();
         favor.setMember(member);
         favor.setTag(tag);
-        favorRepository.save(favor);
+        basicService.saveFavor(favor);
     }
 }

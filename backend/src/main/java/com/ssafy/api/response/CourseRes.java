@@ -1,6 +1,9 @@
 package com.ssafy.api.response;
 
 import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.CourseTag;
+import com.ssafy.db.entity.Curriculum;
+import com.ssafy.db.entity.Tag;
 import com.ssafy.db.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +29,7 @@ public class CourseRes {
     List<Long> curriculums;
 
 
-    public static CourseRes of(Course course) {
+    public static CourseRes fromEntity(Course course) {
         return CourseRes.builder()
                 .id(course.getId())
                 .courseName(course.getName())
@@ -37,7 +40,15 @@ public class CourseRes {
                 .instructorName(course.getInstructor().getMember().getName())
                 .description(course.getDescription())
                 .status(course.getStatus())
-                .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
-                .curriculums(course.getCurriculumList().stream().map(curr -> curr.getId()).collect(Collectors.toList())).build();
+                .tags(course.getCourseTagList().stream()
+                        .map(CourseTag::getTag)
+                        .map(Tag::getName)
+                        .collect(Collectors.toList()))
+                .curriculums(course.getCurriculumList().stream()
+                        .map(Curriculum::getId)
+                        .collect(Collectors.toList()))
+                .build();
+//                .tags(course.getCourseTagList().stream().map(ct -> ct.getTag().getName()).collect(Collectors.toList()))
+//                .curriculums(course.getCurriculumList().stream().map(curr -> curr.getId()).collect(Collectors.toList())).build();
     }
 }

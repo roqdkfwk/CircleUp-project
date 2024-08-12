@@ -13,24 +13,12 @@ import java.util.List;
 @Builder
 @ApiModel("MemberResponse")
 public class MemberRes {
-
-    @ApiModelProperty(name = "로그인용 이메일")
-    private String email;
-
-    @ApiModelProperty(name = "이름")
-    private String name;
-
-    @ApiModelProperty(name = "역할")
-    private Role role;
-
-    @ApiModelProperty(name = "연락용 이메일")
-    private String contactEmail;
-
-    @ApiModelProperty(name = "연락용 전화번호")
-    private String contactTel;
-
-    @ApiModelProperty(name = "선호하는 태그")
-    private List<String> tags;
+    String email;
+    String name;
+    Role role;
+    String contactEmail;
+    String contactTel;
+    List<String> tags;
 
     public static MemberRes fromEntity(Member member, List<String> tagNameList) {
         return MemberRes.builder()

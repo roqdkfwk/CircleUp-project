@@ -19,9 +19,5 @@ public interface MemberService {
 
     Member getMemberByEmail(String email);
 
-    Member findById(Long memberId);
-
-    Member getById(Long memberId);
-
     void saveFavor(Member member, Tag tag);
 }

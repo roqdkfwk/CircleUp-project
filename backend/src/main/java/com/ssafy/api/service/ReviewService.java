@@ -22,7 +22,5 @@ public interface ReviewService {
 
     void calculateRating(Course course);
 
-    Review findById(Long reviewId);
-
     boolean checkAuthority(Long memberId, Review review);
 }

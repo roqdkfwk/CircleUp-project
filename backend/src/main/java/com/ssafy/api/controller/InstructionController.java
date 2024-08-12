@@ -86,7 +86,6 @@ public class InstructionController {
         return ResponseEntity.ok().body(course.getId()); // 개설한 강의 id를 반환
     }
 
-
     @PatchMapping(value = "/courses/instructions/{course_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE

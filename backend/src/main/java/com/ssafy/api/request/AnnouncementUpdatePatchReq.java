@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 public class AnnouncementUpdatePatchReq {
     
     @ApiModelProperty(name = "제목", example = "수정할 제목")
-    String title;
+    private String title;
 
     @ApiModelProperty(name = "내용", example = "수정할 내용")
-    String content;
+    private String content;
 
     public static void toEntity(
             Announcement announcement,
