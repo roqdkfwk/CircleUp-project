@@ -159,12 +159,12 @@ public class InstructionController {
     }
 
 //    @PatchMapping(value = "/courses/{course_id}/curriculum/{curriculum_id}/document",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+//            consumes = MediaType.ALL_VALUE,
 //            produces = MediaType.APPLICATION_JSON_VALUE
 //    )
 //    @ApiOperation(value = "커리큘럼에 강의문서 올리기")
 //    public ResponseEntity<Long> uploadDoc(
-//            @RequestParam("doc") MultipartFile doc,
+//            @RequestParam(name = "doc") MultipartFile doc,
 //            @PathVariable(name = "course_id") Long courseId,
 //            @PathVariable(name = "curriculum_id") Long curriculumId,
 //            Authentication authentication
