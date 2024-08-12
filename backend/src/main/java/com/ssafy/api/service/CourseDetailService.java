@@ -18,13 +18,6 @@ public class CourseDetailService {
     private final AppliedService appliedService;
     private final BasicService basicService;
 
-    public List<CurriculumRes> getCurriculumById(List<Long> ids) {
-        return basicService.findCurriculumListByCurriculumIds(ids)
-                .stream()
-                .map(CurriculumRes::of)
-                .collect(Collectors.toList());
-    }
-
     public List<TagRes> getTagList() {
         return appliedService.getAllTagres();
     }

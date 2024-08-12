@@ -70,6 +70,10 @@ public class BasicService {
         curriculumRepository.delete(curriculum);
     }
 
+    public List<Curriculum> findCurriculumListByCourseId(Long courseId){
+        return curriculumRepository.findAllByCourseId(courseId);
+    }
+
     // MemberRepository
     @Transactional(readOnly = true)
     public Member findMemberByMemberId(Long memberId) {

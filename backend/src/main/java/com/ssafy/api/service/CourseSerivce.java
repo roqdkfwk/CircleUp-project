@@ -1,8 +1,6 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.response.CourseRes;
-import com.ssafy.api.response.CoursesRes;
-import com.ssafy.api.response.SearchRes;
+import com.ssafy.api.response.*;
 import com.ssafy.common.custom.BadRequestException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.util.GCSUtil;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -188,5 +187,33 @@ public class CourseSerivce {
         curriculum.setRecUrl(GCSUtil.preUrl + fileName);
         basicService.saveCurriculum(curriculum);
         return true;
+    }
+
+    public List<CurriculumRes> getCurriculumList(Long courseId){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found : Course_id is " + courseId)
+        );
+
+        return basicService.findCurriculumListByCourseId(courseId).stream()
+                .map(curriculum -> CurriculumRes.fromEntity(curriculum, course.getCompletedCourse()))
+                .collect(Collectors.toList());
+    }
+
+    public List<CurriculumUrlRes> getCurriculumUrlList(Long courseId){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found : Course_id is " + courseId)
+        );
+
+        long size = course.getCompletedCourse();
+        List<CurriculumUrlRes> curriculumUrlResList = new ArrayList<>();
+
+        List<Curriculum>curriculumList = course.getCurriculumList();
+
+        for(int i=0; i<size; i++){
+            Curriculum curriculum = curriculumList.get(i);
+            curriculumUrlResList.add(CurriculumUrlRes.fromEntity(curriculum));
+        }
+
+        return curriculumUrlResList;
     }
 }

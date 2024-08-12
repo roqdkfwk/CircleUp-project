@@ -1,6 +1,7 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CoursesRes;
+import com.ssafy.api.response.CurriculumUrlRes;
 import com.ssafy.api.service.CourseSerivce;
 import com.ssafy.api.service.RegisterService;
 import com.ssafy.common.custom.RequiredAuth;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -72,5 +74,24 @@ public class RegisterController {
         Long memberId = Long.valueOf(authentication.getName());
         registerService.cancelRegister(memberId, courseId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("courses/{course_id}/dataUrls")
+    @ApiOperation(value = "강의 학습용 문서 url, 녹화 영상 url 반환")
+    @RequiredAuth
+    @ApiResponses({
+            @ApiResponse(code = 401, message = "권한 없음(수강중인 회원이 아님)"),
+            @ApiResponse(code = 500, message = "로그인 상태가 아님")
+    })
+    public ResponseEntity<List<CurriculumUrlRes>> getCurriculumUrlList(
+            Authentication authentication,
+            @PathVariable(name = "course_id") Long courseId
+    ){
+        Long memberId = Long.valueOf(authentication.getName());
+
+        if(courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)){
+            return ResponseEntity.ok().body(courseService.getCurriculumUrlList(courseId));
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

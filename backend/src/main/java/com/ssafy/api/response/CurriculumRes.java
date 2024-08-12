@@ -13,12 +13,14 @@ public class CurriculumRes {
     Long indexNo;
     String curriculumName;
     String description;
+    Boolean isCurrent;
 
-    public static CurriculumRes of(Curriculum curriculum) {
+    public static CurriculumRes fromEntity(Curriculum curriculum, Long nextClass) {
         return CurriculumRes.builder()
                 .id(curriculum.getId())
                 .indexNo(curriculum.getIndexNo())
                 .curriculumName(curriculum.getName())
-                .description(curriculum.getDescription()).build();
+                .description(curriculum.getDescription())
+                .isCurrent(curriculum.getIndexNo().equals(nextClass+1)? true : false).build();
     }
 }

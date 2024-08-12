@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -91,34 +92,14 @@ public class CourseController {
         return ResponseEntity.ok().body(courseDetailService.getInstructorByCourseId(id));
     }
 
-    @GetMapping("/curriculums")
-    @ApiOperation(value = "커리큘럼 정보 조회")
+    @GetMapping("/courses/{course_id}/curriculums")
+    @ApiOperation(value = "커리큘럼 정보 조회", notes = "강의 id를 통해 커리큘럼들의 정보를 반환합니다.")
     @ApiResponses({
             @ApiResponse(code = 404, message = "커리큘럼 없음")
     })
     public ResponseEntity<List<CurriculumRes>> curriculumList(
-            @RequestParam(required = false, value = "id") List<Long> ids
+            @PathVariable(name = "course_id") Long courseId
     ) {
-        return ResponseEntity.ok().body(courseDetailService.getCurriculumById(ids));
-    }
-
-    @GetMapping("curriculums/{curriculum_id}/dataUrls")
-    @ApiOperation(value = "주차별 학습용 문서 url, 녹화 영상 url 반환")
-    @RequiredAuth
-    @ApiResponses({
-            @ApiResponse(code = 401, message = "권한 없음(수강중인 회원이 아님)"),
-            @ApiResponse(code = 500, message = "로그인 상태가 아님")
-    })
-    public ResponseEntity<CurriculumUrlRes> getCurrUrls(
-            Authentication authentication,
-            @PathVariable(name = "curriculum_id") Long curriculumId
-    ){
-        Long memberId = Long.valueOf(authentication.getName());
-        Long courseId = courseDetailService.getCourseIdOfCurr(curriculumId); // error 가능
-
-        if(courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)){
-        return ResponseEntity.ok().body(courseDetailService.getCurriculumUrls(curriculumId));
-    }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.ok().body(courseService.getCurriculumList(courseId));
     }
 }
