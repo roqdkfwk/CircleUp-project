@@ -1,5 +1,8 @@
 package com.ssafy.db.entity;
 
+import com.google.cloud.storage.Bucket;
+import com.ssafy.api.request.CurriculumUpdateReq;
+import com.ssafy.common.util.GCSUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,9 +37,18 @@ public class Curriculum {
     @Column
     private Long time;
 
-    @Column(name = "img_url", length = 1000)
-    private String imgUrl;
+    @Column(name = "rec_url", length = 1000)
+    private String recUrl;
 
     protected Curriculum() {
+    }
+
+    public void update(CurriculumUpdateReq curriculumUpdateReq, Bucket bucket){
+        if (curriculumUpdateReq.getName() != null) {
+            this.name=curriculumUpdateReq.getName();
+        }
+        if (curriculumUpdateReq.getDescription() != null) {
+            this.description =curriculumUpdateReq.getDescription();
+        }
     }
 }

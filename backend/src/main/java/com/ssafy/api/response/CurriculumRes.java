@@ -10,15 +10,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CurriculumRes {
     Long id;
+    Long indexNo;
     String curriculumName;
     String description;
-    String imgUrl;
 
     public static CurriculumRes of(Curriculum curriculum) {
         return CurriculumRes.builder()
                 .id(curriculum.getId())
+                .indexNo(curriculum.getIndexNo())
                 .curriculumName(curriculum.getName())
-                .imgUrl(curriculum.getImgUrl())
                 .description(curriculum.getDescription()).build();
     }
 }

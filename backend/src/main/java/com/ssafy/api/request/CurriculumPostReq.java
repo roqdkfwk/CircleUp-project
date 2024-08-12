@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class CurriculumPostReq {
-    MultipartFile img;
     String name;
     String description;
 
@@ -18,6 +17,9 @@ public class CurriculumPostReq {
                 .course(course)
                 .name(this.name)
                 .description(this.description)
+                .indexNo(course.getCurriculumList().size()+1L)
                 .build();
     }
+
+
 }

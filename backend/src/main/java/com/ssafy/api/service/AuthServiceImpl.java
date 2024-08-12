@@ -8,6 +8,7 @@ import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Member;
 import com.ssafy.db.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,14 +16,15 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    // 로그인
     @Override
     public MemberLoginPostRes login(MemberLoginPostReq loginReq) {
         Member member = memberRepository.findByEmail(loginReq.getEmail()).orElseThrow(
                 () -> new UnAuthorizedException("아이디 또는 비밀번호가 틀렸습니다")
         );
+        // if (!passwordEncoder.matches(loginReq.getPassword(), member.getPw()))
         if (!member.getPw().equals(loginReq.getPassword())) {
             throw new UnAuthorizedException("아이디 또는 비밀번호가 틀렸습니다");
         }
@@ -30,11 +32,10 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member.getId());
 
-        // Refresh 토큰을 Member 엔티티에 저장
         member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 
-        return MemberLoginPostRes.toEntity(member, accessToken, refreshToken);
+        return MemberLoginPostRes.fromEntity(member, accessToken, refreshToken);
     }
 
     @Override

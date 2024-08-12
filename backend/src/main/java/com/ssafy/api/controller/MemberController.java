@@ -1,9 +1,9 @@
 package com.ssafy.api.controller;
 
-import com.ssafy.api.request.MemberModifyUpdateReq;
+import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.request.MemberSignupPostReq;
-import com.ssafy.api.response.MemberModifyUpdateRes;
-import com.ssafy.api.response.MemberReadGetRes;
+import com.ssafy.api.response.MemberUpdatePostRes;
+import com.ssafy.api.response.MemberRes;
 import com.ssafy.api.service.MemberService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
@@ -56,7 +56,7 @@ public class MemberController {
             @ApiResponse(code = 404, message = "회원 없음")
     })
     @RequiredAuth
-    public ResponseEntity<MemberReadGetRes> readMember(
+    public ResponseEntity<MemberRes> readMember(
             Authentication authentication,
             @RequestHeader("Authorization") String accessToken
     ) {
@@ -73,11 +73,14 @@ public class MemberController {
             @ApiResponse(code = 401, message = "유효하지 않은 토큰")
     )
     @RequiredAuth
-    public ResponseEntity<MemberModifyUpdateRes> modifyMember(
+    public ResponseEntity<MemberUpdatePostRes> updateMember(
             Authentication authentication,
-            @RequestBody MemberModifyUpdateReq memberModifyUpdateReq
+            @RequestBody MemberUpdatePatchReq memberUpdatePatchReq
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        return ResponseEntity.ok().body(memberService.modifyMember(memberId, memberModifyUpdateReq));
+        MemberUpdatePostRes memberUpdatePostRes = memberService.updateMember(memberId, memberUpdatePatchReq);
+        return ResponseEntity.ok()
+                .header("Authorization", memberUpdatePostRes.getAccessToken())
+                .body(memberUpdatePostRes);
     }
 }

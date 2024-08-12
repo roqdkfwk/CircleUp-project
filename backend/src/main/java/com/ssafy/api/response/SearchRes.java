@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,7 +19,7 @@ public class SearchRes {
     Long price;
     Long view;
     Long registeredCnt;
-    List<String> tags = new ArrayList<>();
+    List<String> tags;
 
     public static SearchRes of(Course course, Long registeredCnt, List<String> tags) {
         return new SearchRes(course.getId(),
