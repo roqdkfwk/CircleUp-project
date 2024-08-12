@@ -8,6 +8,13 @@ const CourseDetailRightBoard = ({ courseId }: CourseDetailRightBoardProps) => {
 
     // <todo> - Fetch, 이전 강의 동영상 Lists 얻어오기
     // curriculum get api 통해서 얻으면 됨!
+    const fetchCurriculumList = () => {
+
+    }
+
+    const fetchCurriculumVideoUrl = () => {
+        
+    }
 
     // 만약 courseId가 내가 수강 중인 강의가 아니면 no render!
 

@@ -173,15 +173,27 @@ export const getComment = (courseId: number, reviewId: number) => {
 }
 // CREATE Comment
 export const postComment = (courseId: number, content : Record<string, unknown>) => {
-    return axiosClient.post(`courses/${courseId}/reviews`, content,);
+    return axiosClient.post(`courses/${courseId}/reviews`, content, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    });
 }
 // UPDATE Comment
 export const patchComment = (courseId: number, reviewId: number, content: Record<string, unknown>) => {
-    return axiosClient.patch(`courses/${courseId}/reviews/${reviewId}`, content,);
+    return axiosClient.patch(`courses/${courseId}/reviews/${reviewId}`, content, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    });
 }
 // DELETE Comment
 export const deleteComment = (courseId: number, reviewId: number) => {
-    return axiosClient.delete(`courses/${courseId}/reviews/${reviewId}`,)
+    return axiosClient.delete(`courses/${courseId}/reviews/${reviewId}`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
 }
 
 /* Member API */
@@ -302,12 +314,12 @@ axiosClient.interceptors.response.use(
                     headers : {'refresh' : refreshToken}
                 });
             
-                const newRefreshToken = response.headers['refresh'];
+                const newAccessToken = response.headers['authorization'];
                 console.log(response.headers)
                 
-                originalRequest.headers.Authorization = `${newRefreshToken}`;
+                originalRequest.headers.Authorization = `${newAccessToken}`;
                 
-                localStorage.setItem("accessToken", newRefreshToken);
+                localStorage.setItem("accessToken", newAccessToken);
                 //localStorage.setItem("refreshToken", newRefreshToken);
                 return axiosClient(originalRequest);
 
