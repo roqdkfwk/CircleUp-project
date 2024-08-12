@@ -24,7 +24,6 @@ const CommentCard = ({ data, updateFunc }: CommentProps) => {
       alert("삭제 완료!")
       updateFunc(data.id);
       fetchDeleteComment();
-      //window.location.href = `/courseDetail/${data.courseId}`;
 
     } catch (error) {
       console.error("오류로 인해 삭제 할 수 없습니다!");

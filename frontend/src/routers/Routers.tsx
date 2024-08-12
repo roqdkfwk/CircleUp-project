@@ -14,6 +14,9 @@ import CourseManagementMake from "../pages/Instructor/CourseManagementMake";
 import CurriculumDetail from "../pages/CurriculumDetail";
 import CurriculumManagementDetail from "../pages/Instructor/CurriculumManagementDetail";
 import CurriculumManagementModify from "../pages/Instructor/CurriculumManagementModify";
+import NoticeDetail from "../pages/NoticeDetail";
+import NoticeMake from "../pages/Instructor/NoticeMake";
+import NoticeModify from "../pages/Instructor/NoticeModify";
 
 const Router = () => {
   return (
@@ -28,9 +31,11 @@ const Router = () => {
         <Route path="/courseManagementMake" element={<CourseManagementMake />} />
         <Route path="/courseManagementModify/:courseId" element={<CourseManagementModify />} />
         <Route path="/courseManagementDetail/:courseId" element={<CourseManagementDetail />} />
+        <Route path="/courseNoticeMake/:courseId" element={<NoticeMake />} />
+        <Route path="/courseNoticeModify/:courseId" element={<NoticeModify />} />
 
         <Route path="/curriculumDetail/:courseId" element={<CurriculumDetail />} />
-        <Route path="/NoticeDetail/:courseId" element={<></>} />
+        <Route path="/NoticeDetail/:courseId" element={< NoticeDetail />} />
 
         <Route
           path="/curriculumManagementDetail/:courseId"

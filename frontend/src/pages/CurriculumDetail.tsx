@@ -31,8 +31,6 @@ const CurriculumDetail = () => {
         const response = await getIsLive(Number(courseId));
 
         if (response.status === 200) {
-            console.log(response.data)
-            console.log("@@NOW LIVE@@")
             setIsLive(response.data)
         }
     }

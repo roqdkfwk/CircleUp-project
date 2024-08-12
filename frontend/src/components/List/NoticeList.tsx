@@ -5,9 +5,10 @@ import NoticeCard from "../Card/NoticeCard";
 
 interface NoticeListProps {
     courseId: number,
+    isModify : string,
 }
 
-const NoticeList = ( { courseId } : NoticeListProps ) => {
+const NoticeList = ( { courseId, isModify } : NoticeListProps ) => {
     
     const [noitces, setNotices] = useState<NoticeInfo[]>([]);
 
@@ -39,13 +40,13 @@ const NoticeList = ( { courseId } : NoticeListProps ) => {
         const startIndex = (currentPage - 1) * noticesPerPage;
         const selectedNotices = noitces.slice(startIndex, startIndex + noticesPerPage);
 
-        return selectedNotices.map((notice) => (
-            <NoticeCard data={notice} />
+        return selectedNotices.map((notice, idx) => (
+            <NoticeCard idx={idx+1} data={notice} courseId={courseId} isModify={isModify} />
         ));
     };
 
     return (
-        <div className="notice-list">
+        <div className="notice-list w-full">
             {renderNotices()}
 
             <nav aria-label="Page navigation example">
