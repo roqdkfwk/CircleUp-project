@@ -88,6 +88,10 @@ public class BasicService {
                 () -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
+    public boolean existsMemberByEmail(String email) {
+        return memberRepository.findByEmail(email).isPresent();
+    }
+
     // InstructorRepository
     @Transactional(readOnly = true)
     public Instructor findInstructorByInstructorId(Long instructorId) {
