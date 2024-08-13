@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
+import { deleteNotice, patchNotice } from "../../services/api";
 
 interface NoticeModifyProps {
     title: string,
@@ -8,14 +9,19 @@ interface NoticeModifyProps {
 
 const NoticeModify = () => {
 
-    const { courseId } = useParams<{ courseId: string }>();
     const naviage = useNavigate();
     const location = useLocation();
+    const { courseId } = useParams<{ courseId: string }>();
+    const announcementId = location.state.id;
 
     const [newNotice, setNewNotice] = useState<NoticeModifyProps>({
-        title: location.state,
-        content: "",
+        title: location.state.title,
+        content: location.state.content,
     });
+
+    const fetchDelete = async () => {
+        return await deleteNotice(Number(courseId), announcementId);
+    }
 
     const handleNewNoticeTitle = (e: ChangeEvent<HTMLInputElement>) => {
         setNewNotice({ ...newNotice, title: e.target.value })
@@ -34,13 +40,18 @@ const NoticeModify = () => {
                 content: newNotice.content
             };
 
-            await postNotice(Number(courseId), JsonData);
+            await patchNotice(Number(courseId), Number(announcementId), JsonData);
             window.location.href = `/courseManagementDetail/${courseId}`;
 
         } catch (error) {
-            alert("공지사항 생성에 실패하였습니다.")
-            console.error("공지사항 생성에 실패하였습니다.", error)
+            alert("공지사항 수정에 실패하였습니다.")
+            console.error("공지사항 수정에 실패하였습니다.", error)
         }
+    }
+
+    const handleDelete = () => {
+        fetchDelete();
+        naviage(`courseManagementDetail/${courseId}`);
     }
 
     const handleGoBack = () => {
@@ -95,9 +106,16 @@ const NoticeModify = () => {
                             text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     type="button"
                     onClick={handleSubmit}>
-                    공지사항 만들기
+                    공지사항 수정
                 </button>
-
+                <button
+                    className="block text-white bg-blue-700 hover:bg-blue-800 
+                            focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
+                            text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    type="button"
+                    onClick={handleDelete}>
+                    삭제하기
+                </button>
                 <button
                     className="block text-white bg-blue-700 hover:bg-blue-800 
                             focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg 

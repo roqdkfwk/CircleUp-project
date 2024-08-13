@@ -1,5 +1,6 @@
 
 export interface NoticeInfo {
+    id: number,
     author: string,
     content: string,
     createdAt: string,

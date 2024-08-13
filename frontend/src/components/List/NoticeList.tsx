@@ -41,7 +41,7 @@ const NoticeList = ( { courseId, isModify } : NoticeListProps ) => {
         const selectedNotices = noitces.slice(startIndex, startIndex + noticesPerPage);
 
         return selectedNotices.map((notice, idx) => (
-            <NoticeCard idx={idx+1} data={notice} courseId={courseId} isModify={isModify} />
+            <NoticeCard key={idx} idx={idx+1} data={notice} courseId={courseId} isModify={isModify} />
         ));
     };
 

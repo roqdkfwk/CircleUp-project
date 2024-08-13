@@ -13,7 +13,13 @@ const NoticeDetail = () => {
 
     // Todo : Modify == instrcutor 인 경우 modify 버튼 구현
     const handleModify = () => {
-        navigate(`/courseNoticeModify/${courseId}`, {state : {title : noticeData.title, content : noticeData.content}})
+        navigate(`/courseNoticeModify/${courseId}`, {
+            state: {
+                title: noticeData.title,
+                content: noticeData.content,
+                id: noticeData.id,
+            }
+        })
     }
 
     return (

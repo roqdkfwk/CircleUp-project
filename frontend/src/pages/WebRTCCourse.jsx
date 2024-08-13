@@ -131,6 +131,7 @@ class VideoRoomComponent extends Component {
       },
       async () => {
         this.subscribeToStreamCreated();
+        this.subscribeToEndSession();  // session이 초기화된 후에 호출
         await this.connectToSession();
       }
     );
@@ -307,11 +308,6 @@ class VideoRoomComponent extends Component {
     }
   }
 
-  
-
-
-  ///////////////////////////////////////////////////////////////////
-
   updateSubscribers() {
     var subscribers = this.remotes;
     this.setState(
@@ -331,19 +327,38 @@ class VideoRoomComponent extends Component {
       }
     );
   }
-/////////////////////////////////////<ToDo>/////////////////////////////////////////////////////  
+
+  // 강사가 종료 시그널을 보내는 함수
+  sendEndSessionSignal() {
+    const signalOptions = {
+        data: JSON.stringify({ endSession: true }),
+        type: "endSession",  // 신호 유형 지정
+    };
+    this.state.session.signal(signalOptions);
+  }
+  // 수강생이 종료 시그널을 받도록 하는 함수
+  subscribeToEndSession() {
+    this.state.session.on("signal:endSession", (event) => {
+      // 세션 종료 신호를 수신했을 때 동작
+      console.log("Session 종료 신호를 수신했습니다:", event.data);
+      window.location.href = `/courseDetail/${this.props.course_id}`;
+    });
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
   leaveSession() {
     const mySession = this.state.session;
 
     if (this.state.role === 'Instructor') {
-      console.log(this.props)
-      console.log(this.state)
+      
+      // 세션 종료 신호를 전송
+      this.sendEndSessionSignal();
+
       this.fetchLeaveLiveSession(Number(this.props.course_id), this.props.curriculum_id);
       console.log("endend by" + this.state.myUserName)
     }
-    else
-      alert("강의를 종료합니다.");
+    
+    console.log(this.state)
 
     if (mySession) {
       mySession.disconnect();
@@ -362,8 +377,8 @@ class VideoRoomComponent extends Component {
       this.props.leaveSession();
     }
 
-    // redirect 사용하여, 메인 페이지로 이동하기
-    window.location.href = `/courseDetail/${this.props.course_id}`;
+   // 모든 사용자(강사 포함)가 세션을 떠나 메인 페이지로 이동
+    //window.location.href = `/courseDetail/${this.props.course_id}`;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
