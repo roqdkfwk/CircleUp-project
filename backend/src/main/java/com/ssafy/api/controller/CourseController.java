@@ -2,18 +2,14 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseDetailService;
-import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.common.custom.RequiredAuth;
+import com.ssafy.api.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -24,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseController {
 
-    private final CourseSerivce courseService;
+    private final CourseService courseService;
     private final CourseDetailService courseDetailService;
 
     @GetMapping("/tag")

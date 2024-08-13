@@ -2,7 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CoursesRes;
 import com.ssafy.api.response.CurriculumUrlRes;
-import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.CourseService;
 import com.ssafy.api.service.RegisterService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredAuth
 public class RegisterController {
 
-    private final CourseSerivce courseService;
+    private final CourseService courseService;
     private final RegisterService registerService;
 
     @GetMapping("/courses/registers")
@@ -86,10 +86,10 @@ public class RegisterController {
     public ResponseEntity<List<CurriculumUrlRes>> getCurriculumUrlList(
             Authentication authentication,
             @PathVariable(name = "course_id") Long courseId
-    ){
+    ) {
         Long memberId = Long.valueOf(authentication.getName());
 
-        if(courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)){
+        if (courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)) {
             return ResponseEntity.ok().body(courseService.getCurriculumUrlList(courseId));
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

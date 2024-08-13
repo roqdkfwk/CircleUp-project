@@ -1,9 +1,12 @@
 package com.ssafy.api.controller;
 
-import com.ssafy.api.request.*;
+import com.ssafy.api.request.CourseCreatePostReq;
+import com.ssafy.api.request.CourseModifyUpdateReq;
+import com.ssafy.api.request.CurriculumPostReq;
+import com.ssafy.api.request.CurriculumUpdateReq;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.CoursesRes;
-import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.CourseService;
 import com.ssafy.api.service.InstructionService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
@@ -27,7 +30,7 @@ import java.util.List;
 @RequiredAuth
 public class InstructionController {
 
-    private final CourseSerivce courseService;
+    private final CourseService courseService;
     private final InstructionService instructionService;
 
     @GetMapping("/courses/instructions")
