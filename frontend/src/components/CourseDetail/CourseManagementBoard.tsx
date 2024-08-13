@@ -4,6 +4,8 @@ import CourseInputArea from "../CourseManagementContent/CourseInputArea";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useUserStore } from "../../store/store";
 import CourseCurriculumContent from "./Content/CourseCurriculumContent";
+import CourseCommentContent from "./Content/CourseCommentContent";
+import CourseNoticeContent from "./Content/CourseNoticeContent";
 
 interface CourseManagementBoardProps {
     flag: string,
@@ -184,8 +186,8 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                         <CourseCurriculumContent isModify={flag} currIds={myCourse.curriculums}
                             courseId={myCourse.id} onCurriculums={updateCurriculums} />
                         : <></>}
-                    {activeTab === '공지사항' ? <div>공지사항 게시판 구현</div> : <></>}
-                    {activeTab === '코멘트' ? <div>코멘트 게시판 구현</div> : <></>}
+                    {activeTab === '공지사항' && <CourseNoticeContent isModify={flag} courseId={data.id} />}
+                    {activeTab === '코멘트' && <CourseCommentContent isModify={flag} courseId={data.id} />}
                 </div>
             </div>);
     }
