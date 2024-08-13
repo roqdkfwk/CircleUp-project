@@ -176,8 +176,8 @@ public class InstructionService {
             }
 
             Curriculum curriculum = curriculumPostReq.toEntity(course);
-
             basicService.saveCurriculum(curriculum);
+            basicService.updateTotalCourse(course);
 
             return CourseRes.fromEntity(course);
         } catch (Exception e) {
@@ -243,6 +243,7 @@ public class InstructionService {
         }
 
         basicService.deleteCurriculum(curriculum);
+        basicService.updateTotalCourse(course);
     }
 
     //

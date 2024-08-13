@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
     List<Curriculum> findAllByCourseId(Long courseId);
+    Long countByCourseId(Long courseId);
 }

@@ -58,6 +58,13 @@ public class BasicService {
         curriculumRepository.save(curriculum);
     }
 
+    @Transactional
+    public void updateTotalCourse(Course course){
+        Long cnt = curriculumRepository.countByCourseId(course.getId());
+        course.setTotalCourse(cnt);
+        courseRepository.save(course);
+    }
+
     @Transactional(readOnly = true)
     public List<Curriculum> findAllCurriculum() {
         return curriculumRepository.findAll();
