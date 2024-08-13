@@ -132,6 +132,7 @@ class VideoRoomComponent extends Component {
       async () => {
         this.subscribeToStreamCreated();
         this.subscribeToEndSession();  // session이 초기화된 후에 호출
+        this.subscribeToUserLeft();  // 사용자 퇴장 신호 구독
         await this.connectToSession();
       }
     );
@@ -341,7 +342,39 @@ class VideoRoomComponent extends Component {
     this.state.session.on("signal:endSession", (event) => {
       // 세션 종료 신호를 수신했을 때 동작
       console.log("Session 종료 신호를 수신했습니다:", event.data);
+      
+      this.disconnect();
       window.location.href = `/courseDetail/${this.props.course_id}`;
+    });
+  }
+  
+// 사용자가 세션을 떠났다는 신호를 보내는 메서드
+sendSignalUserLeft() {
+  const signalOptions = {
+      data: JSON.stringify({ userLeft: this.state.myUserName }),
+      type: "userLeft",
+  };
+  this.state.session.signal(signalOptions)
+      .then(() => {
+          console.log("User left signal sent successfully.");
+      })
+      .catch(error => {
+          console.error("Error sending user left signal: ", error);
+      });
+  }
+// 모든 사용자는 다른 사용자가 떠났다는 신호를 수신했을 때, 그 사용자를 화면에서 제거
+subscribeToUserLeft() {
+    this.state.session.on('signal:userLeft', (event) => {
+        const data = JSON.parse(event.data);
+        const username = data.userLeft;
+
+        // 떠난 사용자를 subscribers에서 제거
+        const updatedSubscribers = this.state.subscribers.filter(user => user.getNickname() !== username);
+
+        this.setState({ subscribers: updatedSubscribers }, () => {
+            console.log(username + " has left the session.");
+            this.updateLayout();  // 레이아웃 갱신
+        });
     });
 }
 
@@ -355,12 +388,10 @@ class VideoRoomComponent extends Component {
       this.sendEndSessionSignal();
 
       this.fetchLeaveLiveSession(Number(this.props.course_id), this.props.curriculum_id);
-      console.log("endend by" + this.state.myUserName)
     }
     
-    console.log(this.state)
-
     if (mySession) {
+      this.sendSignalUserLeft();
       mySession.disconnect();
       console.log("#########disconnect############")
     }
