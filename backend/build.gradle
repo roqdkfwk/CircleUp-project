@@ -131,6 +131,9 @@ dependencies {
 
     // Openvidu
     implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 test {
