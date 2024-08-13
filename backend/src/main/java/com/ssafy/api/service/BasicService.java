@@ -40,6 +40,7 @@ public class BasicService {
         );
     }
 
+    @Transactional
     public void saveCourse(Course course) {
         courseRepository.save(course);
     }
@@ -52,6 +53,7 @@ public class BasicService {
         );
     }
 
+    @Transactional
     public void saveCurriculum(Curriculum curriculum) {
         curriculumRepository.save(curriculum);
     }
@@ -66,6 +68,7 @@ public class BasicService {
         return curriculumRepository.findAllById(curriculumIds);
     }
 
+    @Transactional
     public void deleteCurriculum(Curriculum curriculum) {
         curriculumRepository.delete(curriculum);
     }
