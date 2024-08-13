@@ -2,18 +2,14 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseDetailService;
-import com.ssafy.api.service.CourseSerivce;
-import com.ssafy.common.custom.RequiredAuth;
+import com.ssafy.api.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -24,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseController {
 
-    private final CourseSerivce courseService;
+    private final CourseService courseService;
     private final CourseDetailService courseDetailService;
 
     @GetMapping("/tag")
@@ -34,7 +30,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses")
-    @ApiOperation(value = "강의 목록 조회", notes = "Approved 상태의 강의만 결과로 반환됩니다.")
+    @ApiOperation(value = "강의 목록 조회")
     public ResponseEntity<List<CoursesRes>> courselist(
             @RequestParam(required = false) String type,
             @RequestParam(required = false, defaultValue = "0") int page,
@@ -52,7 +48,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/search")
-    @ApiOperation(value = "강의 검색 결과 조회", notes = "Approved 상태의 강의만 결과로 반환됩니다.")
+    @ApiOperation(value = "강의 검색 결과 조회")
     public ResponseEntity<List<SearchRes>> searchResults(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, value = "tag") List<Long> tags,
@@ -69,7 +65,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/{course_id}")
-    @ApiOperation(value = "강의 정보 상세 조회", notes = "요청자의 권한에 따라 접근 못하는 강의가 존재합니다.")
+    @ApiOperation(value = "강의 정보 상세 조회")
     @ApiResponses({
             @ApiResponse(code = 400, message = "강의에 접근 권한 없음"),
             @ApiResponse(code = 404, message = "해당 강의 없음")

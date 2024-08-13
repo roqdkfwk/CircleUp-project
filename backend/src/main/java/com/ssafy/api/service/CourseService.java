@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CourseSerivce {
+public class CourseService {
 
     private final CourseRepository courseRepository;
     private final BasicService basicService;
@@ -189,7 +189,7 @@ public class CourseSerivce {
         return true;
     }
 
-    public List<CurriculumRes> getCurriculumList(Long courseId){
+    public List<CurriculumRes> getCurriculumList(Long courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("Course not found : Course_id is " + courseId)
         );
@@ -199,7 +199,7 @@ public class CourseSerivce {
                 .collect(Collectors.toList());
     }
 
-    public List<CurriculumUrlRes> getCurriculumUrlList(Long courseId){
+    public List<CurriculumUrlRes> getCurriculumUrlList(Long courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(
                 () -> new NotFoundException("Course not found : Course_id is " + courseId)
         );
@@ -207,9 +207,9 @@ public class CourseSerivce {
         long size = course.getCompletedCourse();
         List<CurriculumUrlRes> curriculumUrlResList = new ArrayList<>();
 
-        List<Curriculum>curriculumList = course.getCurriculumList();
+        List<Curriculum> curriculumList = course.getCurriculumList();
 
-        for(int i=0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             Curriculum curriculum = curriculumList.get(i);
             curriculumUrlResList.add(CurriculumUrlRes.fromEntity(curriculum));
         }
