@@ -1,9 +1,9 @@
 import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { Member } from "../../types/Member";
-import MakeTagModal from "./MakeTagModal";
+// import MakeTagModal from "./MakeTagModal";
 import { postSignUp, getAllTages } from "../../services/api";
 import { useNavigate } from "react-router";
-import { tagMapping } from "../../services/tagMapping";
+// import { tagMapping } from "../../services/tagMapping";
 
 interface SignUpModalProps {
     show: boolean,
@@ -29,7 +29,7 @@ const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
         contactTel: '',
         tags: [],
     });
-    const [showModal, setShowModal] = useState<boolean>(false);
+    // const [showModal, setShowModal] = useState<boolean>(false);
     const [allTags, setAllTags] = useState<{ id: number, tagName: string }[]>([]);
 
     useEffect(() => {
@@ -56,10 +56,10 @@ const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
 
     const handleInputTags = (tagId: number) => {
         setUserInfo((prevState) => {
-            const isTagSelected = prevState.tags.includes(tagId);
+            const isTagSelected = prevState.tags.includes(tagId.toString());
             const updatedTags = isTagSelected
-                ? prevState.tags.filter((id) => id !== tagId)
-                : [...prevState.tags, tagId];
+                ? prevState.tags.filter((id) => id !== tagId.toString())
+                : [...prevState.tags, tagId.toString()];
             return { ...prevState, tags: updatedTags };
         });
     };
@@ -216,7 +216,7 @@ const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
                                 />
                             </svg>
                         </button>
-                    </div>
+                </div>
 
                     <div className="p-4 md:p-5">
                         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -385,7 +385,7 @@ const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
                                             <input
                                                 id={`tag-${tag.id}`}
                                                 type="checkbox"
-                                                checked={userInfo.tags.includes(tag.id)}
+                                                checked={userInfo.tags.includes(tag.id.toString())}
                                                 onChange={() => handleInputTags(tag.id)}
                                                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                             />
