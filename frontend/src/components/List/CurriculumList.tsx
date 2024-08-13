@@ -2,7 +2,6 @@ import { CurriculumInfo } from "../../types/CurriculumInfo";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Grid, Pagination } from 'swiper/modules';
 import Curriculum from "../Card/Curriculum";
-import { useLiveStore } from "../../store/store";
 import { useEffect, useState } from "react";
 
 
@@ -14,16 +13,8 @@ interface CurriculumListprops {
 
 const CurriculumList = ({ data, courseId, isModfy }: CurriculumListprops) => {
 
-    const { liveCurriculumIds } = useLiveStore();
-
     const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
     
-    const checkLiveCurri = (curriId: number): boolean => {
-        if (liveCurriculumIds.includes(curriId))
-            return true;
-        return false;
-    }
-
     useEffect(() => {
         setCurriculums(data);
     }, [data]);
@@ -48,7 +39,7 @@ const CurriculumList = ({ data, courseId, isModfy }: CurriculumListprops) => {
                 >
                     {curriculums.map((curri, idx) => (
                         <SwiperSlide key={idx}>
-                            <Curriculum data={curri} isModfy={isModfy} courseId={courseId} isLive={checkLiveCurri(curri.id)} />
+                            <Curriculum data={curri} isModfy={isModfy} courseId={courseId} />
                         </SwiperSlide>
 
                     ))}

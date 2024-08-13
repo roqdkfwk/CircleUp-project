@@ -47,19 +47,3 @@ export const useSearchStore = create<SearchState>((set) => ({
   searchValue: '',
   setSearchValue: (value) => set({ searchValue: value }),
 }));
-
-interface LiveState {
-  liveCourseIds: number[];
-  liveCurriculumIds: number[];
-
-  setLiveCourseIds: (newLiveCourseIds: number[]) => void;
-  setLiveCurriculumIds: (newLiveCurriculumIds: number[]) => void;
-}
-
-export const useLiveStore = create<LiveState>((set) => ({
-  liveCourseIds: [],
-  liveCurriculumIds: [],
-
-  setLiveCourseIds: (newLiveCourseIds) => set({ liveCourseIds: [...newLiveCourseIds] }),
-  setLiveCurriculumIds: (newLiveCurriculumIds) => set({ liveCurriculumIds: [...newLiveCurriculumIds] })
-}));

@@ -28,7 +28,6 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
         instructorName: nickName,
         description: '',
         tags: [],
-        curriculums: [],
         view: 0,
         price: 0,
         rating: 3,
@@ -64,10 +63,6 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
     const updateDescription = (newContent: string) => {
         myCourse.description = newContent;
         onNewMyCourse!(myCourse)
-    }
-
-    const updateCurriculums = (newCurriIds: number[]) => {
-        myCourse.curriculums = newCurriIds;
     }
 
     useEffect(() => {
@@ -183,8 +178,8 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                         }
                     )() : <></>}
                     {activeTab === '커리큘럼' ?
-                        <CourseCurriculumContent isModify={flag} currIds={myCourse.curriculums}
-                            courseId={myCourse.id} onCurriculums={updateCurriculums} />
+                        <CourseCurriculumContent isModify={flag}
+                            courseId={myCourse.id} />
                         : <></>}
                     {activeTab === '공지사항' && <CourseNoticeContent isModify={flag} courseId={data.id} />}
                     {activeTab === '코멘트' && <CourseCommentContent isModify={flag} courseId={data.id} />}

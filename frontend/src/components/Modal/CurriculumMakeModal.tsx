@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { CurriculumInfo } from "../../types/CurriculumInfo";
 import { postCurriculum } from "../../services/api";
 
@@ -7,25 +7,19 @@ interface CurriModalProps {
     show: boolean,
     onClose: () => void,
 
-    curri: CurriculumInfo[],
-    updateFunc: (newCurri: CurriculumInfo[]) => void;
+    //curri: CurriculumInfo[],
+    //updateFunc: (newCurri: CurriculumInfo[]) => void;
 }
 
-const CurriculumMakeModal = ({ show, curri, updateFunc, courseId, onClose }: CurriModalProps) => {
+const CurriculumMakeModal = ({ show, courseId, onClose }: CurriModalProps) => {
 
     const [newCurriculum, setNewCurriculum] = useState<CurriculumInfo>({
         id: 0,
         curriculumName: '',
         description: '',
-        imgUrl: '',
+        indexNo: 0,
+        isCurrent: false
     });
-
-    const hiddenFileInput = useRef<HTMLInputElement | null>(null);
-    const [newFile, setNewFile] = useState<FileList | null>(null);
-
-    const handleClick = () => {
-        hiddenFileInput.current?.click();
-    }
 
     const handleCurriculumName =
         (e: ChangeEvent<HTMLInputElement>) => setNewCurriculum({ ...newCurriculum, curriculumName: e.target.value });
@@ -33,44 +27,27 @@ const CurriculumMakeModal = ({ show, curri, updateFunc, courseId, onClose }: Cur
     const handleDescription
         = (e: ChangeEvent<HTMLInputElement>) => setNewCurriculum({ ...newCurriculum, description: e.target.value });
 
-    const handleAddImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const Files = e.target?.files;
-        const fileUploaded = Files?.[0];
-        /*<ToDo> - Error 처리를 따로 해 주기 => checkImg(fileUploaded)*/
-        if (fileUploaded) {
-            const imageUrl = URL.createObjectURL(fileUploaded);
-            setNewCurriculum({ ...newCurriculum, imgUrl: imageUrl });
-            setNewFile(Files);
-        }
-    }
-
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         try {
             const formData = new FormData();
 
-            for (let i = 0; i < newFile!.length; i++)
-                formData.append("img", newFile![i])
-
             formData.append('description', newCurriculum.description);
             formData.append('name', newCurriculum.curriculumName);
 
             const response = await postCurriculum(formData, courseId);
             console.log(response.data);
-            const newId : number = response.data;
-
+            //const newId : number = response.data;
             alert('커리큘럼 생성 성공!')
-            updateFunc([...curri, { ...newCurriculum, id: newId, }])
-
+            //updateFunc([...curri, { ...newCurriculum, id: newId, }])
             onClose();
-            //window.location.href = `/courseManagementModify/${courseId}`
+            window.location.href = `/courseManagementModify/${courseId}`
 
         } catch (error) {
             alert('커리큘럼 추가에 실패하셨습니다.')
         }
     }
-
 
     if (!show) {
         return null;
@@ -107,27 +84,6 @@ const CurriculumMakeModal = ({ show, curri, updateFunc, courseId, onClose }: Cur
 
                 <div className="p-4 md:p-5">
                     <form className="space-y-4" action="#">
-                        <input
-                            type="file" onChange={handleAddImg}
-                            ref={hiddenFileInput}
-                            style={{ display: 'none' }} />
-                        <button className="
-                                rounded-lg h-60 w-[250px]
-                                hover:scale-105
-                                bg-[url('./assets/images/Img_Default.jpg')]
-                                bg-contain
-                                "
-                            style={{
-                                backgroundSize: 'cover',
-                                overflow: 'hidden',
-                                backgroundImage: newCurriculum.imgUrl ?
-                                    `url("${newCurriculum.imgUrl}")` : ""
-                            }}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleClick();
-                            }}
-                        />
 
                         <label htmlFor="curriculumName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             커리큘럼 이름

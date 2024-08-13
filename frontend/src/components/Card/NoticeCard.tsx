@@ -12,8 +12,8 @@ const NoticeCard = ( { data, courseId, isModify, idx }: NoticeCardProps ) => {
 
     return (
         <Link to={`/NoticeDetail/${courseId}`} state={{data : data, flag : isModify}}
-            className="flex flex-col w-full items-center bg-white border border-gray-200 rounded-lg shadow
-         md:flex-row md:max-w-xl hover:bg-gray-100 md:h-auto
+            className="flex flex-col justify-between items-center bg-white border border-gray-200 rounded-lg shadow
+         mx-2 md:flex-row md:max-w-full hover:bg-gray-100 md:h-auto
         dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
         >
             <h6 className="p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

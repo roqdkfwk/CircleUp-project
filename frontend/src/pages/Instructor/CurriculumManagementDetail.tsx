@@ -3,13 +3,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CurriculumInfo } from "../../types/CurriculumInfo";
 
 const CurriculumManagementDetail = () => {
-    // <ToDo> - curriculum 상세 페이지
-    // 해당 페이지는 라이브변수가 있어야 함
-    // 만약 라이브변수가 true -> 라이브 접속 가능..
+
     const location = useLocation();
     const navigate = useNavigate();
     
-    //const [live, setLive] = useState<boolean>(false);
     const { courseId } = useParams <{courseId : string}>();
     const [curriData] = useState<CurriculumInfo>(location.state.data);
 
@@ -22,13 +19,8 @@ const CurriculumManagementDetail = () => {
             )
     }
 
-    // {..} 커리큘럼 라이브강의 저장소 (?)
     return (
         <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <div className="relative">
-                <img className="rounded-t-lg w-full" src={curriData.imgUrl} alt="" />
-            </div>
-
             <div className="p-5">
                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {curriData.curriculumName}

@@ -15,21 +15,21 @@ const CourseNoticeContent = ({ courseId, isModify }: CourseNoticeContentProps) =
     }
 
     return (
-        <div className="flex">
+        <div className="flex flex-col">
 
-            <div className="w-full">
+            <div className="">
                 <NoticeList courseId={courseId} isModify={isModify} />
             </div>
 
-            <div className="button-area">
+            <div className="flex w-full justify-center">
             {isModify === "instructorModify" &&
                 <button type="button"
                     className="
-                    w-1/2 h-1/2
+                    w-[200px] h-auto
                     text-white bg-blue-700 hover:bg-blue-800 
                     focus:ring-4 focus:ring-blue-300 
                     font-medium rounded-lg 
-                    text-sm px-4 py-2.5 mx-10 my-10
+                    text-sm px-4 py-2.5 mb-5
                     focus:outline-none dark:focus:ring-blue-800
                     "
                     onClick={handleNoticeMake}

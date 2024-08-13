@@ -7,17 +7,13 @@ import CurriculumMakeModal from "../../Modal/CurriculumMakeModal";
 interface CourseCurriculumContent {
 
     isModify: string,
-    
-    currIds: number[],
     courseId: number,
-    onCurriculums: (newCurrIds : number[]) => void,
 }
 
-const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : CourseCurriculumContent) => {
+const CourseCurriculumContent = ({isModify, courseId} : CourseCurriculumContent) => {
 
     const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false);
-    const [, setNewCurrIds] = useState<number[]>([]);
     
     //const [myCurriIds, setMyCurriIds] = useState<number[]>([]);
     const toggleModal = () => {
@@ -26,32 +22,21 @@ const CourseCurriculumContent = ({isModify, currIds, onCurriculums, courseId} : 
 
     // <Todo> : fetch curriculum : GET
     const handleGetCurriculums = async () => {
-        const response = await getCurriculums(currIds);
+        const response = await getCurriculums(courseId);
         setCurriculums(response.data);
     }
     
-    const handleCurris = (newCurris : CurriculumInfo[]) => {
-        setCurriculums([...newCurris])
-        const newCurrIds : number[] = [];
-        newCurris.forEach((curri) => {
-           newCurrIds.push(curri.id)
-        })
-
-        setNewCurrIds(newCurrIds)
-        onCurriculums(newCurrIds)
-    }
+    // const handleCurris = (newCurris : CurriculumInfo[]) => {
+    //     setCurriculums([...newCurris])
+    // }
 
     useEffect(() => {
-
-        if (currIds.length != 0) {
-            setNewCurrIds(currIds);
-            handleGetCurriculums();
-        }
-    }, [currIds])
+        handleGetCurriculums();
+    }, [courseId])
     
     return (
         <div className="flex flex-row items-center">
-            <CurriculumMakeModal show={showModal} curri={curriculums} updateFunc={handleCurris} onClose={toggleModal} courseId={courseId} />
+            <CurriculumMakeModal show={showModal} onClose={toggleModal} courseId={courseId} />
             <div>
                 <CurriculumList data={curriculums} isModfy={isModify} courseId={courseId} />
             </div>

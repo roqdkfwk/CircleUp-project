@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CurriculumInfo } from "../types/CurriculumInfo";
-//import video_camera from './../assets/svgs/videoCamera.svg';
 import { useUserStore } from "../store/store";
-import { getIsLive } from "../services/api";
 
 const CurriculumDetail = () => {
 
@@ -12,10 +10,9 @@ const CurriculumDetail = () => {
 
     const { nickName } = useUserStore();
 
-    // const [live, setLive] = useState<boolean>(false);
     const { courseId } = useParams<{ courseId: string }>();
     const [curriData] = useState<CurriculumInfo>(location.state.data)
-    const [isLive, setIsLive] = useState<boolean>(false);
+    
     const flag: string = location.state.flag;
 
     const searchParams = new URLSearchParams(location.search);
@@ -27,14 +24,6 @@ const CurriculumDetail = () => {
         });
     }
 
-    const fetchIsLiveCourse = async () => {
-        const response = await getIsLive(Number(courseId));
-
-        if (response.status === 200) {
-            setIsLive(response.data)
-        }
-    }
-
     const handleEnterLive = () => {
         navigate(`/course/live/${courseId}`, {
             state: {
@@ -42,10 +31,6 @@ const CurriculumDetail = () => {
             }
         })
     }   
-
-    useEffect(() => {
-        fetchIsLiveCourse();
-    }, []);
 
     return (
         <div className="max-w-sm mt-5 ml-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -65,7 +50,7 @@ const CurriculumDetail = () => {
                     </button>
                 }
                 {flag === "userDetail" && (
-                    isLive ?
+                    curriData.isCurrent ?
                         <button type="button" onClick={handleEnterLive}
                             className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                             Join Live!

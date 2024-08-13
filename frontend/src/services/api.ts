@@ -124,16 +124,8 @@ export const checkUserCourse = (course_id: number) => {
 
 /* Curriculum API */
 // 커리큘럼 조회
-export const getCurriculums = (data: number[]) => {
-    let query = `/curriculums?`;
-    console.log(data)
-    data.forEach((id: number, index: number) => {
-        index !== data.length - 1 ?
-            query += `id=${id}&` :
-            query += `id=${id}`
-    })
-
-    return axiosClient.get(query);
+export const getCurriculums = (courseId : number) => {
+   return axiosClient.get(`courses/${courseId}/curriculums`)
 }
 // 커리큘럼 추가
 export const postCurriculum = (data: FormData, course_id : number) => {

@@ -174,7 +174,7 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
                 </blockquote>}
 
             {activeTab === '커리큘럼' &&
-                <CourseCurriculumContent isModify={'userDetail'} currIds={data.curriculums} courseId={data.id} onCurriculums={() => { }} />
+                <CourseCurriculumContent isModify={'userDetail'} courseId={data.id} />
             }
 
             {activeTab === '공지사항' &&
