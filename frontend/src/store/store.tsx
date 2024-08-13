@@ -1,12 +1,12 @@
-import create from 'zustand';
+import create from "zustand";
 import { persist } from "zustand/middleware";
 
 // 관리자 여부, 닉네임, 이메일
 /*
     authorizedLevel
-        1 : admin
-        2 : instructor
-        3 : user
+        1 : Admin
+        2 : Instructor
+        3 : User
 */
 interface Store {
   nickName: string;
@@ -22,21 +22,26 @@ interface Store {
   setIsLoggedIn: (status: boolean) => void;
 }
 
-export const useUserStore = create(persist<Store>((set) => ({
-  nickName: "",  
-  email: "",
-  role: "",
-  myCourseId: [],
-  isLoggedIn: false,
+export const useUserStore = create(
+  persist<Store>(
+    (set) => ({
+      nickName: "",
+      email: "",
+      role: "",
+      myCourseId: [],
+      isLoggedIn: false,
 
-  setNickName: (newNickName) => set({ nickName: newNickName }),
-  setEmail: (newEmail) => set({ email: newEmail }),
-  setRole: (newRole) => set({ role: newRole }),
-  setMyCourseId: (newMyCourseId) => set({ myCourseId: [...newMyCourseId] }),
-  setIsLoggedIn: (status) => set({ isLoggedIn: status })
-}), {
-  name: 'userIdStorage',
-}));
+      setNickName: (newNickName) => set({ nickName: newNickName }),
+      setEmail: (newEmail) => set({ email: newEmail }),
+      setRole: (newRole) => set({ role: newRole }),
+      setMyCourseId: (newMyCourseId) => set({ myCourseId: [...newMyCourseId] }),
+      setIsLoggedIn: (status) => set({ isLoggedIn: status }),
+    }),
+    {
+      name: "userIdStorage",
+    }
+  )
+);
 
 interface SearchState {
   searchValue: string;
@@ -44,7 +49,7 @@ interface SearchState {
 }
 
 export const useSearchStore = create<SearchState>((set) => ({
-  searchValue: '',
+  searchValue: "",
   setSearchValue: (value) => set({ searchValue: value }),
 }));
 
@@ -61,5 +66,6 @@ export const useLiveStore = create<LiveState>((set) => ({
   liveCurriculumIds: [],
 
   setLiveCourseIds: (newLiveCourseIds) => set({ liveCourseIds: [...newLiveCourseIds] }),
-  setLiveCurriculumIds: (newLiveCurriculumIds) => set({ liveCurriculumIds: [...newLiveCurriculumIds] })
+  setLiveCurriculumIds: (newLiveCurriculumIds) =>
+    set({ liveCurriculumIds: [...newLiveCurriculumIds] }),
 }));
