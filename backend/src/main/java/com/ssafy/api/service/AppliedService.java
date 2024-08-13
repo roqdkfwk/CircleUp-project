@@ -1,12 +1,12 @@
 package com.ssafy.api.service;
 
+import com.ssafy.api.response.CourseRes;
 import com.ssafy.api.response.InstructorRes;
 import com.ssafy.api.response.TagRes;
 import com.ssafy.common.custom.NotFoundException;
-import com.ssafy.db.repository.InstructorRepository;
-import com.ssafy.db.repository.RegisterRepository;
-import com.ssafy.db.repository.ReviewRepository;
-import com.ssafy.db.repository.TagRepository;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Curriculum;
+import com.ssafy.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +18,11 @@ import java.util.List;
 @Transactional
 public class AppliedService {
 
-    private final com.ssafy.db.repository.FavorRepository favorRepository;
     private final InstructorRepository instructorRepository;
     private final RegisterRepository registerRepository;
     private final ReviewRepository reviewRepository;
     private final TagRepository tagRepository;
+    private final CurriculumRepository curriculumRepository;
 
     @Transactional(readOnly = true)
     public List<TagRes> getAllTagres() {
@@ -58,5 +58,12 @@ public class AppliedService {
     @Transactional(readOnly = true)
     public boolean findReviewByMemberIdAndCourseId(Long memberId, Long courseId) {
         return reviewRepository.findByMemberIdAndCourseId(memberId, courseId).isPresent();
+    }
+
+    public Course getCourseIdByCurriculum(Long curriculumId){
+        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
+                () -> new NotFoundException("Not Found Course")
+        );
+        return curriculum.getCourse();
     }
 }

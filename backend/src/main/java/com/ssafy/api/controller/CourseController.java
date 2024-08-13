@@ -92,6 +92,17 @@ public class CourseController {
         return ResponseEntity.ok().body(courseDetailService.getInstructorByCourseId(id));
     }
 
+    @GetMapping("/curriculums")
+    @ApiOperation(value = "커리큘럼 정보 조회(구버전)")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "커리큘럼 없음")
+    })
+    public ResponseEntity<List<CurriculumRes>> curriculumList(
+            @RequestParam(required = false, value = "id") List<Long> ids
+    ) {
+        return ResponseEntity.ok().body(courseDetailService.getCurriculumById(ids));
+    }
+
     @GetMapping("/courses/{course_id}/curriculums")
     @ApiOperation(value = "커리큘럼 정보 조회", notes = "강의 id를 통해 커리큘럼들의 정보를 반환합니다.")
     @ApiResponses({

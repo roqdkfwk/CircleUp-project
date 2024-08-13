@@ -16,7 +16,7 @@ public class BasicService {
 
     private final CourseRepository courseRepository;
     private final CurriculumRepository curriculumRepository;
-    private final com.ssafy.db.repository.FavorRepository favorRepository;
+    private final FavorRepository favorRepository;
     private final InstructorRepository instructorRepository;
     private final MemberRepository memberRepository;
     private final RegisterRepository registerRepository;
@@ -88,6 +88,10 @@ public class BasicService {
         return instructorRepository.findById(instructorId).orElseThrow(
                 () -> new NotFoundException("Not Found Instructor : InstructorId is " + instructorId)
         );
+    }
+
+    public void saveInstructor(Instructor instructor){
+        instructorRepository.save(instructor);
     }
 
     // TagRepository
