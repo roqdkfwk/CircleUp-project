@@ -27,6 +27,7 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
         imgData: null,
         instructorName: nickName,
         description: '',
+        curriculums: [],
         tags: [],
         view: 0,
         price: 0,
