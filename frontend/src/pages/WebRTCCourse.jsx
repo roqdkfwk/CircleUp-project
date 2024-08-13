@@ -142,12 +142,9 @@ class VideoRoomComponent extends Component {
   // FastAPI 웹소켓부분
   setupWebSocket() {
     const websocketUrl =
-      AI_SERVER_URL.startsWith("ws://")
-      ? AI_SERVER_URL.replace("ws://", "wss://")
-      : AI_SERVER_URL.startsWith("wss://")
-      ? AI_SERVER_URL
-      : `wss://${AI_SERVER_URL}`;
-
+      AI_SERVER_URL.startsWith("ws://") || AI_SERVER_URL.startsWith("wss://")
+        ? AI_SERVER_URL
+        : `ws://${AI_SERVER_URL}`;
 
     console.log("Connecting to WebSocket at:", websocketUrl);
     this.webSocket = new WebSocket(websocketUrl);
@@ -381,7 +378,7 @@ class VideoRoomComponent extends Component {
     }
 
    // 모든 사용자(강사 포함)가 세션을 떠나 메인 페이지로 이동
-    //window.location.href = `/courseDetail/${this.props.course_id}`;
+   window.location.href = `/courseDetail/${this.props.course_id}`;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
