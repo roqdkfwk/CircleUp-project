@@ -35,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
-        if (basicService.findMemberByEmail(memberSignupPostReq.getEmail()) != null) {
+        if (basicService.existsMemberByEmail(memberSignupPostReq.getEmail())) {
             throw new ConflictException("Member already exists");
         }
 
