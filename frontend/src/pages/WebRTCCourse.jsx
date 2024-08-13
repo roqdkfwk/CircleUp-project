@@ -221,79 +221,92 @@ class VideoRoomComponent extends Component {
     await this.OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
-  
+
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const videoTrack = mediaStream.getVideoTracks()[0];
-  
-      if (!videoTrack) {
-        console.error("No video track found");
-        return;
-      }
-  
-      console.log("MediaStream obtained: ", mediaStream);
-  
-      let publisher = this.OV.initPublisher(undefined, {
-        videoSource: videoTrack,
-        publishAudio: localUser.isAudioActive(),
-        publishVideo: localUser.isVideoActive(),
-        resolution: "640x480",
-        frameRate: 15, // 프레임레이트 줄이기
-        insertMode: "APPEND",
-        mirror: false,
-      });
-  
-      if (this.state.session.capabilities.publish) {
-        publisher.on("accessAllowed", () => {
-          console.log("Publisher access allowed");
-          this.state.session.publish(publisher).then(() => {
-            console.log("Session published");
-            this.updateSubscribers();
-            this.localUserAccessAllowed = true;
-            if (this.props.joinSession) {
-              this.props.joinSession();
-            }
-          });
-        });
-      }
-  
-      publisher.on("accessDenied", (error) => {
-        console.error("Access denied: ", error);
-      });
-  
-      localUser.setNickname(this.state.myUserName);
-      localUser.setConnectionId(this.state.session.connection.connectionId);
-      localUser.setScreenShareActive(false);
-      localUser.setStreamManager(publisher);
-      this.setState({ currentVideoDevice: videoTrack, localUser: localUser });
-  
-      const sendFrame = async () => {
-        const imageCapture = new ImageCapture(videoTrack);
-        try {
-          const bitmap = await imageCapture.grabFrame();
-          const canvas = document.createElement('canvas');
-          canvas.width = bitmap.width;
-          canvas.height = bitmap.height;
-          const context = canvas.getContext('2d');
-          context.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
-          canvas.toBlob(blob => {
-            if (this.webSocket.readyState === WebSocket.OPEN) {
-              console.log("Sending frame to server");
-              this.webSocket.send(blob);
-            }
-          }, 'image/jpeg');
-        } catch (error) {
-          console.error("Error capturing frame:", error);
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const videoTrack = mediaStream.getVideoTracks()[0];
+
+        if (!videoTrack) {
+            console.error("No video track found");
+            return;
         }
-      };
-      
-      // 프레임 전송 빈도 줄이기
-      setInterval(sendFrame, 1000); // 10 FPS로 전송
-  
+
+        console.log("MediaStream obtained: ", mediaStream);
+
+        let publisher = this.OV.initPublisher(undefined, {
+            videoSource: videoTrack,
+            publishAudio: localUser.isAudioActive(),
+            publishVideo: localUser.isVideoActive(),
+            resolution: "640x480",
+            frameRate: 15, // 프레임레이트 줄이기
+            insertMode: "APPEND",
+            mirror: false,
+        });
+
+        if (this.state.session.capabilities.publish) {
+            publisher.on("accessAllowed", () => {
+                console.log("Publisher access allowed");
+                this.state.session.publish(publisher).then(() => {
+                    console.log("Session published");
+                    this.updateSubscribers();
+                    this.localUserAccessAllowed = true;
+                    if (this.props.joinSession) {
+                        this.props.joinSession();
+                    }
+                });
+            });
+        }
+
+        publisher.on("accessDenied", (error) => {
+            console.error("Access denied: ", error);
+        });
+
+        localUser.setNickname(this.state.myUserName);
+        localUser.setConnectionId(this.state.session.connection.connectionId);
+        localUser.setScreenShareActive(false);
+        localUser.setStreamManager(publisher);
+        this.setState({ currentVideoDevice: videoTrack, localUser: localUser });
+
+        const sendFrame = async () => {
+            const imageCapture = new ImageCapture(videoTrack);
+            try {
+                const bitmap = await imageCapture.grabFrame();
+                const canvas = document.createElement('canvas');
+                canvas.width = bitmap.width;
+                canvas.height = bitmap.height;
+                const context = canvas.getContext('2d');
+                context.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
+                canvas.toBlob(async (blob) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        if (this.webSocket.readyState === WebSocket.OPEN) {
+                            console.log("Sending frame to server");
+                            
+                            // JSON 객체로 변환하여 frame 정보와 함께 전송
+                            const message = {
+                                session_id: this.state.mySessionId,
+                                connection_id: this.state.session.connection.connectionId,
+                                frame: reader.result.split(',')[1] // Base64 데이터만 전송
+                            };
+                            
+                            this.webSocket.send(JSON.stringify(message));
+                        }
+                    };
+                    reader.readAsDataURL(blob); // Blob을 Base64로 변환
+                }, 'image/jpeg');
+            } catch (error) {
+                console.error("Error capturing frame:", error);
+            }
+        };
+        
+        // 프레임 전송 빈도 줄이기
+        setInterval(sendFrame, 1000); // 1 FPS로 전송
+
     } catch (error) {
-      console.error("Error accessing media devices.", error);
+          console.error("Error accessing media devices.", error);
     }
   }
+
   
 
 
