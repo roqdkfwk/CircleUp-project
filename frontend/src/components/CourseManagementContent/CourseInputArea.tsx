@@ -19,7 +19,7 @@ const CourseInputArea = ({original_summary, original_content, onContent} : Cours
         content: original_content
     });
 
-    const { content_title, content } = inputData;
+    const { summary, content } = inputData;
 
     const onChange = (e : (React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)) => {
         
@@ -36,7 +36,7 @@ const CourseInputArea = ({original_summary, original_content, onContent} : Cours
             <input type="text" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 placeholder="Title"
                 onChange={onChange}
-                value={content_title}
+                value={summary}
             />
             <textarea id="message" rows={4}
                 className="
