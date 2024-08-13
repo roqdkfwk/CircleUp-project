@@ -26,7 +26,9 @@ public class CoursesRes {
                 course.getView(),
                 (int) Math.round(course.getRating()),
                 String.format("%.1f", course.getRating()),
-                (course.getCompletedCourse() * 100 / course.getTotalCourse()) / 100d
+                (course.getTotalCourse()!=0?
+                        course.getCompletedCourse() * 100 / course.getTotalCourse()
+                        : 0) / 100d
         );
     }
 }
