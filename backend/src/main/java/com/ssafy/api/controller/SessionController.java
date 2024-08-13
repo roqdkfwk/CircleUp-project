@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequestMapping("/api/sessions")
 public class SessionController {
 
-    private final CourseService courseSerivce;
+    private final CourseService courseService;
     private final Bucket bucket;
 
     @Value("${OPENVIDU_URL}")
@@ -41,7 +41,7 @@ public class SessionController {
     private OpenVidu openvidu;
 
     public SessionController(CourseService courseSerivce, Bucket bucket) {
-        this.courseSerivce = courseSerivce;
+        this.courseService = courseSerivce;
         this.bucket = bucket;
     }
 
@@ -76,7 +76,7 @@ public class SessionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
             makeSession(courseId);
             return new ResponseEntity<>(courseId, HttpStatus.OK);
         }
@@ -99,7 +99,7 @@ public class SessionController {
     ) {
         Long courseId = Long.valueOf(course_id);
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
+        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -136,8 +136,8 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.existRegister(memberId, Long.valueOf(courseId))
-                || courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseService.existRegister(memberId, Long.valueOf(courseId))
+                || courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
             ConnectionProperties properties = new ConnectionProperties.Builder().build();
             Connection connection = session.createConnection(properties);
             return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
@@ -197,7 +197,7 @@ public class SessionController {
 
         try (InputStream inputStream = new FileInputStream(originalPath)) {
             bucket.create(fileName, inputStream, "mp4");
-            courseSerivce.saveVideoUrl(fileName, curriculumId);
+            courseService.saveVideoUrl(fileName, curriculumId);
             openvidu.deleteRecording(courseId.toString());
         } catch (Exception e) {
             return false;
