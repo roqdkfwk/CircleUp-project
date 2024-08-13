@@ -4,6 +4,7 @@ import com.ssafy.api.request.MemberSignupPostReq;
 import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.response.MemberRes;
 import com.ssafy.api.response.MemberUpdatePostRes;
+import com.ssafy.common.custom.ConflictException;
 import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.common.util.JwtUtil;
@@ -35,7 +36,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
+        String email = memberSignupPostReq.getEmail();
+        if (getMemberByEmail(memberSignupPostReq.getEmail()) != null) {
+            throw new ConflictException("Member already exists");
+        }
+
         Member member = MemberSignupPostReq.toEntity(memberSignupPostReq);
+
         // member.setPw(passwordEncoder.encode(member.getPw()));
         List<Long> tags = memberSignupPostReq.getTags();
 
