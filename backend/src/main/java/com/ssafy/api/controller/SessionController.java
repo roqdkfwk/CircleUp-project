@@ -1,7 +1,7 @@
 package com.ssafy.api.controller;
 
 import com.google.cloud.storage.Bucket;
-import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.CourseService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.openvidu.java.client.*;
 import io.swagger.annotations.Api;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/sessions")
 public class SessionController {
 
-    private final CourseSerivce courseSerivce;
+    private final CourseService courseService;
     private final Bucket bucket;
 
     @Value("${OPENVIDU_URL}")
@@ -38,8 +38,8 @@ public class SessionController {
 
     private OpenVidu openvidu;
 
-    public SessionController(CourseSerivce courseSerivce, Bucket bucket) {
-        this.courseSerivce = courseSerivce;
+    public SessionController(CourseService courseService, Bucket bucket) {
+        this.courseService = courseService;
         this.bucket = bucket;
     }
 
@@ -74,7 +74,7 @@ public class SessionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
             makeSession(courseId);
             return new ResponseEntity<>(courseId, HttpStatus.OK);
         }
@@ -97,7 +97,7 @@ public class SessionController {
     ) {
         Long courseId = Long.valueOf(course_id);
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
+        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -134,8 +134,8 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseSerivce.existRegister(memberId, Long.valueOf(courseId))
-                || courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseService.existRegister(memberId, Long.valueOf(courseId))
+                || courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
             ConnectionProperties properties = new ConnectionProperties.Builder().build();
             Connection connection = session.createConnection(properties);
             return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
@@ -157,7 +157,7 @@ public class SessionController {
     public ResponseEntity<String> initializeSession(
             @PathVariable(name = "course_id") String courseId
     ) {
-        if (courseSerivce.existsCourse(Long.valueOf(courseId))) {
+        if (courseService.existsCourse(Long.valueOf(courseId))) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
         makeSession(courseId);
@@ -275,7 +275,7 @@ public class SessionController {
 
         try (InputStream inputStream = new FileInputStream(originalPath)) {
             bucket.create(fileName, inputStream, "mp4");
-            courseSerivce.saveVideoUrl(fileName, curriculumId);
+            courseService.saveVideoUrl(fileName, curriculumId);
             openvidu.deleteRecording(courseId.toString());
         } catch (Exception e) {
             return false;
