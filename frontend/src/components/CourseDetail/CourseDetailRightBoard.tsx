@@ -1,22 +1,32 @@
+import { useEffect, useState } from "react";
 import CourseVideo from "../Card/CourseVideo";
+import { getCurriculumVideoUrls } from "../../services/api";
 
 interface CourseDetailRightBoardProps {
     courseId : number,
 }
 
+interface CourseDataUrlsProps {
+    docUrl: string,
+    id: number,
+    indexNo: number,
+    recUrl: string,
+}
+
 const CourseDetailRightBoard = ({ courseId }: CourseDetailRightBoardProps) => {
 
+    const [dataUrls, setDataUrls] = useState<CourseDataUrlsProps[]>([]);
+
     // <todo> - Fetch, 이전 강의 동영상 Lists 얻어오기
-    // curriculum get api 통해서 얻으면 됨!
-    const fetchCurriculumList = () => {
-
-    }
-
-    const fetchCurriculumVideoUrl = () => {
-        
+    const fetchCurriculumVideoUrl = async () => {
+        const response = await getCurriculumVideoUrls(courseId);
+        setDataUrls(response.data)
     }
 
     // 만약 courseId가 내가 수강 중인 강의가 아니면 no render!
+    useEffect(() => {
+        fetchCurriculumVideoUrl();
+    }, [courseId]);
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-[33%] mt-5 h-full">
@@ -44,9 +54,12 @@ const CourseDetailRightBoard = ({ courseId }: CourseDetailRightBoardProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    <CourseVideo videoUrl="" count={0} />
-                    <CourseVideo videoUrl="" count={1} />
-                    <CourseVideo videoUrl="" count={2} />
+                    {
+                        dataUrls.map((data, idx) => (
+                            <CourseVideo key={idx} docUrl={data.docUrl} videoUrl={data.recUrl} count={data.indexNo} />
+                        ))
+
+                    }
                 </tbody>
             </table>
         </div>

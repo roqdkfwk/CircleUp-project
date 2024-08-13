@@ -2,7 +2,6 @@ import { Bounce, toast } from "react-toastify";
 import { postCourseByUser } from "../../services/api";
 import { useUserStore } from "../../store/store";
 import { BuyInfo } from './../../types/BuyInfo';
-import { useNavigate } from "react-router";
 
 interface CourseBuyProps {
     buyInfo: BuyInfo,
@@ -14,7 +13,6 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
 
     const formattedPrice = buyInfo.price === 0 ? "무료" : buyInfo.price.toLocaleString();
     const { myCourseId, setMyCourseId } = useUserStore();
-    const navigate = useNavigate();
 
     const handleRegisterCourseByUser = async () => {
         await postCourseByUser(buyInfo.id);
@@ -38,7 +36,7 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
             theme: "light",
             transition: Bounce,
         });
-        navigate(`/courseDetail/${buyInfo.id}`)
+        window.location.href = `/courseDetail/${buyInfo.id}`;
         onClose();
     }
 

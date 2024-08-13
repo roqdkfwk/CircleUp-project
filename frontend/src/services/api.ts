@@ -121,6 +121,14 @@ export const checkUserCourse = (course_id: number) => {
         }
     })
 }
+// 수강생이 수강한 강의 중, 이전 커리큘럼에 대한 녹화 영상 uri 조회
+export const getCurriculumVideoUrls = (course_id: number) => {
+    return axiosClient.get(`/courses/${course_id}/dataUrls`, {
+        headers: {
+            'Requires-Auth': true,
+        }
+    })
+}
 
 /* Curriculum API */
 // 커리큘럼 조회

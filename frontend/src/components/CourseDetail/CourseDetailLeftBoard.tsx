@@ -63,7 +63,7 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
             transition: Bounce,
         });
         setMyCourseId(newMyCourseId);
-        navigate(`/courseDetail/${buyInfo.id}`)
+        window.location.href = `/courseDetail/${buyInfo.id}`;
     };
 
     const onClickDeleteBtn = () => {

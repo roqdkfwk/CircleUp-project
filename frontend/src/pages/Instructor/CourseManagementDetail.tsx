@@ -1,4 +1,3 @@
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
@@ -60,7 +59,6 @@ const CourseManagementDetail = () => {
     <div>
       <div className="flex flex-row">
         <CourseManagementBoard flag={"instructorDetail"} data={courseDetails} />
-        <RightSideBar courseId={numericCourseId} />
       </div>
       <div className="flex flex-row">
         <div className="flex basis-2/3 justify-end ml-10">
