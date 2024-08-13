@@ -24,7 +24,6 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
     const handleSubmit = () => {
         handleRegisterCourseByUser();
 
-        // window.location.href=`/courseDetail/${buyInfo.id}`
         toast.info("수강신청이 완료됐습니다.", {
             position: "top-center",
             autoClose: 3000,

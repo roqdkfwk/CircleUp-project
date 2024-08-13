@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 
 interface InputDataProps {
-    content_title?: string,
+    summary?: string,
     content?: string,
 }
 
 interface CourseInputAreaProps {
-    original_content_title?: string,
+    original_summary?: string,
     original_content?: string,
 
     onContent: (newContent: string) => void,
 }
 
-const CourseInputArea = ({original_content_title, original_content, onContent} : CourseInputAreaProps) => {
+const CourseInputArea = ({original_summary, original_content, onContent} : CourseInputAreaProps) => {
 
     const [inputData, setInputData] = useState<InputDataProps>({
-        content_title: original_content_title,
+        summary: original_summary,
         content: original_content
     });
 

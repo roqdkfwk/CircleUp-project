@@ -55,9 +55,6 @@ const CourseManagementMake = () => {
         formData.append("price", newCourse.price.toString())
         formData.append("rating", newCourse.rating.toString())
 
-        // for (const [key, value] of formData.entries()) {
-        //     console.log(`${key}:`, value instanceof File ? value.name : value);
-        //   }
         fetchPostNewCourse(formData);
     }
 

@@ -163,13 +163,13 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                                     );
                                 case "instructorMake":
                                     return <CourseInputArea
-                                        original_content_title={""}
+                                        original_summary={""}
                                         original_content={""}
                                         onContent={updateDescription}
                                     />
                                 case "instructorModify":
                                     return <CourseInputArea
-                                        original_content_title={myCourse.courseName}
+                                        original_summary={""}
                                         original_content={myCourse.description}
                                         onContent={updateDescription}
                                     />
