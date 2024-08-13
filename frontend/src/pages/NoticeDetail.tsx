@@ -9,6 +9,7 @@ const NoticeDetail = () => {
 
     const { courseId } = useParams<{ courseId: string }>();
     const [noticeData] = useState<NoticeInfo>(location.state.data);
+    console.log(noticeData)
     const isModify: string = location.state.flag;
 
     // Todo : Modify == instrcutor 인 경우 modify 버튼 구현

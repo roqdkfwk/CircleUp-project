@@ -13,6 +13,7 @@ const NoticeModify = () => {
     const location = useLocation();
     const { courseId } = useParams<{ courseId: string }>();
     const announcementId = location.state.id;
+    console.log(location.state)
 
     const [newNotice, setNewNotice] = useState<NoticeModifyProps>({
         title: location.state.title,
@@ -51,11 +52,11 @@ const NoticeModify = () => {
 
     const handleDelete = () => {
         fetchDelete();
-        naviage(`courseManagementDetail/${courseId}`);
+        naviage(`/courseManagementDetail/${courseId}`);
     }
 
     const handleGoBack = () => {
-        naviage(`courseManagementDetail/${courseId}`);
+        naviage(`/courseManagementDetail/${courseId}`);
     }
 
     return (

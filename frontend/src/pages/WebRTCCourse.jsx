@@ -142,9 +142,12 @@ class VideoRoomComponent extends Component {
   // FastAPI 웹소켓부분
   setupWebSocket() {
     const websocketUrl =
-      AI_SERVER_URL.startsWith("ws://") || AI_SERVER_URL.startsWith("wss://")
-        ? AI_SERVER_URL
-        : `ws://${AI_SERVER_URL}`;
+      AI_SERVER_URL.startsWith("ws://")
+      ? AI_SERVER_URL.replace("ws://", "wss://")
+      : AI_SERVER_URL.startsWith("wss://")
+      ? AI_SERVER_URL
+      : `wss://${AI_SERVER_URL}`;
+
 
     console.log("Connecting to WebSocket at:", websocketUrl);
     this.webSocket = new WebSocket(websocketUrl);
