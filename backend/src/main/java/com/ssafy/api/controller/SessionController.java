@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/sessions")
 public class SessionController {
 
-    private final CourseService courseService;
+    private final CourseService courseSerivce;
     private final Bucket bucket;
 
     @Value("${OPENVIDU_URL}")
@@ -38,8 +38,8 @@ public class SessionController {
 
     private OpenVidu openvidu;
 
-    public SessionController(CourseService courseService, Bucket bucket) {
-        this.courseService = courseService;
+    public SessionController(CourseService courseSerivce, Bucket bucket) {
+        this.courseSerivce = courseSerivce;
         this.bucket = bucket;
     }
 
@@ -74,7 +74,7 @@ public class SessionController {
             Authentication authentication
     ) {
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
             makeSession(courseId);
             return new ResponseEntity<>(courseId, HttpStatus.OK);
         }
@@ -97,7 +97,7 @@ public class SessionController {
     ) {
         Long courseId = Long.valueOf(course_id);
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseService.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
+        if (courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId) == false) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -134,8 +134,8 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Long memberId = Long.valueOf(authentication.getName());
-        if (courseService.existRegister(memberId, Long.valueOf(courseId))
-                || courseService.instructorInCourse(Long.valueOf(courseId), memberId)) {
+        if (courseSerivce.existRegister(memberId, Long.valueOf(courseId))
+                || courseSerivce.instructorInCourse(Long.valueOf(courseId), memberId)) {
             ConnectionProperties properties = new ConnectionProperties.Builder().build();
             Connection connection = session.createConnection(properties);
             return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
@@ -143,6 +143,29 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+    /**
+     * Live 방 퇴출
+     */
+    @DeleteMapping("/{course_id}/connections")
+    @ApiOperation(value = "Live 방 퇴출")
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "세션이나 커넥션을 찾지못하여 에러")
+    })
+    @RequiredAuth
+    public ResponseEntity<String> deleteConnection(
+            @PathVariable("course_id") String courseId,
+            @RequestParam(name = "connection_id") String connectionId) {
+        try {
+            Session session = openvidu.getActiveSession(courseId);
+            session.forceDisconnect(connectionId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     /////////////////////////////////////////////////////
 
     /**
@@ -157,7 +180,7 @@ public class SessionController {
     public ResponseEntity<String> initializeSession(
             @PathVariable(name = "course_id") String courseId
     ) {
-        if (courseService.existsCourse(Long.valueOf(courseId))) {
+        if (courseSerivce.existsCourse(Long.valueOf(courseId))) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
         makeSession(courseId);
@@ -275,7 +298,7 @@ public class SessionController {
 
         try (InputStream inputStream = new FileInputStream(originalPath)) {
             bucket.create(fileName, inputStream, "mp4");
-            courseService.saveVideoUrl(fileName, curriculumId);
+            courseSerivce.saveVideoUrl(fileName, curriculumId);
             openvidu.deleteRecording(courseId.toString());
         } catch (Exception e) {
             return false;
