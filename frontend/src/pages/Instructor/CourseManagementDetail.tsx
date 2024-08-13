@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
 import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
+import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 
 const CourseManagementDetail = () => {
   
@@ -10,7 +11,7 @@ const CourseManagementDetail = () => {
   const numericCourseId = Number(courseId);
   const navigate = useNavigate();
   
-  const [courseDetails, setCourseDetails] = useState({
+  const [courseDetails, setCourseDetails] = useState<CourseDetailInfo>(({
     id: numericCourseId,
     courseName: "",
     imgUrl: "",
@@ -22,7 +23,7 @@ const CourseManagementDetail = () => {
     view: 0,
     price: 0,
     rating: 3,
-  });
+  }));
 
   const fetchDetailCourseData = async () => {
     return await getCourseDetail(courseDetails.id);

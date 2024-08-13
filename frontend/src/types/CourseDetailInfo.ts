@@ -9,4 +9,5 @@ export interface CourseDetailInfo {
     description: string,
     tags: string[],
     rating : number,
+    curriculums: [],
 }
