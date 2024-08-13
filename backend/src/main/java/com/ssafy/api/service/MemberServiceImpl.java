@@ -5,7 +5,6 @@ import com.ssafy.api.request.MemberUpdatePatchReq;
 import com.ssafy.api.response.MemberRes;
 import com.ssafy.api.response.MemberUpdatePostRes;
 import com.ssafy.common.custom.ConflictException;
-import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.custom.UnAuthorizedException;
 import com.ssafy.common.util.JwtUtil;
 import com.ssafy.db.entity.Favor;
@@ -36,8 +35,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
-        String email = memberSignupPostReq.getEmail();
-        if (getMemberByEmail(memberSignupPostReq.getEmail()) != null) {
+        if (basicService.findMemberByEmail(memberSignupPostReq.getEmail()) != null) {
             throw new ConflictException("Member already exists");
         }
 
@@ -113,13 +111,6 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
 
         return MemberUpdatePostRes.fromEntity(member, newAccessToken, tagNameList);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
     @Override

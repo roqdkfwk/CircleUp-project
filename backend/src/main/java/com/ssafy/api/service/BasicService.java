@@ -73,7 +73,7 @@ public class BasicService {
         curriculumRepository.delete(curriculum);
     }
 
-    public List<Curriculum> findCurriculumListByCourseId(Long courseId){
+    public List<Curriculum> findCurriculumListByCourseId(Long courseId) {
         return curriculumRepository.findAllByCourseId(courseId);
     }
 
@@ -83,6 +83,12 @@ public class BasicService {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("Not Found Member : MemberId is " + memberId)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
     // InstructorRepository
