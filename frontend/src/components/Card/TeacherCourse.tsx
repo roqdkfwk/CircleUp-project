@@ -12,7 +12,7 @@ const TeacherCourse = ({ data } : TeacherCourseProps) => {
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
-            <Link to={`/courseManagementDetail/${courseId}`}>
+            <Link to={`/courseManagementDetail/${courseId}`} state={{summary : summary}}>
                 <img className="rounded-t-lg mx-auto w-full h-[150px] " src={imgUrl} alt="" />
                 <div className="p-5">
                     <h5 className="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{name}</h5>

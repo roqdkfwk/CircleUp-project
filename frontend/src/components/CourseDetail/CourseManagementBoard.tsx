@@ -10,16 +10,19 @@ import CourseNoticeContent from "./Content/CourseNoticeContent";
 interface CourseManagementBoardProps {
     flag: string,
     data: CourseDetailInfo,
+    summary: string,
 
     onNewMyCourse?: (course: CourseDetailInfo) => void,
+    onNewSummary: (summary: string) => void,
 }
 
-const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBoardProps) => {
+const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummary }: CourseManagementBoardProps) => {
 
     // <ToDo> - 수강자가 수강 진행 중인 경우의 상태, { 수강 신청 버튼 X & 라이브 참가 허용 }
     const { nickName, } = useUserStore();
     const [isReady, setIsReady] = useState(false);
 
+    const [mySummary, setMySummary] = useState<string>("");
     const [myCourse, setMyCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: '',
@@ -66,9 +69,15 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
         onNewMyCourse!(myCourse)
     }
 
+    const updateSummary = (newSummary: string) => {
+        setMySummary(newSummary);
+        onNewSummary(newSummary);
+    }
+
     useEffect(() => {
         if (data) {
             setMyCourse(data);
+            setMySummary(summary);
             setIsReady(true);
         }
     }, [data]);
@@ -166,12 +175,14 @@ const CourseManagementBoard = ({ flag, data, onNewMyCourse }: CourseManagementBo
                                         original_summary={""}
                                         original_content={""}
                                         onContent={updateDescription}
+                                        onSummary={updateSummary}
                                     />
                                 case "instructorModify":
                                     return <CourseInputArea
-                                        original_summary={""}
+                                        original_summary={mySummary}
                                         original_content={myCourse.description}
                                         onContent={updateDescription}
+                                        onSummary={updateSummary}
                                     />
                                 default:
                                     return <></>

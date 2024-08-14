@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
 import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
@@ -9,7 +9,9 @@ const CourseManagementDetail = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = Number(courseId);
   const navigate = useNavigate();
+  const location = useLocation();
   
+  const getSummary: string = location.state.summary;
   const [courseDetails, setCourseDetails] = useState<CourseDetailInfo>(({
     id: numericCourseId,
     courseName: "",
@@ -38,7 +40,12 @@ const CourseManagementDetail = () => {
   }, []);
 
   function handleModify() {
-    navigate(`/courseManagementModify/${courseId}`, { state : courseDetails});
+    navigate(`/courseManagementModify/${courseId}`, {
+      state: { 
+        courseDetails: courseDetails, 
+        summary: getSummary 
+      } 
+    });
   }
   
   const fetchDeleteCourse = async () => {
@@ -58,7 +65,8 @@ const CourseManagementDetail = () => {
   return (
     <div>
       <div className="flex flex-row">
-        <CourseManagementBoard flag={"instructorDetail"} data={courseDetails} />
+        <CourseManagementBoard flag={"instructorDetail"} data={courseDetails}
+          summary={getSummary} onNewSummary={() => {}} />
       </div>
       <div className="flex flex-row">
         <div className="flex basis-2/3 justify-end ml-10">

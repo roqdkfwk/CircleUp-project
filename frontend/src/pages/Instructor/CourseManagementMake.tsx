@@ -6,6 +6,7 @@ import CourseManagementBoard from "../../components/CourseDetail/CourseManagemen
 
 const CourseManagementMake = () => {
 
+    const [newSummary, setNewSummary] = useState<string>("");
     const [newCourse, setNewCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: "",
@@ -23,6 +24,10 @@ const CourseManagementMake = () => {
     const updateNewCourse = (getCourse: CourseDetailInfo) => {
         setNewCourse({ ...getCourse });
         console.log(newCourse)
+    }
+
+    const updateNewSummary = (getSummary: string) => {
+        setNewSummary(getSummary);
     }
 
     const fetchPostNewCourse = async(data : FormData) => {
@@ -51,7 +56,7 @@ const CourseManagementMake = () => {
 
         formData.append("tags", JSON.stringify(numToTag))
         
-        formData.append("summary", "dummyData")
+        formData.append("summary", newSummary);
         formData.append("price", newCourse.price.toString())
         formData.append("rating", newCourse.rating.toString())
 
@@ -61,7 +66,8 @@ const CourseManagementMake = () => {
     return (
         <div>
             <div className="flex flex-row">
-                <CourseManagementBoard flag={"instructorMake"} data={newCourse} onNewMyCourse={updateNewCourse} />
+                <CourseManagementBoard flag={"instructorMake"} data={newCourse} summary={newSummary}
+                    onNewMyCourse={updateNewCourse} onNewSummary={updateNewSummary} />
             </div>
             <div className="flex flex-row">
                 <div className="basis-3/4 flex justify-end mr-2">
