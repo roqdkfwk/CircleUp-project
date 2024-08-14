@@ -21,7 +21,7 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
     const navigate = useNavigate();
     const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
     const [registerValue, setRegisterValue] = useState<number>();
-    const courseNavbar = ['소개', '커리큘럼', '공지사항', '코멘트']
+    const courseNavbar = ['소개', '커리큘럼', '공지사항', '후기']
     const [activeTab, setActiveTab] = useState<string>('소개');
     const [showModal, setShowModal] = useState<boolean>(false);
     const { myCourseId, setMyCourseId, isLoggedIn } = useUserStore();
@@ -182,7 +182,7 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
 
             }
 
-            {activeTab === '코멘트' &&
+            {activeTab === '후기' &&
                 <CourseCommentContent isModify={'userDetail'} courseId={data.id} />
             }
         </div>
