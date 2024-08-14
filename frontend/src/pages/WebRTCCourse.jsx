@@ -132,6 +132,10 @@ class VideoRoomComponent extends Component {
       async () => {
         this.subscribeToStreamCreated();
         this.subscribeToEndSession();  // session이 초기화된 후에 호출
+        
+        this.subscribeToStreamDestroyed();
+        this.subscribeToUserChanged();
+        
         this.subscribeToUserLeft();  // 사용자 퇴장 신호 구독
         await this.connectToSession();
       }
