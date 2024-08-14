@@ -1,30 +1,35 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NoticeInfo } from "../../types/NoticeInfo";
 
 interface NoticeCardProps {
-    data: NoticeInfo,
-    courseId: number,
-    isModify: string,
-    idx : number,
-    summary: string,
+  data: NoticeInfo;
+  courseId: number;
+  isModify: string;
+  idx: number;
+  summary: string;
 }
 
-const NoticeCard = ( { data, courseId, isModify, idx, summary }: NoticeCardProps ) => {
+const NoticeCard = ({ data, courseId, isModify, idx, summary }: NoticeCardProps) => {
+  const navigate = useNavigate();
 
-    return (
-        <Link to={`/NoticeDetail/${courseId}`} state={{data : data, flag : isModify, summary : summary}}
-            className="flex flex-col justify-between items-center bg-white border border-gray-200 rounded-lg shadow
-         mx-2 md:flex-row md:max-w-full hover:bg-gray-100 md:h-auto
-        dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
-            <h6 className="p-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {idx}. {data.title}
-            </h6>
-            <div className="m-2 font-medium">
-               생성날짜 : {new Date(data.createdAt).toLocaleDateString()} 수정 날짜 : {new Date(data.updatedAt).toLocaleDateString()}
-            </div>
-        </Link>
-    )
-}
+  const handleClick = () => {
+    navigate(`/NoticeDetail/${courseId}`, {
+      state: { data: data, flag: isModify, summary: summary },
+    });
+  };
+
+  return (
+    <tr
+      className="border-b-gray-400 border-b hover:bg-gray-50 hover:cursor-pointer"
+      onClick={handleClick}
+    >
+      <th className="p-3">{idx}</th>
+      <td width={"70%"} className="text-left pl-2 font-bold text-gray-900 tracking-tight ">
+        {data.title}
+      </td>
+      <td width={"20%"}>{new Date(data.createdAt).toLocaleDateString()}</td>
+    </tr>
+  );
+};
 
 export default NoticeCard;

@@ -165,10 +165,11 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                   e.preventDefault();
                   handleTabClick(NavbarName);
                 }}
-                className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${activeTab === NavbarName
+                className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${
+                  activeTab === NavbarName
                     ? "text-blue-600 border-blue-600"
                     : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                  }`}
+                }`}
               >
                 {NavbarName}
               </a>
@@ -178,7 +179,7 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
       </div>
 
       {activeTab === "소개" && (
-        <blockquote className="py-4 text-lg italic font-semibold text-gray-900 dark:text-white w-[80%] mx-auto mt-5 mb-8 whitespace-pre-wrap">
+        <blockquote className="py-4 text-lg font-semibold leading-7 text-gray-800 dark:text-white w-[85%] mx-auto mt-5 mb-8 whitespace-pre-wrap">
           <svg
             className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-4"
             aria-hidden="true"
@@ -188,7 +189,7 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
           >
             <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
           </svg>
-          <p>"{data.description}"</p>
+          <p>{data.description}</p>
         </blockquote>
       )}
 
