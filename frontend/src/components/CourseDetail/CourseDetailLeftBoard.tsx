@@ -7,17 +7,15 @@ import { useUserStore } from "../../store/store";
 import CourseBuyModal from "../Modal/CourseBuyModal";
 import { useNavigate } from "react-router";
 import { BuyInfo } from './../../types/BuyInfo';
-import video_camera from './../../assets/svgs/videoCamera.svg';
 import { toast, Bounce  } from "react-toastify";
 import CourseCommentContent from "./Content/CourseCommentContent";
 import CourseNoticeContent from "./Content/CourseNoticeContent";
 
 interface CourseDetailLeftBoardProps {
     data: CourseDetailInfo,
-    isLive: boolean
 }
 
-const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => {
+const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
     const navigate = useNavigate();
     const formattedPrice = data.price === 0 ? "무료" : data.price.toLocaleString();
     const [registerValue, setRegisterValue] = useState<number>();
@@ -106,7 +104,6 @@ const CourseDetailLeftBoard = ({ data, isLive }: CourseDetailLeftBoardProps) => 
             <CourseBuyModal show={showModal} buyInfo={buyInfo} onClose={toggleModal} />
             <div className="w-full h-[350px] p-2 rounded-t-lg shadow bg-gradient-to-r from-black from-0% via-gray-400 via-30% to-black to-55% flex flex-row items-center justify-evenly">
                 <img src={data.imgUrl} alt="" className="rounded-lg h-60 w-[300px]" />
-                {isLive && <img src={video_camera} alt="Live icon" className="absolute top-0 right-0 m-2 w-6 h-6" />}
                 <div className="">
                     <p className="text-4xl GDtitle text-white mb-2">{data.courseName}</p>
                     <div className="w-full flex mt-4 mb-7">

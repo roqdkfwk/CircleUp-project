@@ -6,7 +6,7 @@ import CourseManagementBoard from "../../components/CourseDetail/CourseManagemen
 
 const CourseManagementMake = () => {
 
-    const [newSummary, setNewSummary] = useState<string>("");
+    const [newSummary, setNewSummary] = useState<string>("Inital Data");
     const [newCourse, setNewCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: "",
@@ -23,7 +23,6 @@ const CourseManagementMake = () => {
 
     const updateNewCourse = (getCourse: CourseDetailInfo) => {
         setNewCourse({ ...getCourse });
-        console.log(newCourse)
     }
 
     const updateNewSummary = (getSummary: string) => {
@@ -57,8 +56,13 @@ const CourseManagementMake = () => {
         formData.append("tags", JSON.stringify(numToTag))
         
         formData.append("summary", newSummary);
+        
         formData.append("price", newCourse.price.toString())
         formData.append("rating", newCourse.rating.toString())
+
+        for (const [key, value] of formData.entries()) {
+            console.log(key, value);
+          }
 
         fetchPostNewCourse(formData);
     }

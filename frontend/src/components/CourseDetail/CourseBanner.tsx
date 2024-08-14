@@ -206,7 +206,7 @@ const MyCourseBanner = ({
                                     <label className="block text-sm mr-2 font-bold text-gray-500 dark:text-white">
                                         제목 :
                                     </label>
-                                    <input type="text" ref={tilteInputRef} value={courseName} className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
+                                    <input type="text" ref={tilteInputRef} defaultValue={courseName} className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
                                         onChange={handleTitle} />
                                 </div>
                             else if (isModified)
@@ -214,7 +214,7 @@ const MyCourseBanner = ({
                                     <label className="block text-sm mr-2 font-bold text-gray-500 dark:text-white">
                                         제목 :
                                     </label>
-                                    <input type="text" ref={tilteInputRef} value={courseName} className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
+                                    <input type="text" ref={tilteInputRef} defaultValue={courseName} className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
                                         onChange={handleTitle} />
                                 </div>
                             else
@@ -274,7 +274,7 @@ const MyCourseBanner = ({
                                         가격 :
                                     </label>
                                     <input type="text" className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
-                                        value={formattedPrice}
+                                        defaultValue={formattedPrice}
                                         onChange={handlePrice} />
                                 </div>
                             )
@@ -286,7 +286,7 @@ const MyCourseBanner = ({
                                         가격 :
                                     </label>
                                     <input type="text" className="bg-gray-50 border border-gray-100 p-0.5 text-gray-900 text-sm rounded-lg"
-                                        value={newPrice}
+                                        defaultValue={newPrice}
                                         onChange={handlePrice} />
                                 </div>
                             )

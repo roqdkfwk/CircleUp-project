@@ -22,7 +22,7 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
     const { nickName, } = useUserStore();
     const [isReady, setIsReady] = useState(false);
 
-    const [mySummary, setMySummary] = useState<string>("");
+    const [mySummary, setMySummary] = useState<string>("Inital Data");
     const [myCourse, setMyCourse] = useState<CourseDetailInfo>({
         id: 0,
         courseName: '',
