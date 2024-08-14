@@ -216,4 +216,14 @@ public class CourseService {
 
         return curriculumUrlResList;
     }
+
+    @Transactional
+    public void upCompletedCourse(Long courseId){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found : Course_id is " + courseId)
+        );
+
+        course.upCompletedCourse();
+        basicService.saveCourse(course);
+    }
 }

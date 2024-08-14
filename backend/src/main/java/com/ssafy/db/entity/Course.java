@@ -79,6 +79,8 @@ public class Course {
         this.view = this.view + 1;
     }
 
+    public void upCompletedCourse() { this.completedCourse = this.completedCourse + 1; }
+
     public void update(CourseModifyUpdateReq courseModifyUpdateReq, List<Tag> tagsReq, Bucket bucket) {
         // 변경사항 확인 후 적용
         if (courseModifyUpdateReq.getName() != null) {
