@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { CurriculumInfo } from "../../types/CurriculumInfo";
 import { postCurriculum } from "../../services/api";
+import { Bounce, toast } from "react-toastify";
 
 interface CurriModalProps {
     courseId: number,
@@ -39,13 +40,33 @@ const CurriculumMakeModal = ({ show, courseId, onClose }: CurriModalProps) => {
             const response = await postCurriculum(formData, courseId);
             console.log(response.data);
             //const newId : number = response.data;
-            alert('커리큘럼 생성 성공!')
+            toast.info("커리큘럼 생성에 성공했습니다.", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              });
             //updateFunc([...curri, { ...newCurriculum, id: newId, }])
             onClose();
             window.location.href = `/courseManagementModify/${courseId}`
 
         } catch (error) {
-            alert('커리큘럼 추가에 실패하셨습니다.')
+            toast.error("커리큘럼 생성에 실패했습니다.", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              });
         }
     }
 

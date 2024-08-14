@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { deleteCurriculum, updateCurriculum } from "../../services/api";
 import { CurriculumInfo } from "../../types/CurriculumInfo";
+import { Bounce, toast } from "react-toastify";
 
 const CurriculumManagementModify = () => {
 
@@ -34,7 +35,17 @@ const CurriculumManagementModify = () => {
         try {
             const response = fetchDelete();
             console.log(response);
-            alert("커리큘럼 삭제 완료!")
+            toast.error("커리큘럼 수정을 완료했습니다.", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              });
             navigate(`/courseManagementDetail/${courseId}`, { state: { summary: location.state.summary } })
         } catch {
             alert("Error 발생..")

@@ -3,6 +3,7 @@ import { Member } from "../../types/Member";
 // import MakeTagModal from "./MakeTagModal";
 import { postSignUp, getAllTages } from "../../services/api";
 import { useNavigate } from "react-router";
+import { Bounce, toast } from "react-toastify";
 // import { tagMapping } from "../../services/tagMapping";
 
 interface SignUpModalProps {
@@ -86,21 +87,60 @@ const SignUpModal = ({ show, onClose }: SignUpModalProps) => {
             tags: userInfo.tags,
           };
 
-          const response = await postSignUp(JsonData);
+          await postSignUp(JsonData);
 
-          console.log(response.data);
+          toast.info("회원 가입 성공! 다시 로그인 해 주세요.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
 
-          alert("회원 가입 성공! 다시 로그인 해 주세요.");
           onClose();
           navigate("/");
         } else {
-          alert(`Role은 'User', 'Instructor' 둘 중 하나만 가능합니다.`);
+          toast.error("Role은 'User', 'Instructor' 둘 중 하나만 가능합니다.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
         }
       } else {
-        alert("비밀번호가 같지 않습니다.");
+        toast.error("비밀번호 확인을 다시 해 주세요.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
       }
     } catch (error) {
-      alert("회원 생성에 실패하셨습니다.");
+      toast.error("회원 가입에 실패했습니다.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 

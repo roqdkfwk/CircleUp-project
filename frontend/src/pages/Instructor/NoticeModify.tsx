@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { deleteNotice, patchNotice } from "../../services/api";
+import { Bounce, toast } from "react-toastify";
 
 interface NoticeModifyProps {
   title: string;
@@ -44,7 +45,17 @@ const NoticeModify = () => {
         state: { summary: location.state.summary },
       });
     } catch (error) {
-      alert("공지사항 수정에 실패하였습니다.");
+        toast.error("공지사항 수정에 실패했습니다.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
       console.error("공지사항 수정에 실패하였습니다.", error);
     }
   };

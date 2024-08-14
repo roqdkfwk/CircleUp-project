@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import Slider from "rc-slider";
 import '../../assets/rcSlider/index.css'
 import { postComment } from "../../services/api";
+import { Bounce, toast } from "react-toastify";
 
 interface CommentMakeModalProps {
     show: boolean,
@@ -45,7 +46,17 @@ const CommentMakeModal = ({ show, onClose, courseId }: CommentMakeModalProps) =>
             onClose();
             
         } catch (error) {
-            alert('리뷰 작성에 실패하셨습니다.')
+            toast.error("리뷰 작성에 실패했습니다.", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+              });
         }
     }
 

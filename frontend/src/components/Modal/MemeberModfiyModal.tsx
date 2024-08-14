@@ -6,6 +6,7 @@ import MakeTagModal from "./MakeTagModal";
 import { deleteMember, updateMember } from "../../services/api";
 import { useNavigate } from "react-router";
 import { tagMapping } from "../../services/tagMapping";
+import { Bounce, toast } from "react-toastify";
 
 interface MemberModfiyModalProps {
   show: boolean;
@@ -54,26 +55,82 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
         const response = await updateMember(email, JsonData);
 
         setNickName(response.data.name);
-        alert("회원 수정 성공!");
+
+        toast.info("회원 수정에 성공했습니다.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
         onClose();
         navigate("/");
-      } else alert("비밀번호가 같지 않습니다.");
+      } else {
+        toast.error("비밀번호 확인을 다시 해 주세요.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
     } catch (error) {
-      alert("회원 수정에 실패하셨습니다.");
+      toast.error("회원 수정에 실패했습니다.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteMember();
-      alert("회원 탈퇴 성공!");
+      
+      toast.info("회원 탈퇴에 성공했습니다.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+
       onClose();
       
       setIsLoggedIn(false);
 
       navigate("/");
     } catch (error) {
-      alert("회원 탈퇴에 실패하셨습니다.");
+      toast.error("회원 탈퇴에 실패했습니다.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   }
 
