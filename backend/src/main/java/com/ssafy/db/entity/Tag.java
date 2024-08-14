@@ -19,9 +19,6 @@ public class Tag {
     @Column(length = 45)
     private String name;
 
-    @Column(name = "img_url", length = 2000)
-    private String imgUrl;
-
     @OneToMany(mappedBy = "tag")
     private List<CourseTag> courseTagList = new ArrayList<>();
 }
