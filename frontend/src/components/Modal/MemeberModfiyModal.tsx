@@ -55,10 +55,8 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
         const response = await updateMember(email, JsonData);
 
         console.log(response.data);
-        setNickName(response.data.member.name);
-
+        setNickName(response.data.name);
         alert("회원 수정 성공!");
-
         onClose();
         navigate("/");
       } else alert("비밀번호가 같지 않습니다.");
@@ -321,7 +319,7 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                                     focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 
                                     dark:placeholder-gray-400 dark:text-white"
-                  placeholder="name"
+                  placeholder="서클업"
                   required
                 />
               </div>
@@ -410,16 +408,14 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                 </label>
                 <TagList names={userInfo.tags} />
                 <button
-                  className="
-                                        block text-white bg-blue-700 hover:bg-blue-800
-                                        focus:ring-4 focus:outline-none focus:ring-blue-300 
-                                        font-small rounded-lg px-2.5 py-1
-                                        text-xs text-center 
-                                        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className=" border-blue-800 border  text-blue-800 font-medium
+                              block  hover:bg-blue-100
+                              font-small rounded-lg px-2.5 py-1
+                              text-xs text-center"
                   type="button"
                   onClick={toggleTagModal}
                 >
-                  Make Tags
+                  태그 추가
                 </button>
               </div>
 
