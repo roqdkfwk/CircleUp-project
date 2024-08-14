@@ -6,15 +6,18 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class MemberSignupPostReq {
 
+    @NotEmpty
     @ApiModelProperty(name = "아이디", example = "circle@circle.com")
     private String email;
 
+    @NotEmpty
     @ApiModelProperty(name = "비밀번호", example = "circle123")
     private String pw;
 
