@@ -1,9 +1,7 @@
 package com.ssafy.api.service;
 
-import com.ssafy.api.response.CurriculumRes;
-import com.ssafy.api.response.CurriculumUrlRes;
-import com.ssafy.api.response.InstructorRes;
-import com.ssafy.api.response.TagRes;
+import com.ssafy.api.response.*;
+import com.ssafy.db.entity.Course;
 import com.ssafy.db.entity.Curriculum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,5 +34,14 @@ public class CourseDetailService {
         Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
 
         return curriculum.getCourse().getId();
+    }
+
+    /////
+    public List<CurriculumRes> getCurriculumById(List<Long> ids) {
+        Course course = appliedService.getCourseIdByCurriculum(ids.get(0));
+        return basicService.findCurriculumListByCurriculumIds(ids)
+                .stream()
+                .map(curriculum -> CurriculumRes.fromEntity(curriculum, course.getCompletedCourse()))
+                .collect(Collectors.toList());
     }
 }

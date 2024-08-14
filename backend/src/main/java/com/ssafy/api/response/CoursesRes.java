@@ -15,6 +15,7 @@ public class CoursesRes {
     Long view;
     int ratingNum;
     String ratingStr;
+    Double progress;
 
     public static CoursesRes of(Course course) {
         return new CoursesRes(course.getId(),
@@ -24,6 +25,10 @@ public class CoursesRes {
                 course.getPrice(),
                 course.getView(),
                 (int) Math.round(course.getRating()),
-                String.format("%.1f", course.getRating()));
+                String.format("%.1f", course.getRating()),
+                (course.getTotalCourse()!=0?
+                        course.getCompletedCourse() * 100 / course.getTotalCourse()
+                        : 0) / 100d
+        );
     }
 }

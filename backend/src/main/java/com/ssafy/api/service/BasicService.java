@@ -16,7 +16,7 @@ public class BasicService {
 
     private final CourseRepository courseRepository;
     private final CurriculumRepository curriculumRepository;
-    private final com.ssafy.db.repository.FavorRepository favorRepository;
+    private final FavorRepository favorRepository;
     private final InstructorRepository instructorRepository;
     private final MemberRepository memberRepository;
     private final RegisterRepository registerRepository;
@@ -40,6 +40,7 @@ public class BasicService {
         );
     }
 
+    @Transactional
     public void saveCourse(Course course) {
         courseRepository.save(course);
     }
@@ -52,8 +53,16 @@ public class BasicService {
         );
     }
 
+    @Transactional
     public void saveCurriculum(Curriculum curriculum) {
         curriculumRepository.save(curriculum);
+    }
+
+    @Transactional
+    public void updateTotalCourse(Course course){
+        Long cnt = curriculumRepository.countByCourseId(course.getId());
+        course.setTotalCourse(cnt);
+        courseRepository.save(course);
     }
 
     @Transactional(readOnly = true)
@@ -66,6 +75,7 @@ public class BasicService {
         return curriculumRepository.findAllById(curriculumIds);
     }
 
+    @Transactional
     public void deleteCurriculum(Curriculum curriculum) {
         curriculumRepository.delete(curriculum);
     }
@@ -98,6 +108,10 @@ public class BasicService {
         return instructorRepository.findById(instructorId).orElseThrow(
                 () -> new NotFoundException("Not Found Instructor : InstructorId is " + instructorId)
         );
+    }
+
+    public void saveInstructor(Instructor instructor){
+        instructorRepository.save(instructor);
     }
 
     // TagRepository

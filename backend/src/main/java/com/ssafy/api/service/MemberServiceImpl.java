@@ -31,11 +31,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final BasicService basicService;
-    private final InstructorRepository instructorRepository;
-    private final TagRepository tagRepository;
-    private final FavorRepository favorRepository;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void signup(MemberSignupPostReq memberSignupPostReq) {
@@ -57,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
             instructor.setId(member.getId());
             instructor.setMember(member);
             instructor.setDescription("");
-            instructorRepository.save(instructor);
+            basicService.saveInstructor(instructor);
         }
 
         memberRepository.save(member);
