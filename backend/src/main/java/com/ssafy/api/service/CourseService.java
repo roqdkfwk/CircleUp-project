@@ -183,9 +183,16 @@ public class CourseService {
 
     @Transactional
     public Boolean saveVideoUrl(String fileName, Long curriculumId) {
+
         Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
+        Long courseId = curriculum.getCourse().getId();
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new NotFoundException("Course not found : Course_id is " + courseId)
+        );
         curriculum.setRecUrl(GCSUtil.preUrl + fileName);
         basicService.saveCurriculum(curriculum);
+        course.setCompletedCourse(curriculum.getIndexNo());
+        basicService.saveCourse(course);
         return true;
     }
 
@@ -217,13 +224,4 @@ public class CourseService {
         return curriculumUrlResList;
     }
 
-    @Transactional
-    public void upCompletedCourse(Long courseId){
-        Course course = courseRepository.findById(courseId).orElseThrow(
-                () -> new NotFoundException("Course not found : Course_id is " + courseId)
-        );
-
-        course.upCompletedCourse();
-        basicService.saveCourse(course);
-    }
 }

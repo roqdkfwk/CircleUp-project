@@ -106,7 +106,6 @@ public class SessionController {
         try {
             openvidu.stopRecording(course_id);
             openvidu.getActiveSession(course_id).close();
-            courseService.upCompletedCourse(courseId);
         } catch (Exception e) {
 
         } finally {
