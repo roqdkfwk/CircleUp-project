@@ -5,30 +5,21 @@ import { CurriculumInfo } from "../../../types/CurriculumInfo";
 import CurriculumMakeModal from "../../Modal/CurriculumMakeModal";
 
 interface CourseCurriculumContent {
-
-    isModify: string,
-    courseId: number,
+  isModify: string;
+  courseId: number;
 }
 
-const CourseCurriculumContent = ({isModify, courseId} : CourseCurriculumContent) => {
+const CourseCurriculumContent = ({ isModify, courseId }: CourseCurriculumContent) => {
+  const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
 
-    const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
-    const [showModal, setShowModal] = useState<boolean>(false);
-    
-    //const [myCurriIds, setMyCurriIds] = useState<number[]>([]);
-    const toggleModal = () => {
-        setShowModal(!showModal);
-    }
-
-    // <Todo> : fetch curriculum : GET
-    const handleGetCurriculums = async () => {
-        const response = await getCurriculums(courseId);
-        setCurriculums(response.data);
-    }
-    
-    // const handleCurris = (newCurris : CurriculumInfo[]) => {
-    //     setCurriculums([...newCurris])
-    // }
+  const handleGetCurriculums = async () => {
+    const response = await getCurriculums(courseId);
+    setCurriculums(response.data);
+  };
 
     useEffect(() => {
         handleGetCurriculums();
@@ -50,14 +41,14 @@ const CourseCurriculumContent = ({isModify, courseId} : CourseCurriculumContent)
                     text-sm px-4 py-2.5 mr-64 my-10
                     focus:outline-none dark:focus:ring-blue-800
                     "
-                    onClick={toggleModal}
-                >
-                    커리큘럼 생성
-                </button>
-            }
-           {/* 기타 데이터 나타내기 */}
-        </div>
-    )
-}
+          onClick={toggleModal}
+        >
+          커리큘럼 생성
+        </button>
+      }
+      {/* 기타 데이터 나타내기 */}
+    </div>
+  );
+};
 
 export default CourseCurriculumContent;
