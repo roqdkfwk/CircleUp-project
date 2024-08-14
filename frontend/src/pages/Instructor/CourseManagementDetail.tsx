@@ -11,7 +11,7 @@ const CourseManagementDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const getSummary: string = location.state.summary;
+  const getSummary : string = location.state.summary;
   const [courseDetails, setCourseDetails] = useState<CourseDetailInfo>(({
     id: numericCourseId,
     courseName: "",
@@ -43,7 +43,7 @@ const CourseManagementDetail = () => {
     navigate(`/courseManagementModify/${courseId}`, {
       state: { 
         courseDetails: courseDetails, 
-        summary: getSummary 
+        summary: location.state.summary 
       } 
     });
   }
@@ -69,7 +69,7 @@ const CourseManagementDetail = () => {
           summary={getSummary} onNewSummary={() => {}} />
       </div>
       <div className="flex flex-row">
-        <div className="flex basis-2/3 justify-end ml-10">
+        <div className="flex w-[73%] justify-end ml-10">
           <button
             type="button"
             className="
@@ -84,7 +84,7 @@ const CourseManagementDetail = () => {
                     "
             onClick={handleModify}
           >
-            Modify
+            수정하기
           </button>
 
           <button
@@ -101,7 +101,7 @@ const CourseManagementDetail = () => {
                 "
             onClick={handleDelete}
           >
-            Delete
+            삭제하기
           </button>
         </div>
       </div>

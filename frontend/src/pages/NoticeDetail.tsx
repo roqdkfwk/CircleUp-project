@@ -9,7 +9,7 @@ const NoticeDetail = () => {
 
     const { courseId } = useParams<{ courseId: string }>();
     const [noticeData] = useState<NoticeInfo>(location.state.data);
-    console.log(noticeData)
+
     const isModify: string = location.state.flag;
 
     // Todo : Modify == instrcutor 인 경우 modify 버튼 구현
@@ -37,7 +37,7 @@ const NoticeDetail = () => {
                 </div>
 
                 <div className="notice-content">
-                    <p className="ml-3 mb-10 font-normal text-gray-700 dark:text-gray-400">
+                    <p className="ml-3 mb-10 font-normal text-gray-700 dark:text-gray-400 whitespace-pre-wrap">
                         {noticeData.content}
                     </p>
                 </div>

@@ -23,12 +23,6 @@ const Main = () => {
         return await getSpecialCourse(data)
     }
 
-    // const fetchLiveCourse = async () => {
-    //     const response = await getLiveCourses();
-    //     console.log(response.data)
-    //     setLiveCourseIds(response.data.map((str: string) => Number(str)));
-    // }
-
     useEffect(() => {
         const fetchHotCourses = async() => {
             const response = await fetchData("hot",10);

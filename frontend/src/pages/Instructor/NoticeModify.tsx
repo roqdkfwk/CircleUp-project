@@ -13,8 +13,7 @@ const NoticeModify = () => {
     const location = useLocation();
     const { courseId } = useParams<{ courseId: string }>();
     const announcementId = location.state.id;
-    console.log(location.state)
-
+   
     const [newNotice, setNewNotice] = useState<NoticeModifyProps>({
         title: location.state.title,
         content: location.state.content,
@@ -42,7 +41,7 @@ const NoticeModify = () => {
             };
 
             await patchNotice(Number(courseId), Number(announcementId), JsonData);
-            window.location.href = `/courseManagementDetail/${courseId}`;
+            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
 
         } catch (error) {
             alert("공지사항 수정에 실패하였습니다.")
@@ -52,11 +51,11 @@ const NoticeModify = () => {
 
     const handleDelete = () => {
         fetchDelete();
-        naviage(`/courseManagementDetail/${courseId}`);
+        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
     }
 
     const handleGoBack = () => {
-        naviage(`/courseManagementDetail/${courseId}`);
+        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
     }
 
     return (

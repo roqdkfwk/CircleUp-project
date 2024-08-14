@@ -30,7 +30,6 @@ const MyCourseBanner = ({
     imgUrl, courseName, instructorName, tags, price, courseId,
     onImg, onTitle, onTags, onImgData, onPrice }: BannerProps) => {
 
-    console.log(isDetail + " : " + isCreate + " : " + isModified)
     const { role } = useUserStore();
     const formattedPrice = price === 0 ? "무료" : price.toLocaleString();
 

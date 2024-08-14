@@ -35,7 +35,7 @@ const NoticeMake = () => {
             };
             
             await postNotice(Number(courseId), JsonData);
-            window.location.href = `/courseManagementDetail/${courseId}`;
+            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
 
         } catch (error) {
             alert("공지사항 생성에 실패하였습니다.")
@@ -44,7 +44,7 @@ const NoticeMake = () => {
     }
 
     const handleGoBack = () => {
-        naviage(`courseManagementDetail/${courseId}`);
+        naviage(`courseManagementDetail/${courseId}`, {state : {summary : "123"}});
     }
 
     return (

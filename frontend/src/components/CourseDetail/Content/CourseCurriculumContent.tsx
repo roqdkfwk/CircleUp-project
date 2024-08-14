@@ -35,7 +35,7 @@ const CourseCurriculumContent = ({isModify, courseId} : CourseCurriculumContent)
     }, [courseId])
     
     return (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center justify-between">
             <CurriculumMakeModal show={showModal} onClose={toggleModal} courseId={courseId} />
             <div>
                 <CurriculumList data={curriculums} isModfy={isModify} courseId={courseId} />
@@ -43,11 +43,11 @@ const CourseCurriculumContent = ({isModify, courseId} : CourseCurriculumContent)
             {isModify === "instructorModify" &&
                 <button type="button"
                     className="
-                    w-1/2 h-1/2
+                    w-[200px] h-[150px]
                     text-white bg-blue-700 hover:bg-blue-800 
                     focus:ring-4 focus:ring-blue-300 
-                    font-medium rounded-lg 
-                    text-sm px-4 py-2.5 mx-10 my-10
+                    font-medium rounded-lg
+                    text-sm px-4 py-2.5 mr-64 my-10
                     focus:outline-none dark:focus:ring-blue-800
                     "
                     onClick={toggleModal}
