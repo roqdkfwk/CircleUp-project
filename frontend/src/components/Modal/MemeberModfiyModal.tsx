@@ -3,7 +3,7 @@ import { useUserStore } from "../../store/store";
 import TagList from "../List/TagList";
 import { Member } from "../../types/Member";
 import MakeTagModal from "./MakeTagModal";
-import { updateMember } from "../../services/api";
+import { deleteMember, updateMember } from "../../services/api";
 import { useNavigate } from "react-router";
 import { tagMapping } from "../../services/tagMapping";
 
@@ -14,7 +14,7 @@ interface MemberModfiyModalProps {
 
 const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
   const navigate = useNavigate();
-  const { role, email, setNickName } = useUserStore();
+  const { role, email, setNickName, setIsLoggedIn } = useUserStore();
   const [checkPwd, setCheckPwd] = useState<string>("");
   const [userInfo, setUserInfo] = useState<Member>({
     pw: "",
@@ -42,7 +42,6 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
 
     try {
       if (checkPwd === userInfo.pw) {
-        console.log(userInfo);
 
         const JsonData: Record<string, unknown> = {
           pw: userInfo.pw,
@@ -54,7 +53,6 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
         };
         const response = await updateMember(email, JsonData);
 
-        console.log(response.data);
         setNickName(response.data.name);
         alert("회원 수정 성공!");
         onClose();
@@ -64,6 +62,20 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
       alert("회원 수정에 실패하셨습니다.");
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      await deleteMember();
+      alert("회원 탈퇴 성공!");
+      onClose();
+      
+      setIsLoggedIn(false);
+
+      navigate("/");
+    } catch (error) {
+      alert("회원 탈퇴에 실패하셨습니다.");
+    }
+  }
 
   const toggleTagModal = () => {
     setShowModal(!showModal);
@@ -419,13 +431,22 @@ const MemberModfiyModal = ({ show, onClose }: MemberModfiyModalProps) => {
                 </button>
               </div>
 
-              <button
-                type="submit"
-                onClick={handleSubmit}
-                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                변경하기
-              </button>
+              <div className="relative text-center">
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="mx-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
+                  변경하기
+                </button>
+                <button
+                  type="submit"
+                  onClick={handleDelete}
+                  className="text-white absolute right-0 bg-red-700 hover:bg-red-800 text-white border focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
+                  회원탈퇴
+                </button>
+              </div>
             </form>
           </div>
         </div>
