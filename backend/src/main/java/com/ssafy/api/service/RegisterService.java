@@ -26,7 +26,6 @@ public class RegisterService {
         return registerRepository.checkRegisterStatus(memberId, courseId);
     }
 
-
     public void doRegister(Long memberId, Long courseId) {
         // 이미 수강중이면
         if (registerRepository.existsRegisterByMemberIdAndCourseId(memberId, courseId) != null) {

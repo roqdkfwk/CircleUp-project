@@ -176,8 +176,8 @@ public class InstructionService {
             }
 
             Curriculum curriculum = curriculumPostReq.toEntity(course);
-
             basicService.saveCurriculum(curriculum);
+            basicService.updateTotalCourse(course);
 
             return CourseRes.fromEntity(course);
         } catch (Exception e) {
@@ -212,6 +212,7 @@ public class InstructionService {
         }
     }
 
+    @Transactional
     public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId) {
         Instructor instructor = basicService.findInstructorByInstructorId(memberId);
         Course course = basicService.findCourseByCourseId(courseId);
@@ -230,15 +231,19 @@ public class InstructionService {
             throw new BadRequestException("Curriculum already done");
         }
 
-        basicService.deleteCurriculum(curriculum);
-
         int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
         List<Curriculum> curriculumList = course.getCurriculumList();
+
+        curriculumList.remove(curriculum);
+
         for (int idx = idxDeleted - 1; idx < curriculumList.size(); idx++) {
             Curriculum curr = curriculumList.get(idx);
-            curr.setIndexNo(idx + 1L);
-            basicService.saveCurriculum(curr);
+            curr.setIndexNo((long) (idx + 1));
+            basicService.saveCurriculum(curr); // Save the adjusted curriculum
         }
+
+        basicService.deleteCurriculum(curriculum);
+        basicService.updateTotalCourse(course);
     }
 
     //
