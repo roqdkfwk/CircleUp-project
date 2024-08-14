@@ -32,6 +32,7 @@ public class CourseCreatePostReq {
                 .imgUrl(imgUrl)
                 .view(0L)
                 .price(Long.parseLong(price))
+                .summary(this.summary)
                 .description(this.description)
                 .courseTagList(new ArrayList<>())
                 .curriculumList(new ArrayList<>())
