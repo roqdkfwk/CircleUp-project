@@ -6,12 +6,13 @@ interface NoticeCardProps {
     courseId: number,
     isModify: string,
     idx : number,
+    summary: string,
 }
 
-const NoticeCard = ( { data, courseId, isModify, idx }: NoticeCardProps ) => {
+const NoticeCard = ( { data, courseId, isModify, idx, summary }: NoticeCardProps ) => {
 
     return (
-        <Link to={`/NoticeDetail/${courseId}`} state={{data : data, flag : isModify}}
+        <Link to={`/NoticeDetail/${courseId}`} state={{data : data, flag : isModify, summary : summary}}
             className="flex flex-col justify-between items-center bg-white border border-gray-200 rounded-lg shadow
          mx-2 md:flex-row md:max-w-full hover:bg-gray-100 md:h-auto
         dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"

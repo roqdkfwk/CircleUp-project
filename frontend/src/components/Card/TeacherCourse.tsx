@@ -9,7 +9,6 @@ interface TeacherCourseProps {
 const TeacherCourse = ({ data } : TeacherCourseProps) => {
 
     const { imgUrl, id: courseId, name, summary } = data;
-    console.log(data)
     
     const maxSummaryLength = 50;
     const shortenedSummary =

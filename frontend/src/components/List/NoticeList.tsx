@@ -5,10 +5,11 @@ import NoticeCard from "../Card/NoticeCard";
 
 interface NoticeListProps {
     courseId: number,
-    isModify : string,
+    isModify: string,
+    summary: string,
 }
 
-const NoticeList = ( { courseId, isModify } : NoticeListProps ) => {
+const NoticeList = ( { courseId, isModify, summary } : NoticeListProps ) => {
     
     const [notices, setNotices] = useState<NoticeInfo[]>([]);
 
@@ -41,7 +42,7 @@ const NoticeList = ( { courseId, isModify } : NoticeListProps ) => {
         const selectedNotices = notices.slice(startIndex, startIndex + noticesPerPage);
         
         return selectedNotices.map((notice, idx) => (
-            <NoticeCard key={idx} idx={idx+1} data={notice} courseId={courseId} isModify={isModify} />
+            <NoticeCard key={idx} idx={idx+1} data={notice} courseId={courseId} isModify={isModify} summary={summary} />
         ));
     };
 

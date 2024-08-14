@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { postNotice } from "../../services/api";
 
 interface NoticeMakeProps {
@@ -11,6 +11,7 @@ const NoticeMake = () => {
 
     const { courseId } = useParams<{ courseId: string }>();
     const naviage = useNavigate();
+    const location = useLocation();
 
     const [newNotice, setNewNotice] = useState<NoticeMakeProps>({
         title: "",
@@ -35,7 +36,7 @@ const NoticeMake = () => {
             };
             
             await postNotice(Number(courseId), JsonData);
-            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
+            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : location.state.summary}});
 
         } catch (error) {
             alert("공지사항 생성에 실패하였습니다.")
@@ -44,7 +45,7 @@ const NoticeMake = () => {
     }
 
     const handleGoBack = () => {
-        naviage(`courseManagementDetail/${courseId}`, {state : {summary : "123"}});
+        naviage(`courseManagementDetail/${courseId}`, {state : {summary : location.state.summary}});
     }
 
     return (

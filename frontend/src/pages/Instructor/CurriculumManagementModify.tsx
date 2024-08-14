@@ -35,7 +35,7 @@ const CurriculumManagementModify = () => {
             const response = fetchDelete();
             console.log(response);
             alert("커리큘럼 삭제 완료!")
-            navigate(`/courseManagementDetail/${courseId}`)
+            navigate(`/courseManagementDetail/${courseId}`, { state: { summary: location.state.summary } })
         } catch {
             alert("Error 발생..")
         }
@@ -52,7 +52,7 @@ const CurriculumManagementModify = () => {
             console.log(response)
 
             alert('커리큘럼 수정 성공!')
-            navigate(`/courseManagementDetail/${courseId}`)
+            navigate(`/courseManagementDetail/${courseId}`, { state: { summary: "123" } })
 
         } catch (error) {
             alert('커리큘럼 수정에 실패하셨습니다.')

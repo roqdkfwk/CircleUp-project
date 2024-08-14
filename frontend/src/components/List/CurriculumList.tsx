@@ -1,6 +1,4 @@
 import { CurriculumInfo } from "../../types/CurriculumInfo";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Grid, Pagination } from "swiper/modules";
 import Curriculum from "../Card/Curriculum";
 import { useEffect, useState } from "react";
 
@@ -8,9 +6,10 @@ interface CurriculumListprops {
   data: CurriculumInfo[];
   courseId: number;
   isModfy: string;
+  summary: string;
 }
 
-const CurriculumList = ({ data, courseId, isModfy }: CurriculumListprops) => {
+const CurriculumList = ({ data, courseId, isModfy, summary }: CurriculumListprops) => {
   const [curriculums, setCurriculums] = useState<CurriculumInfo[]>([]);
 
   useEffect(() => {
@@ -18,28 +17,16 @@ const CurriculumList = ({ data, courseId, isModfy }: CurriculumListprops) => {
   }, [data]);
 
   if (curriculums.length === 0)
-    return <div className="p-4">현재 커리큘럼이 준비 중에 있습니다</div>;
+    return <div className="p-4"><h3>현재 커리큘럼이 준비 중에 있습니다.</h3></div>;
 
   return (
     <div>
-      <div className="w-[850px] ml-4 p-1 rounded-lg mx-auto my-5 ">
+      <div className="w-auto mx-4 p-1 rounded-lg mx-auto my-5 ">
         <ul className=" divide-y divide-gray-200 ">
           {curriculums.map((curri, idx) => (
-            <Curriculum data={curri} isModfy={isModfy} courseId={courseId} />
+            <Curriculum key={idx} data={curri} isModfy={isModfy} courseId={courseId} summary={summary} />
           ))}
         </ul>
-
-        {/* <Swiper
-                    style={{ height: '100%' }}
-                    direction={`vertical`}
-                    slidesPerView={3}
-                    
-                    pagination={{ clickable: true }}
-                    modules={[ Grid, Pagination ]}
-                > *ㅊㅅㅁ
-        
-
-        {/* </Swiper> */}
       </div>
     </div>
   );

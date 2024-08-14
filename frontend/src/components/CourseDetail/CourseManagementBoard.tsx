@@ -245,11 +245,11 @@ const CourseManagementBoard = ({
             <></>
           )}
           {activeTab === "커리큘럼" ? (
-            <CourseCurriculumContent isModify={flag} courseId={myCourse.id} />
+            <CourseCurriculumContent isModify={flag} courseId={myCourse.id} summary={mySummary}  />
           ) : (
             <></>
           )}
-          {activeTab === "공지사항" && <CourseNoticeContent isModify={flag} courseId={data.id} />}
+          {activeTab === "공지사항" && <CourseNoticeContent isModify={flag} courseId={data.id} summary={mySummary} />}
           {activeTab === "후기" && <CourseCommentContent isModify={flag} courseId={data.id} />}
         </div>
       </div>

@@ -42,25 +42,29 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
   };
 
   const handleDeleteMyCourse = async () => {
-    await deleteCourseByUser(data.id);
+    try {
+      await deleteCourseByUser(data.id);
 
-    const newMyCourseId: number[] = [];
-    myCourseId.map((courseId) => {
-      if (courseId !== data.id) newMyCourseId.push(courseId);
-    });
-    toast.info("수강취소가 완료되었습니다.", {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-    });
-    setMyCourseId(newMyCourseId);
-    window.location.href = `/courseDetail/${buyInfo.id}`;
+      const newMyCourseId: number[] = [];
+      myCourseId.map((courseId) => {
+        if (courseId !== data.id) newMyCourseId.push(courseId);
+      });
+      toast.info("수강취소가 완료되었습니다.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      setMyCourseId(newMyCourseId);
+      window.location.href = `/courseDetail/${buyInfo.id}`;
+    } catch (err) {
+      alert("수강 취소 중 에러 발생!");
+    }
   };
 
   const onClickDeleteBtn = () => {
@@ -161,11 +165,10 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
                   e.preventDefault();
                   handleTabClick(NavbarName);
                 }}
-                className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${
-                  activeTab === NavbarName
+                className={`inline-block p-4 border-b-2 rounded-t-lg text-sm ${activeTab === NavbarName
                     ? "text-blue-600 border-blue-600"
                     : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                }`}
+                  }`}
               >
                 {NavbarName}
               </a>
@@ -190,11 +193,11 @@ const CourseDetailLeftBoard = ({ data }: CourseDetailLeftBoardProps) => {
       )}
 
       {activeTab === "커리큘럼" && (
-        <CourseCurriculumContent isModify={"userDetail"} courseId={data.id} />
+        <CourseCurriculumContent isModify={"userDetail"} courseId={data.id} summary={""} />
       )}
 
       {activeTab === "공지사항" && (
-        <CourseNoticeContent isModify={"userDetail"} courseId={data.id} />
+        <CourseNoticeContent isModify={"userDetail"} courseId={data.id} summary={""} />
       )}
 
       {activeTab === "후기" && <CourseCommentContent isModify={"userDetail"} courseId={data.id} />}

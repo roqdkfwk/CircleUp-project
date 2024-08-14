@@ -41,7 +41,7 @@ const NoticeModify = () => {
             };
 
             await patchNotice(Number(courseId), Number(announcementId), JsonData);
-            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
+            naviage(`/courseManagementDetail/${courseId}`, {state : {summary : location.state.summary}});
 
         } catch (error) {
             alert("공지사항 수정에 실패하였습니다.")
@@ -51,11 +51,11 @@ const NoticeModify = () => {
 
     const handleDelete = () => {
         fetchDelete();
-        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
+        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : location.state.summary}});
     }
 
     const handleGoBack = () => {
-        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : "123"}});
+        naviage(`/courseManagementDetail/${courseId}`, {state : {summary : location.state.summary}});
     }
 
     return (

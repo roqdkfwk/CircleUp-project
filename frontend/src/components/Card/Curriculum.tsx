@@ -9,9 +9,10 @@ interface CurriculumProps {
   data: CurriculumInfo;
   courseId: number;
   isModfy: string;
+  summary: string;
 }
 
-const Curriculum = ({ data, courseId, isModfy }: CurriculumProps) => {
+const Curriculum = ({ data, courseId, isModfy, summary }: CurriculumProps) => {
   return (
     <Link
       to={
@@ -25,7 +26,7 @@ const Curriculum = ({ data, courseId, isModfy }: CurriculumProps) => {
               search: `?curriculum_id=${data.id}`,
             } as unknown as string)
       }
-      state={{ data: data, flag: isModfy }}
+      state={{ data: data, flag: isModfy, summary: summary }}
     >
       <div className="flex flex-row p-1  border-b hover:bg-gray-50 ">
         <li className="mx-2 py-2">

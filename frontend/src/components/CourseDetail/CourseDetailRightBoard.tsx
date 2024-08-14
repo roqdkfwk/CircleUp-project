@@ -3,7 +3,7 @@ import CourseVideo from "../Card/CourseVideo";
 import { getCurriculumVideoUrls } from "../../services/api";
 
 interface CourseDetailRightBoardProps {
-    courseId : number,
+    courseId: number,
 }
 
 interface CourseDataUrlsProps {
@@ -19,8 +19,13 @@ const CourseDetailRightBoard = ({ courseId }: CourseDetailRightBoardProps) => {
 
     // <todo> - Fetch, 이전 강의 동영상 Lists 얻어오기
     const fetchCurriculumVideoUrl = async () => {
-        const response = await getCurriculumVideoUrls(courseId);
-        setDataUrls(response.data)
+        try {
+            const response = await getCurriculumVideoUrls(courseId);
+            setDataUrls(response.data)
+        }
+        catch (error) {
+            setDataUrls([]);
+        }
     }
 
     // 만약 courseId가 내가 수강 중인 강의가 아니면 no render!

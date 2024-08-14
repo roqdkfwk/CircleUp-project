@@ -19,11 +19,12 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
 
         const newMyCourse = [...myCourseId, buyInfo.id];
         setMyCourseId(newMyCourse);
+
+        window.location.href = `/courseDetail/${buyInfo.id}`;
     };
 
     const handleSubmit = () => {
-        handleRegisterCourseByUser();
-
+        
         toast.info("수강신청이 완료됐습니다.", {
             position: "top-center",
             autoClose: 3000,
@@ -35,7 +36,9 @@ const CourseBuyModal = ({ show, buyInfo, onClose } : CourseBuyProps) => {
             theme: "light",
             transition: Bounce,
         });
-        window.location.href = `/courseDetail/${buyInfo.id}`;
+        
+        handleRegisterCourseByUser();
+
         onClose();
     }
 

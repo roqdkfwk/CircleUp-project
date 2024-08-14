@@ -50,6 +50,8 @@ const CommentList = ({ courseId, isModify }: CommentListProps) => {
         alert("이미 댓글을 작성했습니다! ");
       else toggleModal();
     }
+    else
+      alert("수강 신청 후 다시 시도해 주세요.")
   };
 
   const toggleModal = () => {

@@ -4,21 +4,22 @@ import NoticeList from "../../List/NoticeList";
 interface CourseNoticeContentProps {
     courseId: number,
     isModify: string,
+    summary: string,
 }
 
-const CourseNoticeContent = ({ courseId, isModify }: CourseNoticeContentProps) => {
+const CourseNoticeContent = ({ courseId, isModify, summary }: CourseNoticeContentProps) => {
 
     const navigate = useNavigate();
 
     const handleNoticeMake = () => {
-        navigate(`/courseNoticeMake/${courseId}`)
+        navigate(`/courseNoticeMake/${courseId}`, {state : {summary : summary}})
     }
 
     return (
         <div className="flex flex-col">
 
             <div className="">
-                <NoticeList courseId={courseId} isModify={isModify} />
+                <NoticeList courseId={courseId} isModify={isModify} summary={summary} />
             </div>
 
             <div className="flex w-full justify-center">

@@ -19,6 +19,7 @@ const NoticeDetail = () => {
                 title: noticeData.title,
                 content: noticeData.content,
                 id: noticeData.id,
+                summary: location.state.summary,
             }
         })
     }
