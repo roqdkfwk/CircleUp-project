@@ -24,7 +24,7 @@ const CourseInputArea = ({ original_summary, original_content, onContent, onSumm
 
     const onChangeSummary = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setInputData({ ...inputData, summary : value })
+        setInputData({ ...inputData, summary: value })
     }
 
     const onChangeTextarea = (e: (React.ChangeEvent<HTMLTextAreaElement>)) => {
@@ -41,23 +41,25 @@ const CourseInputArea = ({ original_summary, original_content, onContent, onSumm
 
     return (
         <div>
-            <div className="flex justify-center align-center">
-            <label htmlFor="summary" className="block mr-3 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            요약본을 입력하세요.
-            </label>
+            <div className="flex items-center align-center mx-3 mt-5 mb-10">
+                <label htmlFor="summary" className="block text-sm mr-2 font-medium text-gray-900 dark:text-white">
+                    요약본을 입력하세요.
+                </label>
                 <input type="text"
                     name="summary"
-                            id="summary"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                placeholder="Summary"
-                onChange={onChangeSummary}
-                value={summary}
-            />
+                    id="summary"
+                    className="bg-gray-50 border border-gray-300 w-[70%] text-gray-900 text-sm rounded-lg 
+                   focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-600 dark:border-gray-500 
+                   dark:placeholder-gray-400 dark:text-white"
+                    placeholder="Summary"
+                    onChange={onChangeSummary}
+                    value={summary}
+                />
             </div>
-            
+
             <textarea id="message" rows={4}
                 className="
-                block p-2.5 w-full text-sm
+                block p-1 mx-2 mb-10 w-[81%] text-sm
                 text-gray-900 bg-gray-50
                 rounded-lg
                 border border-gray-300

@@ -31,6 +31,12 @@ const Course = ({ data, bar }: CourseProps) => {
     </svg>
   );
 
+  const maxSummaryLength = 50;
+  const shortenedSummary =
+    data.summary.length > maxSummaryLength
+      ? `${data.summary.slice(0, maxSummaryLength)}...`
+      : data.summary;
+
   return (
     <div className="bg-white dark:bg-gray-800 mx-auto items-center dark:border-gray-700 w-[220px]">
       <Link to={`/courseDetail/${data.id}`}>
@@ -44,7 +50,7 @@ const Course = ({ data, bar }: CourseProps) => {
             {data.name}
           </h5>
           <h5 className="text-sm min-h-[60px] tracking-tight text-gray-900 dark:text-white">
-            {data.summary}
+            {shortenedSummary}
           </h5>
           {bar ? (
             <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">

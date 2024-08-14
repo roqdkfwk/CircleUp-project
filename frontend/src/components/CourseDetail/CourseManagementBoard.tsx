@@ -74,6 +74,11 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
         onNewSummary(newSummary);
     }
 
+    const updatePrice = (newPirce: number) => {
+        myCourse.price = newPirce;
+        onNewMyCourse!(myCourse)
+    }
+
     useEffect(() => {
         if (data) {
             setMyCourse(data);
@@ -108,7 +113,7 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
                                     imgUrl={myCourse.imgUrl} courseName={myCourse.courseName}
                                     instructorName={myCourse.instructorName} tags={myCourse.tags}
                                     price={myCourse.price} courseId={data.id}
-                                    onImg={() => { }} onTitle={() => { }} onTags={() => { }}
+                                    onImg={() => { }} onTitle={() => { }} onTags={() => { }} onPrice={()=>{ }}
                                 />
                             case "instructorMake":
                                 return <CourseBanner
@@ -116,7 +121,7 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
                                     imgUrl={myCourse.imgUrl} courseName=""
                                     instructorName={myCourse.instructorName} tags={[]}
                                     price={0} courseId={data.id}
-                                    onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags}
+                                    onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags} onPrice={updatePrice}
                                 />
                             case "instructorModify":
                                 return <CourseBanner
@@ -124,7 +129,7 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
                                     imgUrl={myCourse.imgUrl} courseName={myCourse.courseName}
                                     instructorName={myCourse.instructorName} tags={myCourse.tags}
                                     price={myCourse.price} courseId={data.id}
-                                    onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags}
+                                    onImg={updateImg} onImgData={updateImgData} onTitle={updateTitle} onTags={updateTags} onPrice={updatePrice}
                                 />
                             default:
                                 // Loading Spinner or other error pages
@@ -163,7 +168,7 @@ const CourseManagementBoard = ({ flag, data, summary, onNewMyCourse, onNewSummar
                             switch (flag) {
                                 case "instructorDetail":
                                     return (
-                                        <blockquote className="text-base italic font-semibold text-gray-900 dark:text-white w-[80%] mx-auto mt-5 mb-8">
+                                        <blockquote className="text-base italic font-semibold text-gray-900 dark:text-white w-[80%] mx-auto mt-5 mb-8 whitespace-pre-wrap">
                                             <svg className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 14">
                                                 <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
                                             </svg>
