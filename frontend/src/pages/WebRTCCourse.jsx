@@ -136,7 +136,7 @@ class VideoRoomComponent extends Component {
         this.subscribeToStreamDestroyed();
         this.subscribeToUserChanged();
         
-        this.subscribeToUserLeft();  // 사용자 퇴장 신호 구독
+        //this.subscribeToUserLeft();  // 사용자 퇴장 신호 구독
         await this.connectToSession();
       }
     );
@@ -347,7 +347,7 @@ class VideoRoomComponent extends Component {
       // 세션 종료 신호를 수신했을 때 동작
       console.log("Session 종료 신호를 수신했습니다:", event.data);
       
-      this.disconnect();
+      this.state.session.disconnect();
       window.location.href = `/courseDetail/${this.props.course_id}`;
     });
   }
