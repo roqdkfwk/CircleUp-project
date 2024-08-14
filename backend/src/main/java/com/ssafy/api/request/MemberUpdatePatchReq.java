@@ -22,6 +22,7 @@ public class MemberUpdatePatchReq {
             Member member
     ) {
         member.setPw(memberUpdatePatchReq.getPw());
+        member.setName(memberUpdatePatchReq.getName());
         member.setRole(memberUpdatePatchReq.getRole());
         member.setContactEmail(memberUpdatePatchReq.getContactEmail());
         member.setContactTel(memberUpdatePatchReq.getContactTel());
