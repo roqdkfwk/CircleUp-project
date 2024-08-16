@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 public class SearchRes {
-
     Long id;
     String imgUrl;
     String name;

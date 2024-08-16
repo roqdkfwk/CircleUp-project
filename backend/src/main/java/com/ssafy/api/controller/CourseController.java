@@ -2,7 +2,7 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.response.*;
 import com.ssafy.api.service.CourseDetailService;
-import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,17 +20,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseController {
 
-    private final CourseSerivce courseService;
-    private final CourseDetailService searchService;
+    private final CourseService courseService;
+    private final CourseDetailService courseDetailService;
 
     @GetMapping("/tag")
     @ApiOperation(value = "태그 목록 조회")
     public ResponseEntity<List<TagRes>> taglist() {
-        return ResponseEntity.ok().body(searchService.getTagList());
+        return ResponseEntity.ok().body(courseDetailService.getTagList());
     }
 
     @GetMapping("/courses")
-    @ApiOperation(value = "강의 목록 조회", notes = "Approved 상태의 강의만 결과로 반환됩니다.")
+    @ApiOperation(value = "강의 목록 조회")
     public ResponseEntity<List<CoursesRes>> courselist(
             @RequestParam(required = false) String type,
             @RequestParam(required = false, defaultValue = "0") int page,
@@ -48,7 +48,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/search")
-    @ApiOperation(value = "강의 검색 결과 조회", notes = "Approved 상태의 강의만 결과로 반환됩니다.")
+    @ApiOperation(value = "강의 검색 결과 조회")
     public ResponseEntity<List<SearchRes>> searchResults(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false, value = "tag") List<Long> tags,
@@ -65,7 +65,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/{course_id}")
-    @ApiOperation(value = "강의 정보 상세 조회", notes = "요청자의 권한에 따라 접근 못하는 강의가 존재합니다.")
+    @ApiOperation(value = "강의 정보 상세 조회")
     @ApiResponses({
             @ApiResponse(code = 400, message = "강의에 접근 권한 없음"),
             @ApiResponse(code = 404, message = "해당 강의 없음")
@@ -85,18 +85,17 @@ public class CourseController {
     public ResponseEntity<InstructorRes> owner(
             @PathVariable(name = "course_id") Long id
     ) {
-        return ResponseEntity.ok().body(searchService.getInstructorByCourseId(id));
+        return ResponseEntity.ok().body(courseDetailService.getInstructorByCourseId(id));
     }
 
-
-    @GetMapping("/curriculums")
-    @ApiOperation(value = "커리큘럼 정보 조회")
+    @GetMapping("/courses/{course_id}/curriculums")
+    @ApiOperation(value = "강의의 커리큘럼 조회", notes = "강의 id를 통해 커리큘럼들의 정보를 반환합니다.")
     @ApiResponses({
             @ApiResponse(code = 404, message = "커리큘럼 없음")
     })
     public ResponseEntity<List<CurriculumRes>> curriculumList(
-            @RequestParam(required = false, value = "id") List<Long> ids
+            @PathVariable(name = "course_id") Long courseId
     ) {
-        return ResponseEntity.ok().body(searchService.getCurriculumById(ids));
+        return ResponseEntity.ok().body(courseService.getCurriculumList(courseId));
     }
 }

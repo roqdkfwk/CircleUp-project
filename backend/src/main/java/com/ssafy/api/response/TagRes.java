@@ -6,7 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class TagRes {
-
     Long id;
     String tagName;
 }

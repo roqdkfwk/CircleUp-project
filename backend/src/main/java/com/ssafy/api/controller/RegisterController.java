@@ -1,7 +1,8 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.response.CoursesRes;
-import com.ssafy.api.service.CourseSerivce;
+import com.ssafy.api.response.CurriculumUrlRes;
+import com.ssafy.api.service.CourseService;
 import com.ssafy.api.service.RegisterService;
 import com.ssafy.common.custom.RequiredAuth;
 import io.swagger.annotations.Api;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ import java.util.List;
 @RequiredAuth
 public class RegisterController {
 
-    private final CourseSerivce courseService;
+    private final CourseService courseService;
     private final RegisterService registerService;
 
     @GetMapping("/courses/registers")
@@ -45,7 +47,6 @@ public class RegisterController {
         return ResponseEntity.ok().body(registerService.roleRegister(memberId, courseId));
     }
 
-
     @PostMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 신청")
     @ApiResponses({
@@ -61,7 +62,6 @@ public class RegisterController {
         return ResponseEntity.ok().build();
     }
 
-
     @DeleteMapping("/courses/registers/{course_id}")
     @ApiOperation(value = "수강 취소")
     @ApiResponses({
@@ -76,4 +76,26 @@ public class RegisterController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("courses/{course_id}/dataUrls")
+    @ApiOperation(value = "강의 학습용 문서 url, 녹화 영상 url 반환")
+    @RequiredAuth
+    @ApiResponses({
+            @ApiResponse(code = 401, message = "권한 없음(로그인 안함)"),
+            @ApiResponse(code = 406, message = "권한 없음(수강중인 회원이 아님)"),
+    })
+    public ResponseEntity<List<CurriculumUrlRes>> getCurriculumUrlList(
+            Authentication authentication,
+            @PathVariable(name = "course_id") Long courseId
+    ) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 인증되지 않은 경우
+        }
+
+        Long memberId = Long.valueOf(authentication.getName());
+
+        if (courseService.existRegister(memberId, courseId) || courseService.instructorInCourse(courseId, memberId)) {
+            return ResponseEntity.ok().body(courseService.getCurriculumUrlList(courseId));
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
 }

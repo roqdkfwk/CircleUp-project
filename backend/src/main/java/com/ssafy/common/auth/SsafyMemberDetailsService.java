@@ -1,6 +1,6 @@
 package com.ssafy.common.auth;
 
-import com.ssafy.api.service.MemberService;
+import com.ssafy.api.service.BasicService;
 import com.ssafy.db.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 public class SsafyMemberDetailsService implements UserDetailsService {
 
     @Autowired
-    MemberService memberService;
+    BasicService basicService;
 
     @Override
     public SsafyMemberDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberService.getMemberByEmail(email);
+        Member member = basicService.findMemberByEmail(email);
         if (member != null) {
             return new SsafyMemberDetails(member);
         }

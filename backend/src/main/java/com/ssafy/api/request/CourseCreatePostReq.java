@@ -17,12 +17,12 @@ import java.util.List;
 @Setter
 //@ToString
 public class CourseCreatePostReq {
-    MultipartFile img;
-    String name;
-    String summary;
-    String description;
-    String price;
-    String tags;
+    private MultipartFile img;
+    private String name;
+    private String summary;
+    private String description;
+    private String price;
+    private String tags;
 
     public Course toEntity(Instructor instructor, Timestamp timestamp, String imgUrl) {
         return Course.builder()
@@ -32,19 +32,20 @@ public class CourseCreatePostReq {
                 .imgUrl(imgUrl)
                 .view(0L)
                 .price(Long.parseLong(price))
+                .summary(this.summary)
                 .description(this.description)
                 .courseTagList(new ArrayList<>())
                 .curriculumList(new ArrayList<>())
                 .totalCourse(0L)
                 .completedCourse(0L)
                 .rating(0.0)
-//                .status(Status.Draft)
                 .status(Status.Approved)
                 .build();
     }
 
-    public List<Long> parseTags() throws Exception{
+    public List<Long> parseTags() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(tags, new TypeReference<List<Long>>() {});
+        return objectMapper.readValue(tags, new TypeReference<List<Long>>() {
+        });
     }
 }

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class AnnouncementRes {
+    Long id;
     String author;
     String title;
     String content;
@@ -19,6 +20,7 @@ public class AnnouncementRes {
 
     public static AnnouncementRes fromEntity(Announcement announcement) {
         return AnnouncementRes.builder()
+                .id(announcement.getId())
                 .author(announcement.getAuthor().getName())
                 .title(announcement.getTitle())
                 .content(announcement.getContent())

@@ -16,31 +16,31 @@ import java.time.LocalDateTime;
 public class ReviewGetRes {
 
     @ApiModelProperty(name = "리뷰 ID")
-    private Long id;
+    Long id;
 
     @ApiModelProperty(name = "사용자 ID")
-    private Long memberId;
+    Long memberId;
 
     @ApiModelProperty(name = "사용자 이름")
-    private String memberName;
+    String memberName;
 
     @ApiModelProperty(name = "강의 ID")
-    private Long courseId;
+    Long courseId;
 
     @ApiModelProperty(name = "강의 이름")
-    private String courseName;
+    String courseName;
 
     @ApiModelProperty(name = "별점")
-    private Integer rating;
+    Integer rating;
 
     @ApiModelProperty(name = "리뷰 내용")
-    private String content;
+    String content;
 
     @ApiModelProperty(name = "등록일")
-    private LocalDateTime createAt;
+    LocalDateTime createAt;
 
     @ApiModelProperty(name = "수정일")
-    private LocalDateTime updateAt;
+    LocalDateTime updateAt;
 
     public static ReviewGetRes fromEntity(Review review) {
         return ReviewGetRes.builder()

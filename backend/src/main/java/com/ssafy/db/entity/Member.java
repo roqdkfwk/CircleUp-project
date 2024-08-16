@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,14 +41,20 @@ public class Member {
     @Column(name = "contact_tel", length = 45)
     private String contactTel;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favor> favors = new ArrayList<>();
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private Instructor instructor;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Register> registers = new ArrayList<>();
+    private List<Favor> favorList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Register> registerList;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Announcement> announcements = new ArrayList<>();
+    private List<Announcement> announcementList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviewList;
 
     protected Member() {
     }

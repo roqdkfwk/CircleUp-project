@@ -1,14 +1,19 @@
 package com.ssafy.api.service;
 
 import com.google.cloud.storage.Bucket;
-import com.ssafy.api.request.*;
+import com.ssafy.api.request.CourseCreatePostReq;
+import com.ssafy.api.request.CourseModifyUpdateReq;
+import com.ssafy.api.request.CurriculumPostReq;
+import com.ssafy.api.request.CurriculumUpdateReq;
 import com.ssafy.api.response.CourseRes;
 import com.ssafy.common.custom.BadRequestException;
-import com.ssafy.common.custom.NotFoundException;
 import com.ssafy.common.util.GCSUtil;
-import com.ssafy.db.entity.*;
+import com.ssafy.db.entity.Course;
+import com.ssafy.db.entity.Curriculum;
+import com.ssafy.db.entity.Instructor;
+import com.ssafy.db.entity.Tag;
 import com.ssafy.db.entity.enums.Status;
-import com.ssafy.db.repository.*;
+import com.ssafy.db.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,62 +29,48 @@ import java.util.List;
 public class InstructionService {
 
     private final CourseRepository courseRepository;
-    private final InstructorRepository instructorRepository;
-    private final RegisterRepository registerRepository;
-    private final TagRepository tagRepository;
-    private final CurriculumRepository curriculumRepository;
+    private final BasicService basicService;
+    private final AppliedService appliedService;
     private final Bucket bucket;
 
     // Course 관리
-
     public CourseRes createCourse(CourseCreatePostReq courseCreatePostReq, Long memberId) {
-        try{
-            // 1. 유효성 검증
-            // 요청자가 강사가 아닐때
-            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                    () -> new NotFoundException("Instructor not found")
-            );
-            // 빈 파일일때
-            if (courseCreatePostReq.getImg() == null) {
-                throw new BadRequestException("Not File");
-            }
-            // 이미지 파일이 아닐때
-            String contentType = courseCreatePostReq.getImg().getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                throw new BadRequestException("Not Image File");
-            }
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
-            // 2. 서비스 로직 실행
-            // 현재 시간
-            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+        if (courseCreatePostReq.getImg() == null) {
+            throw new BadRequestException("Not File");
+        }
 
-            Course newCourse = courseCreatePostReq.toEntity(instructor, timestamp, null);
-            newCourse = courseRepository.save(newCourse);
+        String contentType = courseCreatePostReq.getImg().getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BadRequestException("Not Image File");
+        }
 
-            List<Tag> tagsToAdd = tagRepository.findAllById(courseCreatePostReq.parseTags());
-            newCourse.addTag(tagsToAdd);
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
 
-            // 이미지 저장
-            GCSUtil.saveCourseImg(newCourse, bucket, courseCreatePostReq.getImg());
-            // 3. 업데이트된 정보로 다시 저장
-            return CourseRes.of(courseRepository.save(newCourse));
+        Course course = courseCreatePostReq.toEntity(instructor, timestamp, null);
+        basicService.saveCourse(course);
 
+        // todo :: partseTags 이대로? 다운이형이 프론트 코드 고칠 여력 없으면 그냥 이대로 두기...
+        try {
+            List<Tag> tagList = basicService.findTagListByTagIds(courseCreatePostReq.parseTags());
+            course.addTag(tagList);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create course", e);
         }
+
+        GCSUtil.saveCourseImg(course, bucket, courseCreatePostReq.getImg());
+
+        basicService.saveCourse(course);
+        return CourseRes.fromEntity(course);
     }
 
     public CourseRes updateCourse(Long courseId, CourseModifyUpdateReq courseModifyUpdateReq, Long memberId) {
         try {
             // 1. 유효성 검증
-            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                    () -> new NotFoundException("Instructor not found")
-            );
-
-            Course course = courseRepository.findById(courseId).orElseThrow(
-                    () -> new NotFoundException("Course not found")
-            );
+            Instructor instructor = basicService.findInstructorByInstructorId(memberId);
+            Course course = basicService.findCourseByCourseId(courseId);
 
             if (!course.getInstructor().equals(instructor)) {
                 throw new BadRequestException("Instructor doesn't own the course");
@@ -96,23 +87,20 @@ public class InstructionService {
                     throw new BadRequestException("Not Image File");
                 }
             }
-            // 서비스 로직
-            List<Long> tagIds = courseModifyUpdateReq.parseTags();
-            List<Tag> tagsReq = tagRepository.findAllById(tagIds);
-            course.update(courseModifyUpdateReq, tagsReq, bucket);
 
-            return CourseRes.of(courseRepository.save(course));
+            List<Tag> tagList = basicService.findTagListByTagIds(courseModifyUpdateReq.parseTags());
+            course.update(courseModifyUpdateReq, tagList, bucket);
+
+            basicService.saveCourse(course);
+            return CourseRes.fromEntity(course);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to update course", e);
         }
     }
 
-    public void deleteCourse(Long courseId, Long memberId)  {
-        // 1. 유효성 검증
-        Course course = courseRepository.findById(courseId).orElseThrow(
-                ()-> new NotFoundException("Course is not found")
-        );
+    public void deleteCourse(Long courseId, Long memberId) {
+        Course course = basicService.findCourseByCourseId(courseId);
 
 //        if(course.getStatus().equals(Status.Pending) || course.getStatus().equals(Status.Completed)){
 //            throw new BadRequestException("Status is "+ course.getStatus());
@@ -121,72 +109,63 @@ public class InstructionService {
 //        if (course.getStatus().equals(Status.Approved) && registerRepository.countByCourseId(courseId) > 0) {
 //            throw new BadRequestException("Registrant exists");
 //        }
-        if (registerRepository.countByCourseId(courseId) > 0) {
+
+        if (appliedService.getRegisterCount(courseId) > 0) {
             throw new BadRequestException("Registrant exists");
         }
 
-        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Instructor not found")
-        );
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
+        System.out.println("###" + courseId);
         GCSUtil.deleteCourseImg(courseId, bucket);
 
         courseRepository.delete(course);
     }
 
-    public CourseRes enqueueCourse(Long memberId, Long courseId){
-        Instructor instructor = instructorRepository.findById(memberId)
-                .orElseThrow(()-> new NotFoundException("Instructor not found"));
+    public CourseRes enqueueCourse(Long memberId, Long courseId) {
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+        Course course = basicService.findCourseByCourseId(courseId);
 
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        if(course.getStatus()!=Status.Draft) throw new BadRequestException("Status is not Draft");
+        if (course.getStatus() != Status.Draft) throw new BadRequestException("Status is not Draft");
 
         course.setStatus(Status.Pending);
-        courseRepository.save(course);
+        basicService.saveCourse(course);
 
-        return CourseRes.of(course);
+        return CourseRes.fromEntity(course);
     } // 강의 개설 신청 for 강사
 
-    public CourseRes dequeueCourse(Long memberId, Long courseId){
-        Instructor instructor = instructorRepository.findById(memberId)
-                .orElseThrow(()-> new NotFoundException("Instructor not found"));
+    public CourseRes dequeueCourse(Long memberId, Long courseId) {
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
+        Course course = basicService.findCourseByCourseId(courseId);
 
         if (!course.getInstructor().equals(instructor)) {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        if(course.getStatus()!=Status.Pending) throw new BadRequestException("Status is not Pending");
+        if (course.getStatus() != Status.Pending) throw new BadRequestException("Status is not Pending");
 
         course.setStatus(Status.Draft);
-        courseRepository.save(course);
+        basicService.saveCourse(course);
 
-        return CourseRes.of(course);
+        return CourseRes.fromEntity(course);
     } // 강의 개설 신청 취소 for 강사
 
     // Curriculum 관리
-
     public CourseRes createCurriculum(CurriculumPostReq curriculumPostReq, Long courseId, Long memberId) {
         try {
-            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                    () -> new NotFoundException("Instructor not found")
-            );
+            Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
-            Course course = courseRepository.findById(courseId).orElseThrow(
-                    ()-> new NotFoundException("Course is not found")
-            );
+            Course course = basicService.findCourseByCourseId(courseId);
 
 //            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
 //                throw new BadRequestException("Status is "+course.getStatus());
@@ -196,12 +175,11 @@ public class InstructionService {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
+            Curriculum curriculum = curriculumPostReq.toEntity(course);
+            basicService.saveCurriculum(curriculum);
+            basicService.updateTotalCourse(course);
 
-            Curriculum newCurr = curriculumPostReq.toEntity(course);
-
-            curriculumRepository.save(newCurr);
-
-            return CourseRes.of(course);
+            return CourseRes.fromEntity(course);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create curriculum", e);
@@ -210,13 +188,9 @@ public class InstructionService {
 
     public CourseRes updateCurriculum(CurriculumUpdateReq curriculumUpdateReq, Long courseId, Long curriculumId, Long memberId) {
         try {
-            Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                    () -> new NotFoundException("Instructor not found")
-            );
+            Instructor instructor = basicService.findInstructorByInstructorId(memberId);
 
-            Course course = courseRepository.findById(courseId).orElseThrow(
-                    ()-> new NotFoundException("Course is not found")
-            );
+            Course course = basicService.findCourseByCourseId(courseId);
 
 //            if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
 //                throw new BadRequestException("Status is "+course.getStatus());
@@ -226,30 +200,22 @@ public class InstructionService {
                 throw new BadRequestException("Instructor doesn't own the course");
             }
 
-            Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
-                    () -> new NotFoundException("Curriculum not found")
-            );
-
-
+            Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
 
             curriculum.update(curriculumUpdateReq, bucket);
-            curriculumRepository.save(curriculum);
+            basicService.saveCurriculum(curriculum);
 
-            return CourseRes.of(course);
+            return CourseRes.fromEntity(course);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to update curriculum", e);
         }
     }
 
+    @Transactional
     public void deleteCurriculum(Long courseId, Long curriculumId, Long memberId) {
-        Instructor instructor = instructorRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("Instructor not found")
-        );
-
-        Course course = courseRepository.findById(courseId).orElseThrow(
-                ()-> new NotFoundException("Course is not found")
-        );
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
+        Course course = basicService.findCourseByCourseId(courseId);
 
 //        if(!course.getStatus().equals(Status.Draft) && !course.getStatus().equals(Status.Rejected)){
 //            throw new BadRequestException("Status is "+course.getStatus());
@@ -259,23 +225,48 @@ public class InstructionService {
             throw new BadRequestException("Instructor doesn't own the course");
         }
 
-        Curriculum curriculum = curriculumRepository.findById(curriculumId).orElseThrow(
-                () -> new NotFoundException("Curriculum not found")
-        );
+        Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
 
         if (curriculum.getTime() != null && curriculum.getTime() > 0) {
             throw new BadRequestException("Curriculum already done");
         }
 
-        curriculumRepository.delete(curriculum);
-        curriculumRepository.flush();
-
         int idxDeleted = Math.toIntExact(curriculum.getIndexNo());
         List<Curriculum> curriculumList = course.getCurriculumList();
-        for(int idx = idxDeleted-1; idx<curriculumList.size(); idx++){
+
+        curriculumList.remove(curriculum);
+
+        for (int idx = idxDeleted - 1; idx < curriculumList.size(); idx++) {
             Curriculum curr = curriculumList.get(idx);
-            curr.setIndexNo(idx+1L);
-            curriculumRepository.save(curr);
+            curr.setIndexNo((long) (idx + 1));
+            basicService.saveCurriculum(curr); // Save the adjusted curriculum
         }
+
+        basicService.deleteCurriculum(curriculum);
+        basicService.updateTotalCourse(course);
+    }
+
+    //
+
+    public void uploadDoc(Long courseId, Long curriculumId, Long memberId, MultipartFile doc) {
+        Instructor instructor = basicService.findInstructorByInstructorId(memberId);
+
+        Course course = basicService.findCourseByCourseId(courseId);
+
+        if (!course.getInstructor().equals(instructor)) {
+            throw new BadRequestException("Instructor doesn't own the course");
+        }
+
+        Curriculum curriculum = basicService.findCurriculumByCurriculumId(curriculumId);
+
+        try {
+            String blobName = "curriculum_" + curriculumId + "_doc";
+            bucket.create(blobName, doc.getBytes(), doc.getContentType());
+            curriculum.setDocUrl(GCSUtil.preUrl + blobName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        basicService.saveCurriculum(curriculum);
     }
 }

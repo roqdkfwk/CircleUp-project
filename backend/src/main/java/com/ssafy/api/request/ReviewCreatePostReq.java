@@ -33,9 +33,6 @@ public class ReviewCreatePostReq {
                 .content(reviewCreatePostReq.getContent())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(null)
-                .isDeleted(false)
-                .helpfulCount(0)
-                .reportCount(0)
                 .build();
     }
 }
