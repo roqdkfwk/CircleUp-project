@@ -1,75 +1,81 @@
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState } from "react";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { tagMapping } from "../../services/tagMapping";
 import { PostNewCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
+import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementMake = () => {
+  const [newSummary, setNewSummary] = useState<string>("Inital Data");
+  const [newCourse, setNewCourse] = useState<CourseDetailInfo>({
+    id: 0,
+    courseName: "",
+    imgUrl: "",
+    imgData: null,
+    instructorName: "",
+    description: "",
+    price: 0,
+    tags: [],
+    curriculums: [],
+    view: 0,
+    rating: 3,
+  });
 
-    const [newCourse, setNewCourse] = useState<CourseDetailInfo>({
-        id: 0,
-        courseName: "",
-        imgUrl: "",
-        imgData: null,
-        instructorName: "",
-        description: "",
-        price : 0,
-        tags: [],
-        curriculum: "",
-        view: 0,
-    })
+  const updateNewCourse = (getCourse: CourseDetailInfo) => {
+    setNewCourse({ ...getCourse });
+  };
 
-    const updateNewCourse = (getCourse: CourseDetailInfo) => {
-        setNewCourse({ ...getCourse });
+  const updateNewSummary = (getSummary: string) => {
+    setNewSummary(getSummary);
+  };
+
+  const fetchPostNewCourse = async (data: FormData) => {
+    try {
+      const response = await PostNewCourse(data);
+      console.log("Response : ", response.data);
+
+      window.location.href = "/courseManagement";
+    } catch (error) {
+      console.log("error : ", error);
     }
+  };
 
-    const fetchPostNewCourse = async(data : FormData) => {
-        try {
-            const response = await PostNewCourse(data);
-            console.log('Response : ', response.data)
+  const AddNewCourse = () => {
+    const formData = new FormData();
 
-            window.location.href = '/courseManagement';
-        }
-        catch (error) {
-            console.log('error : ', error)
-        }
-    }
+    for (let i = 0; i < newCourse.imgData!.length; i++)
+      formData.append("img", newCourse.imgData![i]);
 
-    const AddNewCourse = () => {
+    formData.append("name", newCourse.courseName);
+    formData.append("description", newCourse.description);
 
-        const formData = new FormData();
+    const numToTag: number[] = tagMapping(newCourse.tags);
 
-        for (let i = 0; i < newCourse.imgData!.length; i++)
-            formData.append("img", newCourse.imgData![i])
-            
-        formData.append("name", newCourse.courseName)
-        formData.append("description", newCourse.description)
+    formData.append("tags", JSON.stringify(numToTag));
 
-        const numToTag: number[] = tagMapping(newCourse.tags)
+    formData.append("summary", newSummary);
 
-        formData.append("tags", JSON.stringify(numToTag))
-        
-        formData.append("summary", "dummyData")
-        formData.append("price", newCourse.price.toString())
+    formData.append("price", newCourse.price.toString());
+    formData.append("rating", newCourse.rating.toString());
 
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}:`, value instanceof File ? value.name : value);
-          }
-        fetchPostNewCourse(formData);
-    }
+    fetchPostNewCourse(formData);
+  };
 
-    return (
-        <div>
-            <div className="flex flex-row">
-                <CourseStatusBoard flag={"instructorMake"} data={newCourse} onNewMyCourse={updateNewCourse} />
-                <RightSideBar />
-            </div>
-            <div className="flex flex-row">
-                <div className="basis-3/4 flex justify-end mr-2">
-                <button
-                        type="button"
-                        className="
+  return (
+    <div>
+      <div className="flex flex-row">
+        <CourseManagementBoard
+          flag={"instructorMake"}
+          data={newCourse}
+          summary={newSummary}
+          onNewMyCourse={updateNewCourse}
+          onNewSummary={updateNewSummary}
+        />
+      </div>
+      <div className="flex flex-row">
+        <div className="basis-3/4 flex justify-end mr-2">
+          <button
+            type="button"
+            className="
                         text-white bg-blue-700 hover:bg-blue-800
                         focus:ring-4 focus:ring-blue-300 
                         font-medium 
@@ -79,15 +85,14 @@ const CourseManagementMake = () => {
                         dark:bg-blue-600 dark:hover:bg-blue-700 
                         focus:outline-none dark:focus:ring-blue-800
                         "
-                        onClick={AddNewCourse}
-                    >
-                        Create New Course!
-                    </button>
-                    
-                </div>
-            </div>
+            onClick={AddNewCourse}
+          >
+            강의 생성하기
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default CourseManagementMake;

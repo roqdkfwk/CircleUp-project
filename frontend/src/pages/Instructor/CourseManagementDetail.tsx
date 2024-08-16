@@ -1,16 +1,18 @@
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getCourseDetail, deleteMyCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
+import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
+import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 
 const CourseManagementDetail = () => {
   
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = Number(courseId);
   const navigate = useNavigate();
+  const location = useLocation();
   
-  const [courseDetails, setCourseDetails] = useState({
+  const getSummary : string = location.state.summary;
+  const [courseDetails, setCourseDetails] = useState<CourseDetailInfo>(({
     id: numericCourseId,
     courseName: "",
     imgUrl: "",
@@ -18,10 +20,11 @@ const CourseManagementDetail = () => {
     instructorName: "",
     description: "",
     tags: [],
-    curriculum: "",
+    curriculums: [],
     view: 0,
     price: 0,
-  });
+    rating: 3,
+  }));
 
   const fetchDetailCourseData = async () => {
     return await getCourseDetail(courseDetails.id);
@@ -37,7 +40,12 @@ const CourseManagementDetail = () => {
   }, []);
 
   function handleModify() {
-    navigate(`/courseManagementModify`, { state : courseDetails});
+    navigate(`/courseManagementModify/${courseId}`, {
+      state: { 
+        courseDetails: courseDetails, 
+        summary: location.state.summary 
+      } 
+    });
   }
   
   const fetchDeleteCourse = async () => {
@@ -57,11 +65,11 @@ const CourseManagementDetail = () => {
   return (
     <div>
       <div className="flex flex-row">
-        <CourseStatusBoard flag={"instructorDetail"} data={courseDetails} />
-        <RightSideBar />
+        <CourseManagementBoard flag={"instructorDetail"} data={courseDetails}
+          summary={getSummary} onNewSummary={() => {}} />
       </div>
       <div className="flex flex-row">
-        <div className="flex basis-2/3 justify-end ml-10">
+        <div className="flex w-[73%] justify-end ml-10">
           <button
             type="button"
             className="
@@ -76,7 +84,7 @@ const CourseManagementDetail = () => {
                     "
             onClick={handleModify}
           >
-            Modify
+            수정하기
           </button>
 
           <button
@@ -93,7 +101,7 @@ const CourseManagementDetail = () => {
                 "
             onClick={handleDelete}
           >
-            Delete
+            삭제하기
           </button>
         </div>
       </div>

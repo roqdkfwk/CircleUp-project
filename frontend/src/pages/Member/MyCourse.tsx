@@ -1,11 +1,15 @@
 
 import { useEffect, useState } from "react";
-import { getUserCourse } from "../../services/api";
-import { CourseInfo } from "../../types/CourseInfo";
 import CourseGallery from "../../components/List/CourseGallery";
+import { CourseInfo } from "../../types/CourseInfo";
+import { getUserCourse } from "../../services/api";
+//import { useLiveStore } from "../../store/store";
 
 const MyCourse = () => {
-    const [myCourse, setMyCourse] = useState<CourseInfo[]>([]);
+
+    //const { setLiveCourseIds } = useLiveStore();
+    const [myCourses, setMyCourses] = useState<CourseInfo[]>([]);
+    
     const myCourseNavBar = [ '수강중인 강의' ]
 
     const [activeTab, setActiveTab] = useState<string>('수강중인 강의'); 
@@ -14,18 +18,24 @@ const MyCourse = () => {
         setActiveTab(NavbarName);
     };
 
-    const fetchMemberCourse = async () => {
+    const handleGetMyCourse = async () => {
         const response = await getUserCourse();
-        setMyCourse(response.data)
-    };
+        setMyCourses(response.data)
+    }
+
+    // const fetchLiveCourse = async () => {
+    //     const response = await getLiveCourses();
+    //     setLiveCourseIds(response.data.map((str: string) => Number(str)));
+    // }
 
     useEffect(() => {
-        fetchMemberCourse();
-    }, []);
+        handleGetMyCourse();
+        // fetchLiveCourse();
+    }, [])
 
     return (
         <div>
-            {/* 태그 선택 Navbar */}
+            {/* 메뉴 선택 Navbar */}
             <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 w-[80%] mx-auto mt-5">
                 <ul className="flex flex-wrap -mb-px">
                 {myCourseNavBar?.map((item, idx) => (
@@ -44,7 +54,7 @@ const MyCourse = () => {
                 </ul>
             </div>
             <div className="w-[80%] mx-auto mt-8">
-                <CourseGallery data={myCourse} ver={1}/>
+                <CourseGallery data={myCourses} ver={1}/>
             </div>
         </div>
 

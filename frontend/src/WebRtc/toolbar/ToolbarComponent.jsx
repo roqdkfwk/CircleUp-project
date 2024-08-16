@@ -57,6 +57,7 @@ export default class ToolbarComponent extends Component {
   }
 
   leaveSession() {
+    /// Modal ///
     this.props.leaveSession();
   }
 
@@ -68,10 +69,10 @@ export default class ToolbarComponent extends Component {
     const mySessionId = this.props.sessionId;
     const localUser = this.props.user;
     return (
-      <AppBar className="toolbar" id="header" style={{backgroundColor: "#6366f1"}}>
-        <Toolbar className="toolbar" >
+      <AppBar className="toolbar" id="header" style={{ backgroundColor: "#6366f1" }}>
+        <Toolbar className="toolbar">
           <div id="navSessionInfo" className="ml-8 ">
-            <p className="title">{mySessionId}</p>
+            <p className="title">{mySessionId}번 방</p>
             {/* {this.props.sessionId && (
               <div id="titleContent">
                 <span id="session-title" className="">{mySessionId}</span>
@@ -136,7 +137,7 @@ export default class ToolbarComponent extends Component {
               onClick={this.leaveSession}
               id="navLeaveButton"
             >
-              <PowerSettingsNew style={{color: "white"}}/>
+              <PowerSettingsNew style={{ color: "white" }} />
             </IconButton>
             <IconButton color="inherit" onClick={this.toggleChat} id="navChatButton">
               {this.props.showNotification && <div id="point" className="" />}

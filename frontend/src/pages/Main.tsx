@@ -3,14 +3,17 @@ import { getSpecialCourse } from '../services/api';
 import HotCourseList from "../components/List/HotCourseList";
 import CourseList from "../components/List/CourseList";
 import { CourseInfo } from './../types/CourseInfo';
+// import { useLiveStore } from "../store/store";
 
 const Main = () => {
+
+    // const { setLiveCourseIds } = useLiveStore();
 
     const [hotCourses, setHotCourses] = useState<CourseInfo[]>([])
     const [freeCourses, setFreeCourses] = useState<CourseInfo[]>([])
     const [RecCourses, setRecCourses] = useState<CourseInfo[]>([])
     const [NewCourses, setNewCourses] = useState<CourseInfo[]>([])
-
+    
     const fetchData = async(type: string, size: number) => {
         const data = {
             type: type,
@@ -41,6 +44,7 @@ const Main = () => {
         fetchFreeCourses()
         fetchRecCourses()
         fetchNewCourses()
+        // fetchLiveCourse()
     },[])
 
     return (

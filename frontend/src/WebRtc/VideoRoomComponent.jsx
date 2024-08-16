@@ -1,12 +1,12 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "../WebRtc/VideoRoomComponent.css";
-import StreamComponent from "../WebRtc/stream/StreamComponent";
-import ChatComponent from "../WebRtc/chat/ChatComponent";
-import ToolbarComponent from "../WebRtc/toolbar/ToolbarComponent";
-import OpenViduLayout from "../WebRtc/layout/openvidu-layout";
-import UserModel from "../WebRtc/models/user-model";
+import StreamComponent from "./stream/StreamComponent";
+import ChatComponent from "./chat/ChatComponent";
+import ToolbarComponent from "./toolbar/ToolbarComponent";
+import OpenViduLayout from "./layout/openvidu-layout";
+import UserModel from "./models/user-model";
 import { useLocation, useParams } from "react-router";
 
 function useTest() {
@@ -16,12 +16,13 @@ function useTest() {
     <VideoRoomComponent
       course_id={params.course_id}
       member_id={location.state.memberId}
-    ></VideoRoomComponent>
+    />
   );
 }
 
 var localUser = new UserModel();
-const APPLICATION_SERVER_URL = import.meta.env.VITE_BACKEND_ADDRESS;
+const SPRING_SERVER_URL = import.meta.env.VITE_BACKEND_ADDRESS;
+const AI_SERVER_URL = import.meta.env.VITE_AI_ADDRESS;
 
 class VideoRoomComponent extends Component {
   constructor(props) {
@@ -40,6 +41,7 @@ class VideoRoomComponent extends Component {
       subscribers: [],
       chatDisplay: "none",
       currentVideoDevice: undefined,
+      nsfwProb: 0,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -57,6 +59,8 @@ class VideoRoomComponent extends Component {
     this.toggleChat = this.toggleChat.bind(this);
     this.checkNotification = this.checkNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
+
+    this.webSocket = null;
   }
 
   componentDidMount() {
@@ -78,6 +82,34 @@ class VideoRoomComponent extends Component {
     window.addEventListener("resize", this.updateLayout);
     window.addEventListener("resize", this.checkSize);
     this.joinSession();
+
+    this.setupWebSocket();
+  }
+
+  setupWebSocket() {
+    const websocketUrl = AI_SERVER_URL.startsWith('ws://') || AI_SERVER_URL.startsWith('wss://')
+      ? AI_SERVER_URL
+      : `ws://${AI_SERVER_URL}`;
+
+    this.webSocket = new WebSocket(websocketUrl);
+
+    this.webSocket.onopen = () => {
+      console.log("WebSocket connection opened");
+    };
+
+    this.webSocket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      console.log("Received from server:", data);
+      this.setState({ nsfwProb: data.nsfw_prob });
+    };
+
+    this.webSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    this.webSocket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
   }
 
   componentWillUnmount() {
@@ -153,46 +185,76 @@ class VideoRoomComponent extends Component {
     await this.OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
-  
-    let publisher = this.OV.initPublisher(undefined, {
-      audioSource: undefined,
-      videoSource: videoDevices[0].deviceId,
-      publishAudio: localUser.isAudioActive(),
-      publishVideo: localUser.isVideoActive(),
-      resolution: "640x480",
-      frameRate: 30,
-      insertMode: "APPEND",
-      mirror: false,
-    });
-  
-    if (this.state.session.capabilities.publish) {
-      publisher.on("accessAllowed", () => {
-        this.state.session.publish(publisher).then(() => {
-          this.updateSubscribers();
-          this.localUserAccessAllowed = true;
-          if (this.props.joinSession) {
-            this.props.joinSession();
-          }
-        });
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const videoTrack = mediaStream.getVideoTracks()[0];
+
+      if (!videoTrack) {
+        console.error("No video track found");
+        return;
+      }
+
+      console.log("MediaStream obtained: ", mediaStream);
+
+      let publisher = this.OV.initPublisher(undefined, {
+        videoSource: videoTrack,
+        publishAudio: localUser.isAudioActive(),
+        publishVideo: localUser.isVideoActive(),
+        resolution: "640x480",
+        frameRate: 30,
+        insertMode: "APPEND",
+        mirror: false,
       });
+
+      if (this.state.session.capabilities.publish) {
+        publisher.on("accessAllowed", () => {
+          console.log("Publisher access allowed");
+          this.state.session.publish(publisher).then(() => {
+            console.log("Session published");
+            this.updateSubscribers();
+            this.localUserAccessAllowed = true;
+            if (this.props.joinSession) {
+              this.props.joinSession();
+            }
+          });
+        })};
+
+      publisher.on("accessDenied", (error) => {
+        console.error("Access denied: ", error);
+      });
+
+      localUser.setNickname(this.state.myUserName);
+      localUser.setConnectionId(this.state.session.connection.connectionId);
+      localUser.setScreenShareActive(false);
+      localUser.setStreamManager(publisher);
+      this.setState({ currentVideoDevice: videoTrack, localUser: localUser });
+
+      const sendFrame = async () => {
+        const imageCapture = new ImageCapture(videoTrack);
+        try {
+          const bitmap = await imageCapture.grabFrame();
+          const canvas = document.createElement('canvas');
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const context = canvas.getContext('2d');
+          context.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
+          canvas.toBlob(blob => {
+            if (this.webSocket.readyState === WebSocket.OPEN) {
+              console.log("Sending frame to server");
+              this.webSocket.send(blob);
+            }
+            requestAnimationFrame(sendFrame);
+          }, 'image/jpeg');
+        } catch (error) {
+          console.error("Error capturing frame:", error);
+        }
+      };
+      requestAnimationFrame(sendFrame);
+    } catch (error) {
+      console.error("Error accessing media devices.", error);
     }
-  
-    localUser.setNickname(this.state.myUserName);
-    localUser.setConnectionId(this.state.session.connection.connectionId);
-    localUser.setScreenShareActive(false);
-    localUser.setStreamManager(publisher);
-  
-    this.subscribeToUserChanged();
-    this.subscribeToStreamDestroyed();
-    this.sendSignalUserChanged({ isScreenShareActive: localUser.isScreenShareActive() });
-  
-    this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, () => {
-      this.state.localUser.getStreamManager().on("streamPlaying", (e) => {
-        this.updateLayout();
-        publisher.videos[0].video.parentElement.classList.remove("custom-class");
-      });
-    });
   }
+  
 
   updateSubscribers() {
     var subscribers = this.remotes;
@@ -288,7 +350,7 @@ class VideoRoomComponent extends Component {
       }
     });
   }
-  
+
   subscribeToStreamDestroyed() {
     this.state.session.on("streamDestroyed", (event) => {
       this.deleteSubscriber(event.stream);
@@ -316,7 +378,7 @@ class VideoRoomComponent extends Component {
             user.setNickname(data.nickname);
           }
           if (data.isScreenShareActive !== undefined) {
-            user.setScreenShareActive(data.isScreenShareActive);
+            user.setScreenShareActive(data.isScreenShareActive());
           }
         }
       });
@@ -549,6 +611,9 @@ class VideoRoomComponent extends Component {
             </div>
           )}
         </div>
+        <div>
+          <p>NSFW Probability: {this.state.nsfwProb}</p>
+        </div>
       </div>
     );
   }
@@ -559,7 +624,7 @@ class VideoRoomComponent extends Component {
   }
 
   async createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + `/sessions/${sessionId}`, null, {
+    const response = await axios.post(SPRING_SERVER_URL + `/sessions/${sessionId}`, null, {
       headers: { "Content-Type": "application/json", memberId: this.props.member_id },
     });
     return response.data;
@@ -567,7 +632,7 @@ class VideoRoomComponent extends Component {
 
   async createToken(sessionId) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "/sessions/" + sessionId + "/connections",
+      SPRING_SERVER_URL + "/sessions/" + sessionId + "/connections",
       {},
       {
         headers: { "Content-Type": "application/json" },

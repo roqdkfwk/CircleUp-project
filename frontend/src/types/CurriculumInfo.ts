@@ -1,7 +1,8 @@
 
 export interface CurriculumInfo {
-    id: number,
     curriculumName: string,
     description: string,
-    imgUrl: string,
+    id: number,
+    indexNo: number,
+    isCurrent: boolean
 }

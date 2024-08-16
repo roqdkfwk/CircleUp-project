@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-
-import RightSideBar from "../../components/CourseDetail/CourseDetailRightBoard";
 import { CourseDetailInfo } from "../../types/CourseDetailInfo";
 import { useLocation } from "react-router-dom";
 import { tagMapping } from "../../services/tagMapping";
 import { getOriginalImage, updateMyCourse } from "../../services/api";
-import CourseStatusBoard from "../../components/CourseDetail/CourseManagementBoard";
+import CourseManagementBoard from "../../components/CourseDetail/CourseManagementBoard";
 
 const CourseManagementModify = () => {
 
     // useState & location으로 데이터 받기
     const location = useLocation();
-    const originalCourse: CourseDetailInfo = location.state;
+    const originalCourse: CourseDetailInfo = location.state.courseDetails;
+    const originalSummary: string = location.state.summary;
     const [isReady, setIsReady] = useState(false);
 
+    const [newSummary, setNewSummary] = useState<string>("");
     const [modifiedCourses, setModifiedCourses] = useState<CourseDetailInfo>({
         id: 0,
         courseName: "",
@@ -23,8 +23,9 @@ const CourseManagementModify = () => {
         instructorName: "",
         description: "",
         tags: [],
-        curriculum: "",
+        curriculums: [],
         view: 0,
+        rating: 3,
       });
     
     useEffect(() => {
@@ -33,9 +34,16 @@ const CourseManagementModify = () => {
             setIsReady(true);
         }
     }, [originalCourse])
+    useEffect(() => {
+        setNewSummary(originalSummary);
+    }, [originalSummary])
     
     const updateModifiedCourse = (getCourse: CourseDetailInfo) => {
         setModifiedCourses({ ...getCourse });
+    }
+
+    const updateNewSummary = (getSummary: string) => {
+        setNewSummary(getSummary);
     }
     
     const fetchOriginalImage = async () => {
@@ -77,8 +85,9 @@ const CourseManagementModify = () => {
         const numToTag: number[] = tagMapping(modifiedCourses.tags)
         formData.append("tags", JSON.stringify(numToTag))
         
-        formData.append("summary", "dummyData")
+        formData.append("summary", newSummary)
         formData.append("price", modifiedCourses.price.toString())
+        formData.append("rating", modifiedCourses.rating.toString())
 
         fetchModifiedCourse(formData);
     }
@@ -90,8 +99,8 @@ const CourseManagementModify = () => {
     return (
         <div>
             <div className="flex flex-row">
-                <CourseStatusBoard flag={"instructorModify"} data={modifiedCourses} onNewMyCourse={updateModifiedCourse} />
-                <RightSideBar />
+                <CourseManagementBoard flag={"instructorModify"} data={modifiedCourses}
+                    onNewMyCourse={updateModifiedCourse} summary={newSummary} onNewSummary={updateNewSummary} />
             </div>
             <div className="flex flex-row">
                 <div className="basis-3/4 flex justify-end mr-2">
